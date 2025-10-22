@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Modality } from "@google/genai";
 
 const fileToBase64 = (file: File): Promise<string> => {
@@ -14,7 +13,7 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-export const generateDecoratedImage = async (imageFile: File, styleName: string): Promise<string> => {
+export const generateDecoratedImage = async (imageFile: File, styleName: string, roomDescription: string): Promise<string> => {
   if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
   }
@@ -22,7 +21,11 @@ export const generateDecoratedImage = async (imageFile: File, styleName: string)
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const base64Image = await fileToBase64(imageFile);
 
-  const prompt = `Redecorate this room in the style of ${styleName}. The new design should be photorealistic, maintaining the original room's layout, windows, and doors, but changing the furniture, wall color, flooring, and decor.`;
+  const userContext = roomDescription 
+    ? `This is a photo of a ${roomDescription}.` 
+    : 'This is a photo of a room.';
+
+  const prompt = `${userContext} Redecorate this room in the style of ${styleName}. The new design should be photorealistic, maintaining the original room's layout, windows, and doors, but changing the furniture, wall color, flooring, and decor.`;
 
   try {
     const response = await ai.models.generateContent({

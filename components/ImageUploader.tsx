@@ -1,12 +1,13 @@
-
 import React, { useState, useCallback, useRef } from 'react';
 
 interface ImageUploaderProps {
   onImageUpload: (file: File) => void;
   imageUrl: string | null;
+  onDescriptionChange: (description: string) => void;
+  description: string;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, imageUrl }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, imageUrl, onDescriptionChange, description }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,8 +42,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, imageUrl }
   }, [onImageUpload]);
 
   return (
-    <div className="w-full">
-      <h2 className="text-2xl font-bold mb-4 text-gray-200">1. Upload Your Room</h2>
+    <div className="w-full space-y-4">
+      <h2 className="text-2xl font-bold text-gray-200">1. Upload & Describe</h2>
       <div
         className={`relative flex flex-col items-center justify-center w-full min-h-[200px] border-2 border-dashed rounded-lg transition-colors duration-200 ${
           isDragging ? 'border-purple-400 bg-gray-800' : 'border-gray-600 hover:border-gray-500'
@@ -85,6 +86,20 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, imageUrl }
           </div>
         )}
       </div>
+
+      {imageUrl && (
+        <div className="w-full">
+            <label htmlFor="room-description" className="block text-sm font-medium text-gray-300 mb-2">Describe the room (e.g., kitchen, bedroom)</label>
+            <input 
+                type="text"
+                id="room-description"
+                value={description}
+                onChange={(e) => onDescriptionChange(e.target.value)}
+                placeholder="e.g., A messy kitchen with wooden cabinets"
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
+            />
+        </div>
+      )}
     </div>
   );
 };

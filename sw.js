@@ -1,0 +1,103 @@
+const CACHE_NAME = 'ai-home-decorator-v1';
+// This list should include all the core files for the app shell.
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/index.tsx',
+  '/App.tsx',
+  '/types.ts',
+  '/constants.ts',
+  '/services/geminiService.ts',
+  '/components/Header.tsx',
+  '/components/Loader.tsx',
+  '/components/ImageUploader.tsx',
+  '/components/StyleSelector.tsx',
+  '/components/ResultDisplay.tsx',
+  'https://cdn.tailwindcss.com',
+  'https://aistudiocdn.com/react@^19.2.0/',
+  'https://aistudiocdn.com/react@^19.2.0',
+  'https://aistudiocdn.com/react-dom@^19.2.0/',
+  'https://aistudiocdn.com/@google/genai@^1.26.0',
+  'https://picsum.photos/seed/japandi/200',
+  'https://picsum.photos/seed/midcentury/200',
+  'https://picsum.photos/seed/cyberpunk/200',
+  'https://picsum.photos/seed/barbie/200',
+  'https://picsum.photos/seed/gothic/200',
+  'https://picsum.photos/seed/boho/200',
+  'https://picsum.photos/seed/minimalist/200',
+  'https://picsum.photos/seed/industrial/200',
+];
+
+// Install a service worker
+self.addEventListener('install', event => {
+  // Perform install steps
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        // AddAll can fail if any of the resources fail to fetch.
+        // For robustness, consider caching essential assets first.
+        return cache.addAll(urlsToCache).catch(err => {
+            console.error('Failed to cache assets during install:', err);
+        });
+      })
+  );
+});
+
+// Cache and return requests using a cache-then-network strategy.
+self.addEventListener('fetch', event => {
+    // We only want to cache GET requests.
+    if (event.request.method !== 'GET') {
+        return;
+    }
+    
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+
+        const fetchRequest = event.request.clone();
+
+        return fetch(fetchRequest).then(
+          response => {
+            // Check if we received a valid response.
+            // Don't cache opaque responses (from third-party CDNs without CORS) or errors.
+            if (!response || response.status !== 200 || response.type === 'opaque') {
+              return response;
+            }
+
+            const responseToCache = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          }
+        ).catch(err => {
+            console.error('Fetch failed:', err);
+            // You could return a fallback offline page here if you have one.
+        });
+      })
+  );
+});
+
+// Update a service worker and clean up old caches
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
