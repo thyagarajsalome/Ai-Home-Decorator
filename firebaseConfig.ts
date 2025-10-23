@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getFunctions, connectFunctionsEmulator } from "firebase/functions"; // Import this
 
 // TODO: Replace with your project's Firebase config object
 const firebaseConfig = {
@@ -13,3 +14,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+export const functions = getFunctions(app); // Export this
+
+// Optional: Connect to local emulators when developing
+// if (window.location.hostname === "localhost") {
+//   connectFunctionsEmulator(functions, "localhost", 5001);
+// }
