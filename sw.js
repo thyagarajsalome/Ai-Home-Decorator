@@ -18,11 +18,16 @@ self.addEventListener("install", (event) => {
 
 // Cache and return requests using a cache-then-network strategy.
 self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+
   // We only want to cache GET requests.
-  if (event.request.method !== "GET") {
+  // We also want to ignore all API calls (which start with /api/).
+  if (event.request.method !== "GET" || url.pathname.startsWith("/api/")) {
+    // Let non-GET requests and API requests pass through to the network
     return;
   }
 
+  // For all other GET requests, use cache-then-network
   event.respondWith(
     caches.match(event.request).then((response) => {
       // Cache hit - return response
