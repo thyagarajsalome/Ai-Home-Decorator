@@ -7,7 +7,8 @@ export const generateDecoratedImage = async (
 ): Promise<string> => {
   // The backend URL. For development, this points to your local server.
   // For production, this would be your deployed backend's URL.
-  const BACKEND_URL = "http://localhost:3001/api/decorate";
+  const BACKEND_URL =
+    "https://ai-decorator-backend-177572689403.asia-south1.run.app/api/decorate";
 
   // Use FormData to send the file and text fields together
   const formData = new FormData();
