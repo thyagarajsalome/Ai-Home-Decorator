@@ -8,7 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_MESSAGING_SENDER_ID: string;
   readonly VITE_FIREBASE_APP_ID: string;
   readonly VITE_FIREBASE_MEASUREMENT_ID: string;
-  // Add any other VITE_ variables you use here
+  // Add any other VITE_ variables you might use here
 }
 
 interface ImportMeta {
