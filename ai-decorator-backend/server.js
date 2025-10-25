@@ -34,7 +34,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const db = getFirestore();
-const USER_GENERATION_LIMIT = 5; // Set the free limit per user
+const USER_GENERATION_LIMIT = 3; // Set the free limit per user
 
 // --- App Setup ---
 const app = express();
