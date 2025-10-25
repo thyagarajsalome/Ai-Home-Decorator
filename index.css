@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* You can add your own global base styles here if needed */
+body {
+  /* Example: Ensure body takes full height if needed, though your current setup seems fine */
+  /* min-height: 100vh; */
+}
