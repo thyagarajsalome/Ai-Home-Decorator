@@ -1,5 +1,7 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+// --- ADD THIS LINE ---
+import { Routes, Route, Link } from "react-router-dom";
+// --- END ---
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -22,6 +24,7 @@ const App: React.FC = () => {
       <footer className="text-center py-6 text-gray-500 text-sm">
         <p>Powered by Google Gemini</p>
         <div className="flex justify-center gap-4 mt-2">
+          {/* These Links now have the component definition imported */}
           <Link to="/legal#terms" className="hover:text-purple-400">
             Terms
           </Link>
