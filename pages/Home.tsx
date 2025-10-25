@@ -5,7 +5,8 @@ import ResultDisplay from "../components/ResultDisplay";
 import Loader from "../components/Loader";
 import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
-import { ensureAnonymousUser } from "../firebase"; // <-- IMPORT ensureAnonymousUser
+// --- CHANGE THIS LINE ---
+import { ensureAnonymousUserAndToken } from "../firebase"; // <-- Use the correct function name
 
 const Home: React.FC = () => {
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
@@ -27,9 +28,9 @@ const Home: React.FC = () => {
   }, []);
 
   const handleDecorateClick = async () => {
-    // --- MODIFICATION START ---
     // 1. Ensure user is signed in (anonymously) and get token
-    const idToken = await ensureAnonymousUser();
+    // --- CHANGE THIS LINE ---
+    const idToken = await ensureAnonymousUserAndToken(); // <-- Use the correct function name
 
     if (!idToken) {
       setError(
@@ -38,7 +39,6 @@ const Home: React.FC = () => {
       setIsLoading(false); // Make sure loading stops if auth fails
       return;
     }
-    // --- MODIFICATION END ---
 
     // 2. Check other conditions (image, style, description)
     if (!uploadedImageFile || !selectedStyle || !roomDescription) {
@@ -59,7 +59,7 @@ const Home: React.FC = () => {
         uploadedImageFile,
         selectedStyle.name,
         roomDescription,
-        idToken // <-- PASS THE TOKEN HERE
+        idToken // Pass the token
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
     } catch (err) {

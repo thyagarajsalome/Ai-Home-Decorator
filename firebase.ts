@@ -4,7 +4,8 @@ import {
   signInAnonymously,
   onAuthStateChanged,
   User,
-} from "firebase/auth"; // Import User type
+  getIdToken, // Import getIdToken directly
+} from "firebase/auth";
 
 // Your web app's Firebase configuration from your Firebase project settings
 // Stored in environment variables (VITE_...) in your .env file
@@ -15,99 +16,115 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID, // <-- ADDED THIS LINE
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID, // Ensure this is included
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let app;
+let auth: ReturnType<typeof getAuth>; // Define auth type
 
-// Store the current user and token state
-let currentUser: User | null = auth.currentUser; // Use User type
-let currentToken: string | null = null;
-let authInitialized = false; // Flag to ensure sign-in runs only once initially
-let signInPromise: Promise<string | null> | null = null; // To handle concurrent calls
-
-// Automatically sign in the user anonymously when the app initializes
-const ensureAnonymousUser = async (): Promise<string | null> => {
-  // If already signed in and have a token, return it
-  if (currentUser && currentToken) {
-    // Optionally: Check token expiry here if needed, but getIdToken(true) handles refresh
-    try {
-      // Attempt to refresh token silently if needed, maybe not necessary with forceRefresh: true later
-      // This is a safety check; getIdToken(true) below is the primary mechanism
-      await currentUser.getIdToken();
-      return currentToken;
-    } catch (error) {
-      console.warn("Error checking existing token, will refresh:", error);
-      // Fall through to refresh the token
-      currentToken = null;
-    }
-  }
-
-  // If a sign-in is already in progress, wait for it
-  if (signInPromise) {
-    console.log("Sign-in already in progress, awaiting...");
-    return await signInPromise;
-  }
-
-  // Start the sign-in process
-  console.log("Starting sign-in or token fetch process...");
-  signInPromise = (async () => {
-    try {
-      if (!currentUser) {
-        console.log("Attempting anonymous sign-in...");
-        const userCredential = await signInAnonymously(auth);
-        currentUser = userCredential.user;
-        console.log("Signed in anonymously:", currentUser.uid);
-      } else {
-        console.log("User already exists:", currentUser.uid);
-      }
-
-      // Get/Refresh the ID token
-      console.log("Getting ID token...");
-      // Force refresh (true) ensures you always have a valid token
-      currentToken = await currentUser!.getIdToken(true);
-      console.log("Got ID token.");
-      return currentToken;
-    } catch (error) {
-      console.error("Firebase Auth Error:", error);
-      // Reset state on error
-      currentUser = null;
-      currentToken = null;
-      return null; // Handle error appropriately in the calling function
-    } finally {
-      // Clear the promise once it's resolved or rejected
-      signInPromise = null;
-      console.log("Sign-in/token fetch process finished.");
-    }
-  })();
-
-  return await signInPromise;
-};
-
-// Listen for auth state changes
-onAuthStateChanged(auth, (user) => {
-  authInitialized = true; // Mark auth as initialized
-  if (user) {
-    console.log("Auth state changed, user:", user.uid);
-    currentUser = user;
-    // You could pre-fetch token here, but ensureAnonymousUser handles it on demand
-  } else {
-    console.log("Auth state changed, user signed out/null.");
-    currentUser = null;
-    currentToken = null;
-    // Attempt to sign in again if the app requires a user always
-    // ensureAnonymousUser(); // Be careful not to create infinite loops if sign-in keeps failing
-  }
-});
-
-// Initial check/sign-in attempt when the module loads.
-// ensureAnonymousUser handles preventing duplicate calls.
-if (!authInitialized && !signInPromise) {
-  console.log("Initial auth check triggered.");
-  ensureAnonymousUser();
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  console.log("Firebase initialized successfully.");
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
+  // Prevent the rest of the script from running if init fails
+  throw new Error(
+    "Could not initialize Firebase. Check config and environment variables."
+  );
 }
 
-// Export auth and the function to get the token
-export { auth, ensureAnonymousUser };
+// Store the current user state - managed primarily by the listener
+let currentUser: User | null = null;
+let authStateKnown = false; // Flag to know if the initial state has been determined
+let authStatePromise: Promise<User | null>; // Promise to await initial state
+
+// --- Auth State Promise ---
+// Create a promise that resolves when the initial auth state is known
+authStatePromise = new Promise((resolve) => {
+  // Check if auth is initialized before using it
+  if (!auth) {
+    console.error(
+      "Firebase Auth not initialized before onAuthStateChanged setup."
+    );
+    resolve(null); // Resolve with null if auth failed
+    return;
+  }
+  const unsubscribe = onAuthStateChanged(
+    auth,
+    (user) => {
+      console.log(
+        "onAuthStateChanged triggered. User:",
+        user ? user.uid : "null"
+      );
+      currentUser = user; // Update the global currentUser
+      authStateKnown = true;
+      resolve(currentUser); // Resolve with the current user (or null)
+      unsubscribe(); // Stop listening after the first state determination
+    },
+    (error) => {
+      console.error("Auth state listener error:", error);
+      authStateKnown = true;
+      currentUser = null; // Ensure user is null on error
+      resolve(null); // Resolve with null on error
+      unsubscribe();
+    }
+  );
+});
+
+// Function to get the current user (potentially signing in anonymously if needed)
+// And then get a valid ID token.
+const ensureAnonymousUserAndToken = async (): Promise<string | null> => {
+  console.log("ensureAnonymousUserAndToken called.");
+
+  // Wait for the initial auth state to be determined if it hasn't already
+  if (!authStateKnown) {
+    console.log("Awaiting initial auth state...");
+    // Wait for the promise created outside this function
+    await authStatePromise;
+    console.log(
+      "Initial auth state known. Current user:",
+      currentUser ? currentUser.uid : "null"
+    );
+  }
+
+  // If after waiting, there's still no user, sign in anonymously
+  if (!currentUser) {
+    try {
+      // Ensure auth is available before calling signInAnonymously
+      if (!auth) throw new Error("Firebase Auth is not initialized.");
+      console.log("Attempting anonymous sign-in...");
+      const userCredential = await signInAnonymously(auth);
+      currentUser = userCredential.user; // Update the global currentUser
+      console.log("Signed in anonymously:", currentUser.uid);
+    } catch (error) {
+      console.error("Anonymous sign-in failed:", error);
+      currentUser = null; // Ensure currentUser is null on failure
+      return null; // Return null if sign-in fails
+    }
+  }
+
+  // At this point, currentUser should be non-null if sign-in was successful
+  if (!currentUser) {
+    console.error("User is unexpectedly null after sign-in attempt.");
+    return null;
+  }
+
+  // Get/Refresh the ID token
+  try {
+    console.log("Getting ID token for user:", currentUser.uid);
+    // Force refresh (true) ensures you always have a valid, non-expired token
+    const idToken = await getIdToken(currentUser, true);
+    console.log("Got ID token successfully.");
+    return idToken;
+  } catch (error) {
+    console.error("Error getting ID token:", error);
+    // Potentially sign the user out or clear state if token fetching fails persistently
+    // Reset currentUser might cause issues if called again quickly, just return null
+    return null;
+  }
+};
+
+// Export auth and the function
+export { auth, ensureAnonymousUserAndToken };
