@@ -78,11 +78,9 @@ app.post(
       }
 
       if (usageCount >= USER_GENERATION_LIMIT) {
-        return res
-          .status(429)
-          .json({
-            error: "Rate limit exceeded. You have used your free generations.",
-          });
+        return res.status(429).json({
+          error: "Rate limit exceeded. You have used your free generations.",
+        });
       }
 
       // 4. Prepare data for Gemini API (if quota is available)
@@ -125,12 +123,10 @@ app.post(
       console.error("Error in /api/decorate:", error);
       // Handle potential Gemini API errors (like rate limits)
       if (error.message && error.message.includes("429")) {
-        return res
-          .status(429)
-          .json({
-            error:
-              "The AI service is currently busy. Please try again in a minute.",
-          });
+        return res.status(429).json({
+          error:
+            "The AI service is currently busy. Please try again in a minute.",
+        });
       }
       res
         .status(500)
