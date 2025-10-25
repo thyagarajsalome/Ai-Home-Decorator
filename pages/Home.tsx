@@ -5,9 +5,7 @@ import ResultDisplay from "../components/ResultDisplay";
 import Loader from "../components/Loader";
 import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
-// Note: You will need to add a way to get the user's auth token
-// and pass it to generateDecoratedImage.
-// This is just a placeholder for the logic move.
+import { ensureAnonymousUser } from "../firebase"; // <-- IMPORT ensureAnonymousUser
 
 const Home: React.FC = () => {
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
@@ -29,45 +27,55 @@ const Home: React.FC = () => {
   }, []);
 
   const handleDecorateClick = async () => {
-    // ---- IMPORTANT ----
-    // You will need to get the Firebase auth token here.
-    // This is a placeholder. See Section 3 for the full auth implementation.
-    const idToken = "DUMMY_TOKEN"; // <-- REPLACE THIS with actual token logic
+    // --- MODIFICATION START ---
+    // 1. Ensure user is signed in (anonymously) and get token
+    const idToken = await ensureAnonymousUser();
 
+    if (!idToken) {
+      setError(
+        "Could not authenticate. Please refresh the page or check your connection."
+      );
+      setIsLoading(false); // Make sure loading stops if auth fails
+      return;
+    }
+    // --- MODIFICATION END ---
+
+    // 2. Check other conditions (image, style, description)
     if (!uploadedImageFile || !selectedStyle || !roomDescription) {
       setError(
         "Please upload an image, describe the room, and select a style first."
       );
-      return;
-    }
-    if (idToken === "DUMMY_TOKEN") {
-      setError("Please log in to use the decorator. (Auth logic pending)");
-      // In the real implementation, you'd get the token from your auth state.
-      // For now, this prevents the API call.
-      // return; // Uncomment this line after implementing auth
+      return; // No need to set isLoading false here, it wasn't set yet
     }
 
+    // 3. Set loading state and clear errors
     setIsLoading(true);
     setError(null);
     setGeneratedImageUrl(null);
 
+    // 4. Call backend service with the token
     try {
-      // Pass the token to the service
       const base64Image = await generateDecoratedImage(
         uploadedImageFile,
         selectedStyle.name,
-        roomDescription
-        // idToken
+        roomDescription,
+        idToken // <-- PASS THE TOKEN HERE
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
     } catch (err) {
       let message = "An unknown error occurred.";
       if (err instanceof Error) {
-        message = err.message;
+        message = err.message; // Use the error message from the backend/fetch
       }
-      // Check for specific rate limit error from our new backend
-      if (message.includes("limit")) {
-        message = "You have reached your free generation limit.";
+      // Customize message based on expected errors from backend
+      if (message.includes("limit exceeded")) {
+        message =
+          "You have reached your free generation limit for this session. Refresh to start a new session.";
+      } else if (
+        message.includes("Invalid token") ||
+        message.includes("No token provided")
+      ) {
+        message = "Authentication failed. Please refresh the page.";
       }
       setError(message);
     } finally {
@@ -75,6 +83,7 @@ const Home: React.FC = () => {
     }
   };
 
+  // Rest of the component JSX remains the same...
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-5xl mx-auto bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
