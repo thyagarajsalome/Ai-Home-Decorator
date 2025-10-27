@@ -1,29 +1,33 @@
-import React from "react"; //
+import React from "react";
 import { DESIGN_STYLES } from "../constants"; //
 import type { DesignStyle } from "../types"; //
 
 interface StyleSelectorProps {
-  onStyleSelect: (style: DesignStyle | null) => void; // Allow null to reset
+  onStyleSelect: (style: DesignStyle | null) => void; //
   selectedStyle: DesignStyle | null; //
   disabled: boolean; //
 }
 
 const StyleSelector: React.FC<StyleSelectorProps> = ({
+  //
   onStyleSelect,
   selectedStyle,
   disabled,
 }) => {
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = event.target.value;
+    //
+    const selectedId = event.target.value; //
     if (!selectedId) {
-      onStyleSelect(null); // Handle the "Select a Style" option
-      return;
+      //
+      onStyleSelect(null); //
+      return; //
     }
     const style = DESIGN_STYLES.find((s) => s.id === selectedId); //
-    onStyleSelect(style || null); // Pass the found style object or null
+    onStyleSelect(style || null); //
   };
 
   return (
+    //
     <div
       className={`w-full transition-opacity duration-300 ${
         //
@@ -33,56 +37,46 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
       <h2 className="text-2xl font-bold text-gray-200 mb-4">
         2. Choose a Style
       </h2>
-      <div className="flex flex-col gap-4">
+      {/* Dropdown for style selection */}
+      <div className="relative">
         {" "}
-        {/* Use flex column for dropdown and image */}
-        {/* Dropdown for style selection */}
-        <div className="relative">
-          <select
-            id="style-select"
-            value={selectedStyle?.id || ""} //
-            onChange={handleChange}
-            disabled={disabled} //
-            className="block w-full appearance-none bg-gray-700 border border-gray-600 text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <option value="" disabled={!selectedStyle}>
-              -- Select a Style --
-            </option>
-            {DESIGN_STYLES.map(
-              (
-                style //
-              ) => (
-                <option key={style.id} value={style.id}>
-                  {style.name}
-                </option>
-              )
-            )}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-            <svg
-              className="fill-current h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-            >
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-            </svg>
-          </div>
-        </div>
-        {/* Preview Image for Selected Style */}
-        <div className="w-full aspect-video bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-gray-700">
-          {selectedStyle && selectedStyle.previewImage ? (
-            <img
-              src={selectedStyle.previewImage} //
-              alt={`Preview of ${selectedStyle.name} style`} //
-              className="w-full h-full object-cover" //
-            />
-          ) : (
-            <span className="text-gray-400 text-center px-4">
-              Select a style to see its preview image here.
-            </span>
+        {/* */}
+        <select
+          id="style-select"
+          value={selectedStyle?.id || ""} //
+          onChange={handleChange}
+          disabled={disabled} //
+          className="block w-full appearance-none bg-gray-700 border border-gray-600 text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70" //
+        >
+          <option value="" disabled={!selectedStyle}>
+            {" "}
+            {/* */}
+            -- Select a Style --
+          </option>
+          {DESIGN_STYLES.map(
+            //
+            (style) => (
+              <option key={style.id} value={style.id}>
+                {" "}
+                {/* */}
+                {style.name}
+              </option>
+            )
           )}
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+          {" "}
+          {/* */}
+          <svg
+            className="fill-current h-4 w-4"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+          >
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+          </svg>
         </div>
       </div>
+      {/* REMOVED Preview Image Section */}
     </div>
   );
 };
