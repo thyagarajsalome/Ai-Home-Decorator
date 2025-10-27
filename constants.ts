@@ -1,203 +1,84 @@
-import type { DesignStyle } from "./types";
+import type { DesignStyle, RoomType } from "./types"; // Make sure to import RoomType
 
 export const DESIGN_STYLES: DesignStyle[] = [
-  // Original Styles
   {
     id: "japandi",
     name: "Japandi",
-    thumbnail:
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&h=400&fit=crop",
+    iconName: "IoLeafOutline", // Keep iconName/iconLibrary if you might use icons elsewhere
+    iconLibrary: "io5",
+    previewImage:
+      "https://images.unsplash.com/photo-1617103995383-9bfa000b5a1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU5M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
   {
     id: "mid-century-modern",
     name: "Mid-Century Modern",
-    thumbnail:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop",
+    iconName: "MdOutlineChair",
+    iconLibrary: "md",
+    previewImage:
+      "https://images.unsplash.com/photo-1593817454217-0f89fae1d5ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU5M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
   {
     id: "cyberpunk",
     name: "Cyberpunk",
-    thumbnail:
-      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop",
+    iconName: "IoHardwareChipOutline",
+    iconLibrary: "io5",
+    previewImage:
+      "https://images.unsplash.com/photo-1581898975010-14469559548a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU5M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
   {
     id: "barbiecore",
     name: "Barbiecore",
-    thumbnail:
-      "https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?w=400&h=400&fit=crop",
+    iconName: "FaHeart",
+    iconLibrary: "fa",
+    previewImage:
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU5M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
   {
     id: "gothic",
     name: "Gothic Sanctuary",
-    thumbnail:
-      "https://images.unsplash.com/photo-1512977147507-6faa8fcc6bdb?w=400&h=400&fit=crop",
+    iconName: "GiBatwingEmblem",
+    iconLibrary: "gi",
+    previewImage:
+      "https://images.unsplash.com/photo-1604578762241-c1fc0aa1c67d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU5M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
   {
     id: "boho",
-    name: "Bohemian",
-    thumbnail:
-      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+    name: "Boho",
+    iconName: "FaFeatherAlt",
+    iconLibrary: "fa",
+    previewImage:
+      "https://images.unsplash.com/photo-1598928640031-30043513ddc4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU9M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
   {
     id: "minimalist",
     name: "Minimalist",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=400&h=400&fit=crop",
+    iconName: "TbRectangleMinimal",
+    iconLibrary: "tb",
+    previewImage:
+      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU5M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
   {
     id: "industrial",
     name: "Industrial",
-    thumbnail:
-      "https://images.unsplash.com/photo-1565183928294-7d22656e99f7?w=400&h=400&fit=crop",
+    iconName: "FaCog",
+    iconLibrary: "fa",
+    previewImage:
+      "https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzZjQwNzVlYzJjZDkxY2E2NzA3ZTg4ODhhYzk3ZGU4N2Q3YjU5M2UyM2YwOTk3NTkyOTMwMGJhODRiYzA0ZmU4&ixlib=rb-4.0.3&q=80&w=600",
   },
-
-  // Traditional Styles
-  {
-    id: "traditional",
-    name: "Traditional",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop",
-  },
-  {
-    id: "victorian",
-    name: "Victorian",
-    thumbnail:
-      "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=400&h=400&fit=crop",
-  },
-  {
-    id: "colonial",
-    name: "Colonial",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=400&fit=crop",
-  },
-  {
-    id: "neoclassical",
-    name: "Neoclassical",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=400&h=400&fit=crop",
-  },
-
-  // Modern & Contemporary
-  {
-    id: "modern",
-    name: "Modern",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&h=400&fit=crop",
-  },
-  {
-    id: "contemporary",
-    name: "Contemporary",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=400&fit=crop",
-  },
-
-  // Rustic & Natural
-  {
-    id: "rustic",
-    name: "Rustic",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=400&fit=crop",
-  },
-  {
-    id: "farmhouse",
-    name: "Farmhouse",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&h=400&fit=crop",
-  },
-  {
-    id: "cottage",
-    name: "Cottage",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=400&fit=crop",
-  },
-  {
-    id: "scandinavian",
-    name: "Scandinavian",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?w=400&h=400&fit=crop",
-  },
-
-  // Eclectic & Artistic
-  {
-    id: "eclectic",
-    name: "Eclectic",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=400&h=400&fit=crop",
-  },
-  {
-    id: "art-deco",
-    name: "Art Deco",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&h=400&fit=crop",
-  },
-  {
-    id: "hollywood-regency",
-    name: "Hollywood Regency",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop",
-  },
-
-  // Urban & Industrial
-  {
-    id: "urban-modern",
-    name: "Urban Modern",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=400&h=400&fit=crop",
-  },
-  {
-    id: "loft",
-    name: "Loft",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=400&h=400&fit=crop",
-  },
-
-  // Specialty Styles
-  {
-    id: "coastal",
-    name: "Coastal/Nautical",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=400&h=400&fit=crop",
-  },
-  {
-    id: "mediterranean",
-    name: "Mediterranean",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop",
-  },
-  {
-    id: "tropical",
-    name: "Tropical",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600607687644-c7171b42498e?w=400&h=400&fit=crop",
-  },
-  {
-    id: "asian-zen",
-    name: "Asian/Zen",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb1?w=400&h=400&fit=crop",
-  },
-  {
-    id: "french-country",
-    name: "French Country",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600566753051-e64c7b90c935?w=400&h=400&fit=crop",
-  },
-  {
-    id: "shabby-chic",
-    name: "Shabby Chic",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=400&h=400&fit=crop",
-  },
-  {
-    id: "transitional",
-    name: "Transitional",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=400&h=400&fit=crop",
-  },
-  {
-    id: "maximalist",
-    name: "Maximalist",
-    thumbnail:
-      "https://images.unsplash.com/photo-1600121848594-d8644e57abae?w=400&h=400&fit=crop",
-  },
+  // Add more styles here, ensuring each has a unique id, name, and a previewImage URL
 ];
+
+// Predefined room types for the dropdown
+export const ROOM_TYPES: RoomType[] = [
+  //
+  "Living Room",
+  "Bedroom",
+  "Bathroom",
+  "Dining Room",
+  "Laundry Room",
+  "Kitchen",
+  "Other", // Keep 'Other' at the end
+];
+
+// Maximum characters for the custom room description input
+export const MAX_ROOM_DESCRIPTION_LENGTH = 15;

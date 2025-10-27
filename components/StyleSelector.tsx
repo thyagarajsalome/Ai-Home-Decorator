@@ -1,11 +1,11 @@
-import React from "react";
-import { DESIGN_STYLES } from "../constants";
-import type { DesignStyle } from "../types";
+import React from "react"; //
+import { DESIGN_STYLES } from "../constants"; //
+import type { DesignStyle } from "../types"; //
 
 interface StyleSelectorProps {
-  onStyleSelect: (style: DesignStyle) => void;
-  selectedStyle: DesignStyle | null;
-  disabled: boolean;
+  onStyleSelect: (style: DesignStyle | null) => void; // Allow null to reset
+  selectedStyle: DesignStyle | null; //
+  disabled: boolean; //
 }
 
 const StyleSelector: React.FC<StyleSelectorProps> = ({
@@ -13,37 +13,78 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
   selectedStyle,
   disabled,
 }) => {
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = event.target.value;
+    if (!selectedId) {
+      onStyleSelect(null); // Handle the "Select a Style" option
+      return;
+    }
+    const style = DESIGN_STYLES.find((s) => s.id === selectedId); //
+    onStyleSelect(style || null); // Pass the found style object or null
+  };
+
   return (
     <div
       className={`w-full transition-opacity duration-300 ${
-        disabled ? "opacity-50 pointer-events-none" : ""
+        //
+        disabled ? "opacity-50 pointer-events-none" : "" //
       }`}
     >
-      <h2 className="text-2xl font-bold text-gray-200">2. Choose a Style</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-        {DESIGN_STYLES.map((style) => (
-          <button
-            key={style.id}
-            onClick={() => onStyleSelect(style)}
-            className={`relative block w-full aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 hover:border-purple-400 ${
-              selectedStyle?.id === style.id
-                ? "border-purple-500 ring-2 ring-purple-500"
-                : "border-transparent"
-            }`}
+      <h2 className="text-2xl font-bold text-gray-200 mb-4">
+        2. Choose a Style
+      </h2>
+      <div className="flex flex-col gap-4">
+        {" "}
+        {/* Use flex column for dropdown and image */}
+        {/* Dropdown for style selection */}
+        <div className="relative">
+          <select
+            id="style-select"
+            value={selectedStyle?.id || ""} //
+            onChange={handleChange}
+            disabled={disabled} //
+            className="block w-full appearance-none bg-gray-700 border border-gray-600 text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
           >
+            <option value="" disabled={!selectedStyle}>
+              -- Select a Style --
+            </option>
+            {DESIGN_STYLES.map(
+              (
+                style //
+              ) => (
+                <option key={style.id} value={style.id}>
+                  {style.name}
+                </option>
+              )
+            )}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+            <svg
+              className="fill-current h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+            </svg>
+          </div>
+        </div>
+        {/* Preview Image for Selected Style */}
+        <div className="w-full aspect-video bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-gray-700">
+          {selectedStyle && selectedStyle.previewImage ? (
             <img
-              src={style.thumbnail}
-              alt={style.name}
-              className="w-full h-full object-cover"
+              src={selectedStyle.previewImage} //
+              alt={`Preview of ${selectedStyle.name} style`} //
+              className="w-full h-full object-cover" //
             />
-            <div className="absolute inset-0 bg-black/50 flex items-end p-2">
-              <p className="text-white font-semibold text-sm">{style.name}</p>
-            </div>
-          </button>
-        ))}
+          ) : (
+            <span className="text-gray-400 text-center px-4">
+              Select a style to see its preview image here.
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default StyleSelector;
+export default StyleSelector; //
