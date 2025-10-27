@@ -76,7 +76,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
           </svg>
         </div>
       </div>
-      {/* REMOVED Preview Image Section */}
+      {/* The preview image div that was here has been removed */}
     </div>
   );
 };
