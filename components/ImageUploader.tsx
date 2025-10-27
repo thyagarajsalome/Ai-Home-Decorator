@@ -1,8 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { MAX_ROOM_DESCRIPTION_LENGTH, ROOM_TYPES } from "../constants"; // Import ROOM_TYPES and MAX_ROOM_DESCRIPTION_LENGTH
-import type { RoomType } from "../types"; // Import RoomType
+// Import constants and types
+import { MAX_ROOM_DESCRIPTION_LENGTH, ROOM_TYPES } from "../constants"; //
+import type { RoomType } from "../types"; //
 
+// Props expected by this component
 interface ImageUploaderProps {
   onImageChange: (file: File | null) => void;
   onDescriptionChange: (description: string) => void;
@@ -15,81 +17,97 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   onImageChange,
   onDescriptionChange,
   currentImage,
-  currentDescription,
+  // currentDescription prop is received but not directly used, state handles it now
   disabled,
 }) => {
+  // Local state for the image preview URL
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     currentImage ? URL.createObjectURL(currentImage) : null
   );
 
   // State to manage selected room type (Living Room, Bedroom, Other, etc.)
-  const [selectedRoomType, setSelectedRoomType] = useState<RoomType | "">(""); // Initialize as empty string
+  const [selectedRoomType, setSelectedRoomType] = useState<RoomType | "">("");
   // State to manage custom description when 'Other' is selected
   const [customDescription, setCustomDescription] = useState<string>("");
 
-  // Effect to update currentDescription whenever selectedRoomType or customDescription changes
+  // Effect to automatically call onDescriptionChange when the relevant state changes
   React.useEffect(() => {
     if (selectedRoomType === "Other") {
       onDescriptionChange(customDescription);
     } else if (selectedRoomType) {
       onDescriptionChange(selectedRoomType);
     } else {
-      onDescriptionChange(""); // Clear description if no room type is selected
+      onDescriptionChange(""); // Clear description if no room type selected
     }
+    // Dependency array ensures this runs when these values change
   }, [selectedRoomType, customDescription, onDescriptionChange]);
 
+  // Handle file drop
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
-        onImageChange(file);
-        setPreviewUrl(URL.createObjectURL(file));
+        // Clean up previous object URL if it exists
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+        }
+        onImageChange(file); // Update parent state with the new File
+        setPreviewUrl(URL.createObjectURL(file)); // Create and set new preview URL
       }
     },
-    [onImageChange]
+    [onImageChange, previewUrl] // Include previewUrl in dependencies
   );
 
+  // Configure react-dropzone
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/*": [".jpeg", ".png", ".jpg", ".webp"],
+      "image/*": [".jpeg", ".png", ".jpg", ".webp"], // Common image types
     },
     multiple: false,
     disabled: disabled,
   });
 
+  // Handle removing/changing the image
   const handleRemoveImage = () => {
-    if (currentImage) {
-      URL.revokeObjectURL(previewUrl || ""); // Clean up previous object URL
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl); // Clean up the object URL
     }
-    onImageChange(null);
-    setPreviewUrl(null);
+    onImageChange(null); // Notify parent that image is removed
+    setPreviewUrl(null); // Clear local preview state
+    // Reset description fields as well when image is removed
+    setSelectedRoomType("");
+    setCustomDescription("");
   };
 
+  // Handle changes in the room type dropdown
   const handleRoomTypeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const value = event.target.value as RoomType | "";
     setSelectedRoomType(value);
-    // If user switches from 'Other', clear custom description
+    // If user switches away from 'Other', clear the custom text input state
     if (value !== "Other") {
       setCustomDescription("");
     }
-    // The useEffect will handle calling onDescriptionChange based on these state updates
+    // The useEffect will call onDescriptionChange
   };
 
+  // Handle changes in the custom description input
   const handleCustomDescriptionChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setCustomDescription(event.target.value);
-    // The useEffect will handle calling onDescriptionChange based on these state updates
+    // The useEffect will call onDescriptionChange
   };
 
+  // Calculate character count based on selection
   const characterCount =
     selectedRoomType === "Other"
       ? customDescription.length
       : selectedRoomType.length;
-  const isTooLong = characterCount > MAX_ROOM_DESCRIPTION_LENGTH;
+  // Check if the length exceeds the limit
+  const isTooLong = characterCount > MAX_ROOM_DESCRIPTION_LENGTH; //
 
   return (
     <div
@@ -108,101 +126,129 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           isDragActive
             ? "border-purple-500 bg-gray-700"
             : "border-gray-600 bg-gray-800"
-        } flex items-center justify-center text-gray-400 cursor-pointer transition-colors duration-200`}
+        } flex items-center justify-center text-center text-gray-400 cursor-pointer transition-colors duration-200 p-4`}
       >
         <input {...getInputProps()} disabled={disabled} />
         {previewUrl ? (
           <img
             src={previewUrl}
             alt="Room to decorate"
-            className="w-full h-full object-cover rounded-lg"
+            className="w-full h-full object-contain rounded-lg" // Changed to object-contain
           />
         ) : (
-          <p>
-            {isDragActive
-              ? "Drop the image here ..."
-              : "Drag & drop an image, or click to select"}
-          </p>
+          <div className="text-center p-4">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              stroke="currentColor"
+              fill="none"
+              viewBox="0 0 48 48"
+              aria-hidden="true"
+            >
+              <path
+                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 4v.01M28 8L36 16m0 0v12m0-12h8m-8 4v8m-12 4h.01M16 20h.01M20 16h.01M24 20h.01M12 24h.01M16 28h.01M20 24h.01M12 16h.01"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="mt-2 text-gray-400">
+              <span className="font-semibold text-purple-400">
+                {isDragActive ? "Drop the image here..." : "Click to upload"}
+              </span>{" "}
+              or drag and drop
+            </p>
+            <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 10MB</p>
+          </div>
         )}
-        {previewUrl && (
+        {previewUrl && !disabled && (
           <button
             onClick={(e) => {
               e.stopPropagation(); // Prevent triggering dropzone click
               handleRemoveImage();
             }}
-            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="absolute top-2 right-2 bg-gray-900/70 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-800 transition-colors"
+            aria-label="Change Image"
           >
             Change Image
           </button>
         )}
       </div>
 
-      {/* Room Type Selection */}
-      <div className="mt-6">
-        <label
-          htmlFor="room-type-select"
-          className="block text-gray-200 text-lg font-semibold mb-2"
-        >
-          Describe the room
-        </label>
-        <div className="relative mb-2">
-          <select
-            id="room-type-select"
-            value={selectedRoomType}
-            onChange={handleRoomTypeChange}
-            disabled={disabled}
-            className="block w-full appearance-none bg-gray-700 border border-gray-600 text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+      {/* Room Type Selection (only show if an image is uploaded) */}
+      {previewUrl && (
+        <div className="mt-6">
+          <label
+            htmlFor="room-type-select"
+            className="block text-gray-200 text-lg font-semibold mb-2"
           >
-            <option value="" disabled>
-              -- Select Room Type --
-            </option>
-            {ROOM_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-            <svg
-              className="fill-current h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-            >
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Custom Description Input (conditionally rendered) */}
-        {selectedRoomType === "Other" && (
-          <div className="mt-2">
-            <label htmlFor="custom-room-description" className="sr-only">
-              Custom Room Description
-            </label>
-            <input
-              type="text"
-              id="custom-room-description"
-              value={customDescription}
-              onChange={handleCustomDescriptionChange}
-              maxLength={MAX_ROOM_DESCRIPTION_LENGTH} // Use constant for max length
+            Describe the room
+          </label>
+          <div className="relative mb-2">
+            <select
+              id="room-type-select"
+              value={selectedRoomType}
+              onChange={handleRoomTypeChange}
+              // Disable dropdown if parent component is disabled (e.g., during loading)
               disabled={disabled}
-              placeholder="e.g., A messy kitchen with wooden cabinets"
-              className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-                isTooLong ? "border-red-500" : "border-gray-600"
-              } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400 disabled:opacity-70 disabled:cursor-not-allowed`}
-            />
+              className="block w-full appearance-none bg-gray-700 border border-gray-600 text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <option value="" disabled>
+                -- Select Room Type --
+              </option>
+              {ROOM_TYPES.map(
+                (
+                  type //
+                ) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                )
+              )}
+            </select>
+            {/* Dropdown arrow */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+              <svg
+                className="fill-current h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+              </svg>
+            </div>
           </div>
-        )}
 
-        {/* Character Counter */}
-        <p
-          className={`text-right text-sm mt-1 ${
-            isTooLong ? "text-red-500" : "text-gray-400"
-          }`}
-        >
-          {characterCount}/{MAX_ROOM_DESCRIPTION_LENGTH}
-        </p>
-      </div>
+          {/* Custom Description Input (conditionally rendered) */}
+          {selectedRoomType === "Other" && (
+            <div className="mt-2">
+              <label htmlFor="custom-room-description" className="sr-only">
+                Custom Room Description
+              </label>
+              <input
+                type="text"
+                id="custom-room-description"
+                value={customDescription}
+                onChange={handleCustomDescriptionChange}
+                maxLength={MAX_ROOM_DESCRIPTION_LENGTH} //
+                // Disable input if parent component is disabled
+                disabled={disabled}
+                placeholder="Describe your room here..."
+                className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                  isTooLong ? "border-red-500" : "border-gray-600"
+                } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400 disabled:opacity-70 disabled:cursor-not-allowed`}
+              />
+            </div>
+          )}
+
+          {/* Character Counter */}
+          <p
+            className={`text-right text-xs mt-1 ${
+              isTooLong ? "text-red-500" : "text-gray-400"
+            }`}
+          >
+            {characterCount}/{MAX_ROOM_DESCRIPTION_LENGTH} {/* */}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
