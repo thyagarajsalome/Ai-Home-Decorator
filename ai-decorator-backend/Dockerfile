@@ -10,8 +10,6 @@ COPY package*.json ./
 # Install only production dependencies
 RUN npm ci --only=production
 
-# Copy the rest of your backend source code (like server.js)
-COPY . .
 
 # Tell Google Cloud what port your app listens on
 EXPOSE 3001
