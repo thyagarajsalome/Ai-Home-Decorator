@@ -1,210 +1,206 @@
+// pages/Home.tsx
 import React, { useState, useCallback } from "react";
-import ImageUploader from "../components/ImageUploader"; //
-import StyleSelector from "../components/StyleSelector"; //
-import ResultDisplay from "../components/ResultDisplay"; //
-import Loader from "../components/Loader"; //
-import { generateDecoratedImage } from "../services/geminiService"; //
-import type { DesignStyle } from "../types"; //
-import { ensureAnonymousUserAndToken } from "../firebase"; //
+// ... other imports
+import { useAuth } from "../context/AuthContext"; // Import useAuth
+import { useNavigate } from "react-router-dom"; // To redirect if not logged in
 
-const MAX_GENERATIONS = 3; //
+const MAX_GENERATIONS = 3;
 
 const Home: React.FC = () => {
-  //
-  // State for the uploaded file object
-  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null); //
-  // State for the preview URL of the original image
-  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
-  // State for the selected style object
-  const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null); //
-  // State for the room description (either from dropdown or custom input)
-  const [roomDescription, setRoomDescription] = useState<string>(""); //
-  // State for the generated image URL (base64)
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
-    null
-  ); //
-  // Loading and error states
-  const [isLoading, setIsLoading] = useState<boolean>(false); //
-  const [error, setError] = useState<string | null>(null); //
-  // Generation count state
-  const [generationCount, setGenerationCount] = useState<number>(0); //
+  const { currentUser, getIdToken } = useAuth(); // Use the Auth context
+  const navigate = useNavigate(); // Hook for navigation
+  // ... existing state variables ...
+  const [generationCount, setGenerationCount] = useState<number>(0); // Keep track locally or fetch from backend if needed
 
-  // Handler for when the image changes in ImageUploader
+  // ... handleImageChange (no changes needed) ...
   const handleImageChange = useCallback(
     (file: File | null) => {
-      setUploadedImageFile(file); // Update the file state
+      setUploadedImageFile(file);
 
-      // Clean up previous object URL to prevent memory leaks
       if (originalImageUrl) {
         URL.revokeObjectURL(originalImageUrl);
       }
 
-      // Create a new object URL for the preview, or set to null if no file
       if (file) {
         setOriginalImageUrl(URL.createObjectURL(file));
       } else {
         setOriginalImageUrl(null);
       }
 
-      // Reset states that depend on the image
       setGeneratedImageUrl(null);
       setError(null);
-      setRoomDescription(""); // Also clear description when image changes
-      setSelectedStyle(null); // Clear selected style too
-      // setGenerationCount(0); // Optionally reset generation count
+      setRoomDescription("");
+      setSelectedStyle(null);
     },
-    [originalImageUrl] // Depend on originalImageUrl for cleanup
+    [originalImageUrl]
   );
 
-  // Handler for the "Decorate" button click
   const handleDecorateClick = async () => {
-    //
-    // Check generation limit first
+    // --- Check if user is logged in ---
+    if (!currentUser) {
+      setError("Please log in or sign up to decorate.");
+      // Optionally redirect to login page: navigate('/login');
+      return;
+    }
+    // ------------------------------------
+
+    // Check generation limit (you might want to fetch this from Firestore based on currentUser.uid)
+    // For simplicity, we'll keep the local count, but ideally, this check happens server-side
+    // or you fetch the count from Firestore here based on currentUser.uid
     if (generationCount >= MAX_GENERATIONS) {
-      //
-      alert("You've reached your free generation limit..."); //
-      return; //
+      alert("You've reached your free generation limit for this session.");
+      return;
     }
 
-    // Ensure authentication and get token
-    const idToken = await ensureAnonymousUserAndToken(); //
+    // --- Get ID token from context ---
+    const idToken = await getIdToken();
     if (!idToken) {
-      //
-      setError("Could not authenticate..."); //
-      return; //
+      setError("Could not authenticate. Please try logging in again.");
+      return;
     }
+    // ---------------------------------
 
-    // Validate inputs
     if (!uploadedImageFile || !selectedStyle || !roomDescription) {
-      //
       setError(
         "Please upload an image, describe the room, and select a style."
-      ); //
-      return; //
+      );
+      return;
     }
 
-    // Set loading state and clear previous results/errors
-    setIsLoading(true); //
-    setError(null); //
-    setGeneratedImageUrl(null); //
-    setGenerationCount((prevCount) => prevCount + 1); //
+    setIsLoading(true);
+    setError(null);
+    setGeneratedImageUrl(null);
 
-    // Call the backend API
     try {
-      //
       const base64Image = await generateDecoratedImage(
-        //
-        uploadedImageFile, //
-        selectedStyle.name, //
-        roomDescription, //
-        idToken //
+        uploadedImageFile,
+        selectedStyle.name,
+        roomDescription,
+        idToken // Pass the obtained token
       );
-      setGeneratedImageUrl(`data:image/png;base64,${base64Image}`); //
+      setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
+      // Increment local count AFTER successful generation
+      setGenerationCount((prevCount) => prevCount + 1);
     } catch (err) {
-      //
       // Handle errors (same logic as before)
-      let message = "An unknown error occurred."; //
+      let message = "An unknown error occurred.";
       if (err instanceof Error) {
-        //
-        message = err.message; //
+        message = err.message;
       }
-      if (message.includes("limit exceeded")) {
-        //
-        message = "You have reached your free generation limit..."; //
+      // Specific error messages based on backend response
+      if (message.includes("Rate limit exceeded")) {
+        message =
+          "You have reached your free generation limit. Consider upgrading for more.";
       } else if (
         message.includes("Invalid token") ||
         message.includes("No token provided")
       ) {
-        //
-        message = "Authentication failed. Please refresh the page."; //
+        message = "Authentication failed. Please log in again.";
+        // Optionally force logout here if token is invalid
+      } else if (message.includes("401") || message.includes("403")) {
+        // Catch backend auth errors
+        message = "Authentication failed. Please log in again.";
       }
-      setError(message); //
+      setError(message);
     } finally {
-      //
-      setIsLoading(false); //
+      setIsLoading(false);
     }
   };
 
-  const isLimitReached = generationCount >= MAX_GENERATIONS; //
+  // Determine if the limit is reached (based on local count for this example)
+  const isLimitReached = generationCount >= MAX_GENERATIONS;
 
+  // Render the component
   return (
-    //
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="max-w-5xl mx-auto bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
+      {/* ... rest of the JSX ... */}
+      <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
+        {/* ... ImageUploader and StyleSelector ... */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* --- CORRECTED ImageUploader props --- */}
           <ImageUploader
-            onImageChange={handleImageChange} // Correct prop name
-            currentImage={uploadedImageFile} // Pass the File object
-            currentDescription={roomDescription} // Pass the description string
-            onDescriptionChange={setRoomDescription} // Pass the setter function
-            disabled={isLoading} // Pass the loading state
+            onImageChange={handleImageChange}
+            currentImage={uploadedImageFile}
+            currentDescription={roomDescription}
+            onDescriptionChange={setRoomDescription}
+            disabled={isLoading || !currentUser} // Disable if loading OR not logged in
           />
-          <StyleSelector //
-            onStyleSelect={setSelectedStyle} //
-            selectedStyle={selectedStyle} //
-            // Disable style selector if no image is uploaded OR if loading
-            disabled={!uploadedImageFile || isLoading}
+          <StyleSelector
+            onStyleSelect={setSelectedStyle}
+            selectedStyle={selectedStyle}
+            disabled={!uploadedImageFile || isLoading || !currentUser} // Disable if no image, loading, OR not logged in
           />
         </div>
 
         {/* Decorate Button */}
         <div className="text-center">
-          {" "}
-          {/* */}
+          {/* Show login prompt if not logged in */}
+          {!currentUser && (
+            <p className="text-yellow-400 mb-4">
+              Please{" "}
+              <Link to="/login" className="underline hover:text-yellow-300">
+                Login
+              </Link>{" "}
+              or{" "}
+              <Link to="/signup" className="underline hover:text-yellow-300">
+                Sign Up
+              </Link>{" "}
+              to start decorating.
+            </p>
+          )}
           <button
             onClick={handleDecorateClick}
             disabled={
               !uploadedImageFile ||
               !selectedStyle ||
-              !roomDescription || // Check description state directly
+              !roomDescription ||
               isLoading ||
-              isLimitReached //
+              !currentUser || // Disable button if not logged in
+              isLimitReached
             }
             className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
-              //
               isLimitReached
-                ? "bg-gray-600 cursor-not-allowed opacity-70" //
-                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105" //
-            } disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100`} //
+                ? "bg-gray-600 cursor-not-allowed opacity-70"
+                : !currentUser
+                ? "bg-gray-500 cursor-not-allowed" // Style for disabled when logged out
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105"
+            } disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100`}
           >
-            {isLoading //
-              ? "Decorating..." //
-              : isLimitReached //
-              ? "🔒 Limit Reached" //
-              : "✨ Decorate My Room"}{" "}
-            {/* */}
+            {isLoading
+              ? "Decorating..."
+              : isLimitReached
+              ? "🔒 Limit Reached"
+              : !currentUser
+              ? "Login to Decorate" // Button text when logged out
+              : "✨ Decorate My Room"}
           </button>
+          {currentUser && (
+            <p className="text-sm text-gray-400 mt-2">
+              Generations used: {generationCount}/{MAX_GENERATIONS}
+            </p>
+          )}
         </div>
       </div>
-
-      {/* Error Display */}
-      {error && ( //
+      {/* ... Error Display, Loader, ResultDisplay ... */}
+      {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
             <strong>Oops!</strong> {error}
           </p>
         </div>
       )}
-
-      {/* Loading Indicator */}
-      {isLoading && ( //
+      {isLoading && (
         <div className="max-w-5xl mx-auto mt-8">
-          <Loader message="Our AI is redecorating... this might take a moment!" />{" "}
-          {/* */}
+          <Loader message="Our AI is redecorating... this might take a moment!" />
         </div>
       )}
-
-      {/* Result Display */}
-      {generatedImageUrl &&
-        originalImageUrl && ( //
-          <ResultDisplay //
-            originalImage={originalImageUrl} //
-            generatedImage={generatedImageUrl} //
-          />
-        )}
+      {generatedImageUrl && originalImageUrl && (
+        <ResultDisplay
+          originalImage={originalImageUrl}
+          generatedImage={generatedImageUrl}
+        />
+      )}
     </main>
   );
 };
 
-export default Home; //
+export default Home;
