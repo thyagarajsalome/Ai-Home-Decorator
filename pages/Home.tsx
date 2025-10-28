@@ -1,32 +1,68 @@
 // pages/Home.tsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react"; // Added useEffect
+import { Link, useNavigate } from "react-router-dom";
 // ... other imports
-import { useAuth } from "../context/AuthContext"; // Import useAuth
-import { useNavigate } from "react-router-dom"; // To redirect if not logged in
+import { useAuth } from "../context/AuthContext";
+// --- ADD ActionCodeSettings if needed for resend ---
+// import { sendEmailVerification, ActionCodeSettings } from "firebase/auth";
+// import { auth } from "../firebase"; // Import auth if sending verification here
+// ----------------------------------------------------
 
 const MAX_GENERATIONS = 3;
 
 const Home: React.FC = () => {
-  const { currentUser, getIdToken } = useAuth(); // Use the Auth context
-  const navigate = useNavigate(); // Hook for navigation
-  // ... existing state variables ...
-  const [generationCount, setGenerationCount] = useState<number>(0); // Keep track locally or fetch from backend if needed
+  const { currentUser, getIdToken } = useAuth();
+  const navigate = useNavigate();
 
-  // ... handleImageChange (no changes needed) ...
+  // ... existing state variables ...
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
+  const [roomDescription, setRoomDescription] = useState<string>("");
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [generationCount, setGenerationCount] = useState<number>(0);
+  // --- ADD state for verification status ---
+  const [isVerified, setIsVerified] = useState(false);
+  // ---------------------------------------
+
+  // --- Check verification status when currentUser changes ---
+  useEffect(() => {
+    // Check if the user exists and if their emailVerified status is true
+    setIsVerified(currentUser?.emailVerified ?? false);
+
+    // If user exists but is not verified, clear any non-auth related errors
+    if (currentUser && !currentUser.emailVerified) {
+      setError(null); // Clear API errors if showing verify prompt
+    }
+  }, [currentUser]);
+  // --------------------------------------------------------
+
+  // --- (Optional) Function to resend verification email ---
+  /*
+  const handleResendVerification = async () => {
+    if (currentUser && auth) { // Ensure auth is imported if using this
+      try {
+        await sendEmailVerification(currentUser);
+        alert('Verification email resent! Please check your inbox.');
+      } catch (error) {
+        console.error("Error resending verification email:", error);
+        alert('Failed to resend verification email.');
+      }
+    }
+  };
+  */
+  // -------------------------------------------------------
+
   const handleImageChange = useCallback(
+    /* ...no changes needed here... */
     (file: File | null) => {
       setUploadedImageFile(file);
-
-      if (originalImageUrl) {
-        URL.revokeObjectURL(originalImageUrl);
-      }
-
-      if (file) {
-        setOriginalImageUrl(URL.createObjectURL(file));
-      } else {
-        setOriginalImageUrl(null);
-      }
-
+      if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
+      setOriginalImageUrl(file ? URL.createObjectURL(file) : null);
       setGeneratedImageUrl(null);
       setError(null);
       setRoomDescription("");
@@ -36,29 +72,31 @@ const Home: React.FC = () => {
   );
 
   const handleDecorateClick = async () => {
-    // --- Check if user is logged in ---
     if (!currentUser) {
       setError("Please log in or sign up to decorate.");
-      // Optionally redirect to login page: navigate('/login');
       return;
     }
-    // ------------------------------------
 
-    // Check generation limit (you might want to fetch this from Firestore based on currentUser.uid)
-    // For simplicity, we'll keep the local count, but ideally, this check happens server-side
-    // or you fetch the count from Firestore here based on currentUser.uid
+    // --- ADD Verification Check ---
+    if (!isVerified) {
+      setError(
+        "Please verify your email address to start decorating. Check your inbox!"
+      );
+      // Optionally add a button here to trigger handleResendVerification
+      return;
+    }
+    // ----------------------------
+
     if (generationCount >= MAX_GENERATIONS) {
       alert("You've reached your free generation limit for this session.");
       return;
     }
 
-    // --- Get ID token from context ---
     const idToken = await getIdToken();
     if (!idToken) {
       setError("Could not authenticate. Please try logging in again.");
       return;
     }
-    // ---------------------------------
 
     if (!uploadedImageFile || !selectedStyle || !roomDescription) {
       setError(
@@ -72,33 +110,32 @@ const Home: React.FC = () => {
     setGeneratedImageUrl(null);
 
     try {
+      // Ensure uploadedImageFile and selectedStyle are not null before accessing properties
+      if (!uploadedImageFile || !selectedStyle) {
+        throw new Error("Missing image or style selection.");
+      }
       const base64Image = await generateDecoratedImage(
         uploadedImageFile,
         selectedStyle.name,
         roomDescription,
-        idToken // Pass the obtained token
+        idToken
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
-      // Increment local count AFTER successful generation
       setGenerationCount((prevCount) => prevCount + 1);
     } catch (err) {
-      // Handle errors (same logic as before)
       let message = "An unknown error occurred.";
       if (err instanceof Error) {
         message = err.message;
       }
-      // Specific error messages based on backend response
       if (message.includes("Rate limit exceeded")) {
         message =
           "You have reached your free generation limit. Consider upgrading for more.";
       } else if (
         message.includes("Invalid token") ||
-        message.includes("No token provided")
+        message.includes("No token provided") ||
+        message.includes("401") ||
+        message.includes("403")
       ) {
-        message = "Authentication failed. Please log in again.";
-        // Optionally force logout here if token is invalid
-      } else if (message.includes("401") || message.includes("403")) {
-        // Catch backend auth errors
         message = "Authentication failed. Please log in again.";
       }
       setError(message);
@@ -107,34 +144,44 @@ const Home: React.FC = () => {
     }
   };
 
-  // Determine if the limit is reached (based on local count for this example)
   const isLimitReached = generationCount >= MAX_GENERATIONS;
 
-  // Render the component
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* ... rest of the JSX ... */}
+      {/* --- ADD Verification Prompt --- */}
+      {currentUser && !isVerified && !isLoading && (
+        <div className="max-w-5xl mx-auto mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-300 rounded-lg text-center">
+          <p>
+            Please check your email ({currentUser.email}) to verify your account
+            before you can decorate.
+          </p>
+          {/* Optional Resend Button: <button onClick={handleResendVerification} className="mt-2 underline hover:text-yellow-200">Resend Verification Email</button> */}
+        </div>
+      )}
+      {/* ----------------------------- */}
+
       <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
-        {/* ... ImageUploader and StyleSelector ... */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <ImageUploader
             onImageChange={handleImageChange}
             currentImage={uploadedImageFile}
             currentDescription={roomDescription}
             onDescriptionChange={setRoomDescription}
-            disabled={isLoading || !currentUser} // Disable if loading OR not logged in
+            // Disable if loading OR not logged in OR not verified
+            disabled={isLoading || !currentUser || !isVerified}
           />
           <StyleSelector
             onStyleSelect={setSelectedStyle}
             selectedStyle={selectedStyle}
-            disabled={!uploadedImageFile || isLoading || !currentUser} // Disable if no image, loading, OR not logged in
+            // Disable if no image, loading, OR not logged in OR not verified
+            disabled={
+              !uploadedImageFile || isLoading || !currentUser || !isVerified
+            }
           />
         </div>
 
-        {/* Decorate Button */}
         <div className="text-center">
-          {/* Show login prompt if not logged in */}
-          {!currentUser && (
+          {!currentUser && !isLoading && (
             <p className="text-yellow-400 mb-4">
               Please{" "}
               <Link to="/login" className="underline hover:text-yellow-300">
@@ -154,15 +201,20 @@ const Home: React.FC = () => {
               !selectedStyle ||
               !roomDescription ||
               isLoading ||
-              !currentUser || // Disable button if not logged in
+              !currentUser ||
+              !isVerified || // Disable if not verified
               isLimitReached
             }
             className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
               isLimitReached
                 ? "bg-gray-600 cursor-not-allowed opacity-70"
                 : !currentUser
-                ? "bg-gray-500 cursor-not-allowed" // Style for disabled when logged out
-                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105"
+                ? "bg-gray-500 cursor-not-allowed" // Logged out
+                : !isVerified
+                ? "bg-yellow-700 cursor-not-allowed" // Not verified
+                : isLoading
+                ? "bg-gray-600 cursor-wait" // Loading
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105" // Active
             } disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100`}
           >
             {isLoading
@@ -170,17 +222,21 @@ const Home: React.FC = () => {
               : isLimitReached
               ? "🔒 Limit Reached"
               : !currentUser
-              ? "Login to Decorate" // Button text when logged out
+              ? "Login to Decorate"
+              : !isVerified
+              ? "Verify Email to Decorate" // Button text when not verified
               : "✨ Decorate My Room"}
           </button>
-          {currentUser && (
-            <p className="text-sm text-gray-400 mt-2">
-              Generations used: {generationCount}/{MAX_GENERATIONS}
-            </p>
-          )}
+          {currentUser &&
+            isVerified && ( // Only show count if logged in AND verified
+              <p className="text-sm text-gray-400 mt-2">
+                Generations used this session: {generationCount}/
+                {MAX_GENERATIONS}
+              </p>
+            )}
         </div>
       </div>
-      {/* ... Error Display, Loader, ResultDisplay ... */}
+
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
@@ -188,11 +244,13 @@ const Home: React.FC = () => {
           </p>
         </div>
       )}
+
       {isLoading && (
         <div className="max-w-5xl mx-auto mt-8">
           <Loader message="Our AI is redecorating... this might take a moment!" />
         </div>
       )}
+
       {generatedImageUrl && originalImageUrl && (
         <ResultDisplay
           originalImage={originalImageUrl}
