@@ -35,8 +35,9 @@ const Legal: React.FC = () => {
         </p>
         <p>
           If you create an account, we will store your email address and
-          authentication details securely using Firebase Authentication. We will
-          not share your email with third parties.
+          authentication details securely using{" "}
+          <strong>Supabase Authentication</strong>. We will not share your email
+          with third parties.
         </p>
 
         <h2 id="disclaimer">Disclaimer</h2>
