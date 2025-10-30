@@ -1,12 +1,19 @@
 // pages/Home.tsx
-import React, { useState, useCallback, useEffect } from "react"; // Added useEffect
+import React, { useState, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// ... other imports
+
+// --- *** ADDED IMPORTS FOR COMPONENTS AND TYPES *** ---
+import ImageUploader from "../components/ImageUploader";
+import StyleSelector from "../components/StyleSelector";
+import ResultDisplay from "../components/ResultDisplay";
+import Loader from "../components/Loader";
+import { generateDecoratedImage } from "../services/geminiService";
+import type { DesignStyle } from "../types";
+// --- ****************************************** ---
+
 import { useAuth } from "../context/AuthContext";
-// --- ADD ActionCodeSettings if needed for resend ---
-// import { sendEmailVerification, ActionCodeSettings } from "firebase/auth";
-// import { auth } from "../firebase"; // Import auth if sending verification here
-// ----------------------------------------------------
+// import { sendEmailVerification } from "firebase/auth"; // Keep commented unless using resend
+// import { auth } from "../firebase"; // Keep commented unless using resend
 
 const MAX_GENERATIONS = 3;
 
@@ -14,7 +21,7 @@ const Home: React.FC = () => {
   const { currentUser, getIdToken } = useAuth();
   const navigate = useNavigate();
 
-  // ... existing state variables ...
+  // State declarations (already correct)
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
@@ -25,40 +32,16 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [generationCount, setGenerationCount] = useState<number>(0);
-  // --- ADD state for verification status ---
   const [isVerified, setIsVerified] = useState(false);
-  // ---------------------------------------
 
-  // --- Check verification status when currentUser changes ---
   useEffect(() => {
-    // Check if the user exists and if their emailVerified status is true
     setIsVerified(currentUser?.emailVerified ?? false);
-
-    // If user exists but is not verified, clear any non-auth related errors
     if (currentUser && !currentUser.emailVerified) {
-      setError(null); // Clear API errors if showing verify prompt
+      setError(null);
     }
   }, [currentUser]);
-  // --------------------------------------------------------
-
-  // --- (Optional) Function to resend verification email ---
-  /*
-  const handleResendVerification = async () => {
-    if (currentUser && auth) { // Ensure auth is imported if using this
-      try {
-        await sendEmailVerification(currentUser);
-        alert('Verification email resent! Please check your inbox.');
-      } catch (error) {
-        console.error("Error resending verification email:", error);
-        alert('Failed to resend verification email.');
-      }
-    }
-  };
-  */
-  // -------------------------------------------------------
 
   const handleImageChange = useCallback(
-    /* ...no changes needed here... */
     (file: File | null) => {
       setUploadedImageFile(file);
       if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
@@ -76,28 +59,21 @@ const Home: React.FC = () => {
       setError("Please log in or sign up to decorate.");
       return;
     }
-
-    // --- ADD Verification Check ---
     if (!isVerified) {
       setError(
         "Please verify your email address to start decorating. Check your inbox!"
       );
-      // Optionally add a button here to trigger handleResendVerification
       return;
     }
-    // ----------------------------
-
     if (generationCount >= MAX_GENERATIONS) {
       alert("You've reached your free generation limit for this session.");
       return;
     }
-
     const idToken = await getIdToken();
     if (!idToken) {
       setError("Could not authenticate. Please try logging in again.");
       return;
     }
-
     if (!uploadedImageFile || !selectedStyle || !roomDescription) {
       setError(
         "Please upload an image, describe the room, and select a style."
@@ -110,7 +86,7 @@ const Home: React.FC = () => {
     setGeneratedImageUrl(null);
 
     try {
-      // Ensure uploadedImageFile and selectedStyle are not null before accessing properties
+      // Added null check for safety, though button state should prevent this
       if (!uploadedImageFile || !selectedStyle) {
         throw new Error("Missing image or style selection.");
       }
@@ -124,9 +100,7 @@ const Home: React.FC = () => {
       setGenerationCount((prevCount) => prevCount + 1);
     } catch (err) {
       let message = "An unknown error occurred.";
-      if (err instanceof Error) {
-        message = err.message;
-      }
+      if (err instanceof Error) message = err.message;
       if (message.includes("Rate limit exceeded")) {
         message =
           "You have reached your free generation limit. Consider upgrading for more.";
@@ -148,18 +122,15 @@ const Home: React.FC = () => {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* --- ADD Verification Prompt --- */}
       {currentUser && !isVerified && !isLoading && (
         <div className="max-w-5xl mx-auto mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-300 rounded-lg text-center">
           <p>
             Please check your email ({currentUser.email}) to verify your account
             before you can decorate.
           </p>
-          {/* Optional Resend Button: <button onClick={handleResendVerification} className="mt-2 underline hover:text-yellow-200">Resend Verification Email</button> */}
+          {/* Optional Resend Button */}
         </div>
       )}
-      {/* ----------------------------- */}
-
       <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <ImageUploader
@@ -167,19 +138,16 @@ const Home: React.FC = () => {
             currentImage={uploadedImageFile}
             currentDescription={roomDescription}
             onDescriptionChange={setRoomDescription}
-            // Disable if loading OR not logged in OR not verified
             disabled={isLoading || !currentUser || !isVerified}
           />
           <StyleSelector
             onStyleSelect={setSelectedStyle}
             selectedStyle={selectedStyle}
-            // Disable if no image, loading, OR not logged in OR not verified
             disabled={
               !uploadedImageFile || isLoading || !currentUser || !isVerified
             }
           />
         </div>
-
         <div className="text-center">
           {!currentUser && !isLoading && (
             <p className="text-yellow-400 mb-4">
@@ -202,19 +170,19 @@ const Home: React.FC = () => {
               !roomDescription ||
               isLoading ||
               !currentUser ||
-              !isVerified || // Disable if not verified
+              !isVerified ||
               isLimitReached
             }
             className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
               isLimitReached
                 ? "bg-gray-600 cursor-not-allowed opacity-70"
                 : !currentUser
-                ? "bg-gray-500 cursor-not-allowed" // Logged out
+                ? "bg-gray-500 cursor-not-allowed"
                 : !isVerified
-                ? "bg-yellow-700 cursor-not-allowed" // Not verified
+                ? "bg-yellow-700 cursor-not-allowed"
                 : isLoading
-                ? "bg-gray-600 cursor-wait" // Loading
-                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105" // Active
+                ? "bg-gray-600 cursor-wait"
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105"
             } disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100`}
           >
             {isLoading
@@ -224,19 +192,16 @@ const Home: React.FC = () => {
               : !currentUser
               ? "Login to Decorate"
               : !isVerified
-              ? "Verify Email to Decorate" // Button text when not verified
+              ? "Verify Email to Decorate"
               : "✨ Decorate My Room"}
           </button>
-          {currentUser &&
-            isVerified && ( // Only show count if logged in AND verified
-              <p className="text-sm text-gray-400 mt-2">
-                Generations used this session: {generationCount}/
-                {MAX_GENERATIONS}
-              </p>
-            )}
+          {currentUser && isVerified && (
+            <p className="text-sm text-gray-400 mt-2">
+              Generations used this session: {generationCount}/{MAX_GENERATIONS}
+            </p>
+          )}
         </div>
       </div>
-
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
@@ -244,13 +209,11 @@ const Home: React.FC = () => {
           </p>
         </div>
       )}
-
       {isLoading && (
         <div className="max-w-5xl mx-auto mt-8">
           <Loader message="Our AI is redecorating... this might take a moment!" />
         </div>
       )}
-
       {generatedImageUrl && originalImageUrl && (
         <ResultDisplay
           originalImage={originalImageUrl}
