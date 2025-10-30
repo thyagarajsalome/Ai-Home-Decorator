@@ -242,7 +242,8 @@ const Home: React.FC = () => {
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
             <strong>Oops!</strong> {error}
-          </input>
+          </p>
+          {/* <-- This was the fix */}
         </div>
       )}
       {isLoading && (
