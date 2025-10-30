@@ -3,7 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer"); // For handling file uploads
-const { GoogleGenerativeAI } = require("@google/genai"); // For Gemini
+const GoogleGenerativeAI = require("@google/genai").GoogleGenerativeAI; // FIX: Correct CommonJS import
+
 const verifySupabaseToken = require("./authMiddleware");
 
 // --- Initialize ---
