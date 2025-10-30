@@ -44,6 +44,7 @@ const Home: React.FC = () => {
       if (!currentUser) return;
 
       try {
+        // THIS IS FIX #1: Removed the stray underscore "_"
         const { data, error } = await supabase
           .from("user_profiles")
           .select("generation_count")
@@ -238,12 +239,12 @@ const Home: React.FC = () => {
           )}
         </div>
       </div>
+      {/* THIS IS FIX #2: Changed </input> to </p> */}
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
             <strong>Oops!</strong> {error}
           </p>
-          {/* <-- This was the fix */}
         </div>
       )}
       {isLoading && (
