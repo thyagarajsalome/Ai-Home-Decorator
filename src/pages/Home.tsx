@@ -12,7 +12,8 @@ import type { DesignStyle } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient"; // <-- Import Supabase
 
-const MAX_GENERATIONS = 3; // This can be your default, or you can fetch it from profile
+// --- 1. CHANGE THIS VALUE ---
+const MAX_GENERATIONS = 2; // This can be your default, or you can fetch it from profile
 
 const Home: React.FC = () => {
   const { currentUser, getIdToken } = useAuth();
@@ -187,17 +188,26 @@ const Home: React.FC = () => {
         </div>
         <div className="text-center">
           {!currentUser && !isLoading && (
-            <p className="text-yellow-400 mb-4">
-              Please{" "}
-              <Link to="/login" className="underline hover:text-yellow-300">
-                Login
-              </Link>{" "}
-              or{" "}
-              <Link to="/signup" className="underline hover:text-yellow-300">
-                Sign Up
-              </Link>{" "}
-              to start decorating.
-            </p>
+            // --- This is the styled prompt you asked for previously ---
+            <div className="max-w-lg mx-auto mb-6 p-4 bg-gray-700/50 border border-purple-800/60 rounded-lg text-center shadow-lg">
+              <p className="text-lg text-gray-200">
+                Please{" "}
+                <Link
+                  to="/login"
+                  className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                >
+                  Login
+                </Link>{" "}
+                or{" "}
+                <Link
+                  to="/signup"
+                  className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                >
+                  Sign Up
+                </Link>{" "}
+                to start decorating.
+              </p>
+            </div>
           )}
           <button
             onClick={handleDecorateClick}
@@ -239,6 +249,29 @@ const Home: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* --- 2. ADD THIS NEW BLOCK --- */}
+      {/* This is the new "Pro" upsell message */}
+      {isLimitReached && !isLoading && (
+        <div className="max-w-5xl mx-auto mt-8 p-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-xl text-center">
+          <h2 className="text-2xl font-bold text-white mb-3">
+            Your Free Generations Have Ended
+          </h2>
+          <p className="text-purple-100 text-lg mb-4">
+            To continue decorating and unlock more styles, upgrade to Pro!
+          </p>
+          <button
+            onClick={() => {
+              /* Add your navigation or modal logic here */
+            }}
+            className="px-6 py-3 font-bold text-purple-600 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200"
+          >
+            Activate Pro Account
+          </button>
+        </div>
+      )}
+      {/* ----------------------------- */}
+
       {/* THIS IS FIX #2: Changed </input> to </p> */}
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
