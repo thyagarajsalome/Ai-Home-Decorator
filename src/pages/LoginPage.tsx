@@ -1,8 +1,8 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase"; // Assuming firebase.ts exports 'auth'
+import { supabase } from "../supabaseClient"; // <-- Import Supabase
+import { useAuth } from "../context/AuthContext"; // <-- Import useAuth
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -10,20 +10,23 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { currentUser } = useAuth(); // <-- Get currentUser
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    if (!auth) {
-      setError("Authentication service is not available.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
       navigate("/"); // Redirect to home page after successful login
     } catch (err: any) {
       console.error("Login failed:", err);
@@ -34,6 +37,12 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // If user is already logged in, redirect to home
+  if (currentUser) {
+    navigate("/");
+    return null; // Render nothing while redirecting
+  }
 
   return (
     <div className="max-w-md mx-auto mt-10 px-4">
