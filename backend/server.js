@@ -1,62 +1,99 @@
-// backend/index.js
+// Use require("dotenv").config() to load .env variables
+require("dotenv").config();
 const express = require("express");
-const cors = require("cors"); // <-- 1. Import cors
-const verifySupabaseToken = require("./authMiddleware"); // Import your new middleware
+const cors = require("cors");
+const multer = require("multer"); // For handling file uploads
+const { GoogleGenerativeAI } = require("@google/genai"); // For Gemini
+const verifySupabaseToken = require("./authMiddleware");
 
-// ... other imports like multer, Gemini, etc.
-
+// --- Initialize ---
 const app = express();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit
+});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// --- 2. ADD MIDDLEWARES ---
-
-// Enable CORS for your frontend.
-// For development, you can be open, but for production, you should
-// restrict it to your deployed frontend's URL.
+// --- Middlewares ---
 app.use(
   cors({
-    // Example for production:
-    // origin: 'https://aihomedecorator.web.app'
-    // For now, this is open:
-    origin: "*",
+    // IMPORTANT: For production, change "*" to your frontend's URL
+    // origin: "https://your-app-name.web.app"
+    origin: "*", // For local testing only
   })
 );
+app.use(express.json()); // For parsing JSON bodies
 
-// Parse incoming JSON bodies (if you send any)
-app.use(express.json());
+// --- Helper Function to convert buffer to base64
+function bufferToGenerativePart(buffer, mimeType) {
+  return {
+    inlineData: {
+      data: buffer.toString("base64"),
+      mimeType,
+    },
+  };
+}
 
-// -----------------------------
-
-// This is your protected route
+// --- Main API Route ---
 app.post(
   "/api/decorate",
-  verifySupabaseToken, // <-- This is correct
-  (req, res) => {
-    // If the code reaches this point, the token was valid.
-    // The user's ID is now available in req.user.id
-    console.log(`Processing request for user: ${req.user.id}`);
+  verifySupabaseToken, // 1. Check if user is logged in
+  upload.single("image"), // 2. Handle the single file upload named "image"
+  async (req, res) => {
+    // 3. Run the API logic
+    try {
+      console.log(`Processing request for user: ${req.user.id}`);
 
-    // --- Your existing image processing logic here ---
-    // (using multer to get the file, calling Gemini, etc.)
-    //
-    // const imageFile = req.file;
-    // const { styleName, roomDescription } = req.body;
-    // const base64Image = await callGemini(imageFile, ...);
+      // Get data from the form
+      const { styleName, roomDescription } = req.body;
+      const file = req.file;
 
-    // --- 3. MUST SEND A RESPONSE ---
-    // Your frontend expects a JSON object with a `base64Image` property.
+      // --- Validation ---
+      if (!file) {
+        return res.status(400).json({ error: "No image file provided." });
+      }
+      if (!styleName || !roomDescription) {
+        return res.status(400).json({ error: "Missing style or description." });
+      }
 
-    // Example success response (replace with your real data):
-    res.status(200).json({
-      message: "Processing complete",
-      base64Image: "your_actual_base64_image_from_gemini_here",
-    });
+      // --- Call Gemini API ---
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `You are an expert interior designer. Redesign this room, which is a "${roomDescription}", in a "${styleName}" style. Return *only* the new image. Do not return markdown, do not return text, only return the resulting image.`;
 
-    // Example error response:
-    // res.status(500).json({ error: "Image processing failed." });
+      const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
+
+      const result = await model.generateContent([prompt, imagePart]);
+      const response = await result.response;
+
+      // Check for safety ratings
+      if (response.promptFeedback?.blockReason) {
+        return res.status(400).json({
+          error: `Image blocked for safety reasons: ${response.promptFeedback.blockReason}`,
+        });
+      }
+
+      const base64Image =
+        response.candidates[0].content.parts[0].inlineData.data;
+
+      if (!base64Image) {
+        throw new Error("AI did not return a valid image.");
+      }
+
+      // --- Send Success Response ---
+      res.status(200).json({
+        base64Image: base64Image,
+      });
+    } catch (error) {
+      console.error("Error processing image:", error);
+      let errorMessage = "Failed to generate image from AI.";
+      if (error.message.includes("400")) {
+        errorMessage =
+          "Image file may be invalid or too large. Please try another image.";
+      }
+      res.status(500).json({ error: errorMessage });
+    }
   }
 );
-
-// ... other routes ...
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
