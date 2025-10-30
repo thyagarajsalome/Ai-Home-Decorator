@@ -8,6 +8,7 @@ import About from "./pages/About";
 import Legal from "./pages/Legal";
 import LoginPage from "./pages/LoginPage"; // Import LoginPage
 import SignupPage from "./pages/SignupPage"; // Import SignupPage
+import PricingPage from "./pages/PricingPage"; // <-- 1. IMPORT NEW PAGE
 
 const App: React.FC = () => {
   return (
@@ -26,7 +27,8 @@ const App: React.FC = () => {
           {/* Add Login Route */}
           <Route path="/signup" element={<SignupPage />} />{" "}
           {/* Add Signup Route */}
-          {/* Add other protected routes if needed */}
+          <Route path="/pricing" element={<PricingPage />} />{" "}
+          {/* <-- 2. ADD NEW ROUTE */}
         </Routes>
         <footer className="text-center py-6 text-gray-500 text-sm">
           <p>Powered by Google Gemini</p>
