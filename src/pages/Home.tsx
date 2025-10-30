@@ -1,6 +1,6 @@
 // pages/Home.tsx
 import React, { useState, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // <-- Make sure Link is imported
 
 import ImageUploader from "../components/ImageUploader";
 import StyleSelector from "../components/StyleSelector";
@@ -10,10 +10,10 @@ import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
 
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../supabaseClient"; // <-- Import Supabase
+import { supabase } from "../supabaseClient";
 
-// --- 1. CHANGE THIS VALUE ---
-const MAX_GENERATIONS = 2; // This can be your default, or you can fetch it from profile
+// --- NO LONGER NEEDED ---
+// const MAX_GENERATIONS = 2;
 
 const Home: React.FC = () => {
   const { currentUser, getIdToken } = useAuth();
@@ -28,44 +28,43 @@ const Home: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [generationCount, setGenerationCount] = useState<number>(0);
+  // --- 1. RENAME STATE ---
+  const [generationCredits, setGenerationCredits] = useState<number>(0);
   const [isVerified, setIsVerified] = useState(false);
 
   // Effect to check verification status and load generation count
   useEffect(() => {
-    // Supabase stores verification as a timestamp
     setIsVerified(!!currentUser?.email_confirmed_at);
 
     if (currentUser && !currentUser.email_confirmed_at) {
-      setError(null); // Clear errors if user is just unverified
+      setError(null);
     }
 
-    // --- Fetch Generation Count from Supabase DB ---
-    const fetchGenerationCount = async () => {
+    // --- 2. FETCH NEW COLUMN ---
+    const fetchGenerationCredits = async () => {
       if (!currentUser) return;
 
       try {
-        // THIS IS FIX #1: Removed the stray underscore "_"
         const { data, error } = await supabase
           .from("user_profiles")
-          .select("generation_count")
+          .select("generation_credits") // <-- Fetch 'generation_credits'
           .eq("id", currentUser.id)
-          .single(); // We expect only one row
+          .single();
 
         if (error) {
           throw error;
         }
 
         if (data) {
-          setGenerationCount(data.generation_count);
+          setGenerationCredits(data.generation_credits); // <-- Set new state
         }
       } catch (dbError: any) {
-        console.error("Error fetching generation count:", dbError);
+        console.error("Error fetching generation credits:", dbError);
         setError("Could not load your user profile.");
       }
     };
 
-    fetchGenerationCount();
+    fetchGenerationCredits();
     // ---------------------------------------------
   }, [currentUser]);
 
@@ -93,8 +92,9 @@ const Home: React.FC = () => {
       );
       return;
     }
-    if (generationCount >= MAX_GENERATIONS) {
-      setError("You've reached your free generation limit for this session.");
+    // --- 3. UPDATE LOGIC CHECK ---
+    if (generationCredits <= 0) {
+      setError("You are out of credits. Please purchase a pack to continue.");
       return;
     }
     const idToken = await getIdToken();
@@ -125,24 +125,23 @@ const Home: React.FC = () => {
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
 
-      // --- Increment Generation Count in Supabase DB ---
-      const newCount = generationCount + 1;
+      // --- 4. UPDATE DECREMENT LOGIC ---
+      const newCredits = generationCredits - 1;
       const { error: updateError } = await supabase
         .from("user_profiles")
-        .update({ generation_count: newCount })
+        .update({ generation_credits: newCredits }) // <-- Subtract 1 credit
         .eq("id", currentUser.id);
 
       if (updateError) {
         throw updateError;
       }
-      setGenerationCount(newCount);
+      setGenerationCredits(newCredits); // <-- Update local state
       // ------------------------------------------------
     } catch (err) {
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
       if (message.includes("Rate limit exceeded")) {
-        message =
-          "You have reached your free generation limit. Consider upgrading for more.";
+        message = "The AI is busy, please try again in a moment.";
       } else if (
         message.includes("Invalid token") ||
         message.includes("No token provided") ||
@@ -157,7 +156,8 @@ const Home: React.FC = () => {
     }
   };
 
-  const isLimitReached = generationCount >= MAX_GENERATIONS;
+  // --- 5. UPDATE LIMIT CHECK ---
+  const isLimitReached = generationCredits <= 0;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -188,7 +188,6 @@ const Home: React.FC = () => {
         </div>
         <div className="text-center">
           {!currentUser && !isLoading && (
-            // --- This is the styled prompt you asked for previously ---
             <div className="max-w-lg mx-auto mb-6 p-4 bg-gray-700/50 border border-purple-800/60 rounded-lg text-center shadow-lg">
               <p className="text-lg text-gray-200">
                 Please{" "}
@@ -235,7 +234,7 @@ const Home: React.FC = () => {
             {isLoading
               ? "Decorating..."
               : isLimitReached
-              ? "🔒 Limit Reached"
+              ? "🔒 Out of Credits" // <-- 6. UPDATE BUTTON TEXT
               : !currentUser
               ? "Login to Decorate"
               : !isVerified
@@ -243,36 +242,33 @@ const Home: React.FC = () => {
               : "✨ Decorate My Room"}
           </button>
           {currentUser && isVerified && (
+            // --- 7. UPDATE UI TEXT ---
             <p className="text-sm text-gray-400 mt-2">
-              Generations used: {generationCount}/{MAX_GENERATIONS}
+              Credits remaining: {generationCredits}
             </p>
           )}
         </div>
       </div>
 
-      {/* --- 2. ADD THIS NEW BLOCK --- */}
       {/* This is the new "Pro" upsell message */}
+      {/* --- 8. UPDATE LINK --- */}
       {isLimitReached && !isLoading && (
         <div className="max-w-5xl mx-auto mt-8 p-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-xl text-center">
           <h2 className="text-2xl font-bold text-white mb-3">
             Your Free Generations Have Ended
           </h2>
           <p className="text-purple-100 text-lg mb-4">
-            To continue decorating and unlock more styles, upgrade to Pro!
+            To continue decorating, please purchase a credit pack.
           </p>
-          <button
-            onClick={() => {
-              /* Add your navigation or modal logic here */
-            }}
-            className="px-6 py-3 font-bold text-purple-600 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200"
+          <Link
+            to="/pricing" // <-- This now links to your new page
+            className="inline-block px-6 py-3 font-bold text-purple-600 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200"
           >
-            Activate Pro Account
-          </button>
+            Buy Credits
+          </Link>
         </div>
       )}
-      {/* ----------------------------- */}
 
-      {/* THIS IS FIX #2: Changed </input> to </p> */}
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
