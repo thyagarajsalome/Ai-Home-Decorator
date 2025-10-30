@@ -1,27 +1,23 @@
 // pages/Home.tsx
 import React, { useState, useCallback, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-// --- *** ADDED IMPORTS FOR COMPONENTS AND TYPES *** ---
 import ImageUploader from "../components/ImageUploader";
 import StyleSelector from "../components/StyleSelector";
 import ResultDisplay from "../components/ResultDisplay";
 import Loader from "../components/Loader";
 import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
-// --- ****************************************** ---
 
 import { useAuth } from "../context/AuthContext";
-// import { sendEmailVerification } from "firebase/auth"; // Keep commented unless using resend
-// import { auth } from "../firebase"; // Keep commented unless using resend
+import { supabase } from "../supabaseClient"; // <-- Import Supabase
 
-const MAX_GENERATIONS = 3;
+const MAX_GENERATIONS = 3; // This can be your default, or you can fetch it from profile
 
 const Home: React.FC = () => {
   const { currentUser, getIdToken } = useAuth();
-  const navigate = useNavigate();
 
-  // State declarations (already correct)
+  // State declarations
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
@@ -34,11 +30,41 @@ const Home: React.FC = () => {
   const [generationCount, setGenerationCount] = useState<number>(0);
   const [isVerified, setIsVerified] = useState(false);
 
+  // Effect to check verification status and load generation count
   useEffect(() => {
-    setIsVerified(currentUser?.emailVerified ?? false);
-    if (currentUser && !currentUser.emailVerified) {
-      setError(null);
+    // Supabase stores verification as a timestamp
+    setIsVerified(!!currentUser?.email_confirmed_at);
+
+    if (currentUser && !currentUser.email_confirmed_at) {
+      setError(null); // Clear errors if user is just unverified
     }
+
+    // --- Fetch Generation Count from Supabase DB ---
+    const fetchGenerationCount = async () => {
+      if (!currentUser) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("user_profiles")
+          .select("generation_count")
+          .eq("id", currentUser.id)
+          .single(); // We expect only one row
+
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          setGenerationCount(data.generation_count);
+        }
+      } catch (dbError: any) {
+        console.error("Error fetching generation count:", dbError);
+        setError("Could not load your user profile.");
+      }
+    };
+
+    fetchGenerationCount();
+    // ---------------------------------------------
   }, [currentUser]);
 
   const handleImageChange = useCallback(
@@ -66,7 +92,7 @@ const Home: React.FC = () => {
       return;
     }
     if (generationCount >= MAX_GENERATIONS) {
-      alert("You've reached your free generation limit for this session.");
+      setError("You've reached your free generation limit for this session.");
       return;
     }
     const idToken = await getIdToken();
@@ -86,7 +112,6 @@ const Home: React.FC = () => {
     setGeneratedImageUrl(null);
 
     try {
-      // Added null check for safety, though button state should prevent this
       if (!uploadedImageFile || !selectedStyle) {
         throw new Error("Missing image or style selection.");
       }
@@ -97,7 +122,19 @@ const Home: React.FC = () => {
         idToken
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
-      setGenerationCount((prevCount) => prevCount + 1);
+
+      // --- Increment Generation Count in Supabase DB ---
+      const newCount = generationCount + 1;
+      const { error: updateError } = await supabase
+        .from("user_profiles")
+        .update({ generation_count: newCount })
+        .eq("id", currentUser.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+      setGenerationCount(newCount);
+      // ------------------------------------------------
     } catch (err) {
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
@@ -128,7 +165,6 @@ const Home: React.FC = () => {
             Please check your email ({currentUser.email}) to verify your account
             before you can decorate.
           </p>
-          {/* Optional Resend Button */}
         </div>
       )}
       <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
@@ -197,7 +233,7 @@ const Home: React.FC = () => {
           </button>
           {currentUser && isVerified && (
             <p className="text-sm text-gray-400 mt-2">
-              Generations used this session: {generationCount}/{MAX_GENERATIONS}
+              Generations used: {generationCount}/{MAX_GENERATIONS}
             </p>
           )}
         </div>
@@ -206,7 +242,7 @@ const Home: React.FC = () => {
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
             <strong>Oops!</strong> {error}
-          </p>
+          </input>
         </div>
       )}
       {isLoading && (

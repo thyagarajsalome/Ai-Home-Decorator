@@ -1,13 +1,7 @@
 // src/pages/SignupPage.tsx
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-// --- ADD sendEmailVerification ---
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-} from "firebase/auth";
-// ---------------------------------
-import { auth } from "../firebase";
+import { Link } from "react-router-dom";
+import { supabase } from "../supabaseClient"; // <-- Import Supabase
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -15,41 +9,36 @@ const SignupPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  // --- ADD state for verification message ---
   const [verificationSent, setVerificationSent] = useState(false);
-  // ----------------------------------------
-  const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setVerificationSent(false); // Reset verification message
+    setVerificationSent(false);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
-    if (!auth) {
-      setError("Authentication service is not available.");
-      return;
-    }
-
     setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      // --- Send verification email ---
-      if (userCredential.user) {
-        await sendEmailVerification(userCredential.user);
-        setVerificationSent(true); // Show success message
-        // Keep user on this page to see the message, or navigate elsewhere
-        // navigate('/'); // Optionally navigate immediately
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        throw error;
       }
-      // -----------------------------
+
+      // Check if user object exists and email confirmation is required
+      if (data.user && !data.user.email_confirmed_at) {
+        setVerificationSent(true);
+      } else if (data.user) {
+        // User is created and auto-confirmed (if enabled)
+        setVerificationSent(true); // Still show a success message
+      }
     } catch (err: any) {
       console.error("Signup failed:", err);
       setError(err.message || "Failed to create an account. Please try again.");
@@ -65,18 +54,15 @@ const SignupPage: React.FC = () => {
           Sign Up
         </h1>
 
-        {/* --- Display verification message --- */}
         {verificationSent && (
           <div className="mb-4 p-3 bg-green-900/50 border border-green-700 text-green-300 rounded-lg text-center">
             <p>
               Account created! Please check your email ({email}) to verify your
-              address before logging in or using the app.
+              address before logging in.
             </p>
           </div>
         )}
-        {/* ---------------------------------- */}
 
-        {/* --- Hide form after verification sent --- */}
         {!verificationSent && (
           <form onSubmit={handleSignup} className="space-y-4">
             <div>
@@ -94,7 +80,7 @@ const SignupPage: React.FC = () => {
                 required
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400"
                 placeholder="you@example.com"
-                disabled={loading} // Disable during loading
+                disabled={loading}
               />
             </div>
             <div>
@@ -113,7 +99,7 @@ const SignupPage: React.FC = () => {
                 minLength={6}
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400"
                 placeholder="********"
-                disabled={loading} // Disable during loading
+                disabled={loading}
               />
             </div>
             <div>
@@ -132,7 +118,7 @@ const SignupPage: React.FC = () => {
                 minLength={6}
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400"
                 placeholder="********"
-                disabled={loading} // Disable during loading
+                disabled={loading}
               />
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
@@ -149,16 +135,14 @@ const SignupPage: React.FC = () => {
             </button>
           </form>
         )}
-        {/* --------------------------------------- */}
 
         <p className="text-center text-gray-400 mt-4">
           {verificationSent ? (
             <Link to="/login" className="text-purple-400 hover:underline">
-              Proceed to Login after verification
+              Proceed to Login
             </Link>
           ) : (
             <>
-              {" "}
               Already have an account?{" "}
               <Link to="/login" className="text-purple-400 hover:underline">
                 Log In
