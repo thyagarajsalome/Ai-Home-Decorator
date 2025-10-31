@@ -24,23 +24,27 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* --- MODIFIED BLOCK --- */}
         <div className="flex-shrink-0 flex items-center gap-x-4">
-          {/* 1. LOGO SIZE INCREASED */}
+          {/* 1. LOGO SIZE ADJUSTED */}
           <Link to="/" onClick={closeMenu}>
             <img
               src="/icons/icon-512x512_bg.png" // Path from public folder
               alt="AI Home Decorator Logo"
-              className="h-18 w-18 md:h-20 md:w-20 rounded-lg" // Responsive size increased
+              className="h-12 w-12 md:h-16 md:w-16 rounded-lg" // FIX: Reduced size for mobile (h-12) and desktop (h-16)
             />
           </Link>
 
           {/* 2. TEXT CONTENT */}
           <div>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+              {" "}
+              {/* FIX: Reduced text size for mobile (text-3xl) and desktop (text-4xl) */}
               <Link to="/" onClick={closeMenu}>
                 AI Home Decorator
               </Link>
             </h1>
-            <p className="mt-2 text-lg text-gray-400 max-w-2xl">
+            <p className="hidden md:block mt-2 text-lg text-gray-400 max-w-2xl">
+              {" "}
+              {/* FIX: Hide paragraph on mobile to save space */}
               See your dream space come to life in seconds.
             </p>
           </div>
