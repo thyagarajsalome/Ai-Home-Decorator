@@ -92,11 +92,15 @@ const Home: React.FC = () => {
       );
       return;
     }
+
+    // also Admin- testing- Bypass- credits
     // --- 3. UPDATE LOGIC CHECK ---
     if (generationCredits <= 0) {
       setError("You are out of credits. Please purchase a pack to continue.");
       return;
     }
+
+    // Admin Testing Bypass Credits
     const idToken = await getIdToken();
     if (!idToken) {
       setError("Could not authenticate. Please try logging in again.");

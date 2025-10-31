@@ -1,3 +1,4 @@
+// src/types.ts
 export interface DesignStyle {
   id: string; //
   name: string; //
@@ -6,6 +7,15 @@ export interface DesignStyle {
   iconLibrary?: "fa" | "md" | "io5" | "etc" | "gi" | "tb";
   // REMOVED previewImage property
 }
+
+// --- ADDED ---
+/** Represents a category of design styles */
+export interface StyleRegion {
+  regionId: string;
+  regionName: string;
+  styles: DesignStyle[];
+}
+// --- END ADDED ---
 
 export type RoomType = //
 
