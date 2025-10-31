@@ -1,11 +1,11 @@
 // components/Header.tsx
-import React, { useState } from "react"; // <-- Import useState
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // Import useAuth hook
 
 const Header: React.FC = () => {
   const { currentUser, signOut } = useAuth(); // Get auth state and sign out function
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // <-- Add state for mobile menu
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Add state for mobile menu
 
   const handleLogout = async () => {
     try {
@@ -22,17 +22,30 @@ const Header: React.FC = () => {
   return (
     <header className="py-6 px-4 border-b border-gray-700/50 relative">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Title and Description */}
-        <div className="flex-shrink-0">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-            <Link to="/" onClick={closeMenu}>
-              AI Home Decorator
-            </Link>
-          </h1>
-          <p className="mt-2 text-lg text-gray-400 max-w-2xl">
-            See your dream space come to life in seconds.
-          </p>
+        {/* --- MODIFIED BLOCK --- */}
+        <div className="flex-shrink-0 flex items-center gap-x-4">
+          {/* 1. LOGO SIZE INCREASED */}
+          <Link to="/" onClick={closeMenu}>
+            <img
+              src="/icons/icon-512x512_bg.png" // Path from public folder
+              alt="AI Home Decorator Logo"
+              className="h-18 w-18 md:h-20 md:w-20 rounded-lg" // Responsive size increased
+            />
+          </Link>
+
+          {/* 2. TEXT CONTENT */}
+          <div>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+              <Link to="/" onClick={closeMenu}>
+                AI Home Decorator
+              </Link>
+            </h1>
+            <p className="mt-2 text-lg text-gray-400 max-w-2xl">
+              See your dream space come to life in seconds.
+            </p>
+          </div>
         </div>
+        {/* --- END MODIFIED BLOCK --- */}
 
         {/* Mobile Menu Button (Hamburger) */}
         <div className="md:hidden">
