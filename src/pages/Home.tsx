@@ -1,6 +1,6 @@
 // pages/Home.tsx
 import React, { useState, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom"; // <-- Make sure Link is imported
+import { Link } from "react-router-dom";
 
 import ImageUploader from "../components/ImageUploader";
 import StyleSelector from "../components/StyleSelector";
@@ -11,9 +11,6 @@ import type { DesignStyle } from "../types";
 
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient";
-
-// --- NO LONGER NEEDED ---
-// const MAX_GENERATIONS = 2;
 
 const Home: React.FC = () => {
   // --- 1. GET THE ROLE FROM CONTEXT ---
@@ -99,14 +96,12 @@ const Home: React.FC = () => {
     }
 
     // --- 3. UPDATE CREDIT CHECK ---
-    // also Admin- testing- Bypass- credits
     if (generationCredits <= 0 && !isAdmin) {
       // <-- Check if NOT admin
       setError("You are out of credits. Please purchase a pack to continue.");
       return;
     }
 
-    // Admin Testing Bypass Credits
     const idToken = await getIdToken();
     if (!idToken) {
       setError("Could not authenticate. Please try logging in again.");
@@ -174,16 +169,130 @@ const Home: React.FC = () => {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* ... (rest of the component is mostly the same) ... */}
+      {currentUser && !isVerified && !isLoading && (
+        <div className="max-w-5xl mx-auto mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-300 rounded-lg text-center">
+          <p>
+            Please check your email ({currentUser.email}) to verify your account
+            before you can decorate.
+          </p>
+        </div>
+      )}
+      <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <ImageUploader
+            onImageChange={handleImageChange}
+            currentImage={uploadedImageFile}
+            currentDescription={roomDescription}
+            onDescriptionChange={setRoomDescription}
+            disabled={isLoading || !currentUser || !isVerified}
+          />
+          <StyleSelector
+            onStyleSelect={setSelectedStyle}
+            selectedStyle={selectedStyle}
+            disabled={
+              !uploadedImageFile || isLoading || !currentUser || !isVerified
+            }
+          />
+        </div>
+        <div className="text-center">
+          {!currentUser && !isLoading && (
+            <div className="max-w-lg mx-auto mb-6 p-4 bg-gray-700/50 border border-purple-800/60 rounded-lg text-center shadow-lg">
+              <p className="text-lg text-gray-200">
+                Please{" "}
+                <Link
+                  to="/login"
+                  className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                >
+                  Login
+                </Link>{" "}
+                or{" "}
+                <Link
+                  to="/signup"
+                  className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                >
+                  Sign Up
+                </Link>{" "}
+                to start decorating.
+              </p>
+            </div>
+          )}
+          <button
+            onClick={handleDecorateClick}
+            disabled={
+              !uploadedImageFile ||
+              !selectedStyle ||
+              !roomDescription ||
+              isLoading ||
+              !currentUser ||
+              !isVerified ||
+              isLimitReached
+            }
+            className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
+              isLimitReached
+                ? "bg-gray-600 cursor-not-allowed opacity-70"
+                : !currentUser
+                ? "bg-gray-500 cursor-not-allowed"
+                : !isVerified
+                ? "bg-yellow-700 cursor-not-allowed"
+                : isLoading
+                ? "bg-gray-600 cursor-wait"
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105"
+            } disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100`}
+          >
+            {isLoading
+              ? "Decorating..."
+              : isLimitReached
+              ? "🔒 Out of Credits"
+              : !currentUser
+              ? "Login to Decorate"
+              : !isVerified
+              ? "Verify Email to Decorate"
+              : "✨ Decorate My Room"}
+          </button>
+          {currentUser && isVerified && (
+            // --- 6. UPDATE CREDITS DISPLAY ---
+            <p className="text-sm text-gray-400 mt-2">
+              Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
+            </p>
+          )}
+        </div>
+      </div>
 
-      {/* --- 6. UPDATE CREDITS DISPLAY --- */}
-      {currentUser && isVerified && (
-        <p className="text-sm text-gray-400 mt-2">
-          Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
-        </p>
+      {isLimitReached && !isLoading && (
+        <div className="max-w-5xl mx-auto mt-8 p-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-xl text-center">
+          <h2 className="text-2xl font-bold text-white mb-3">
+            Your Free Generations Have Ended
+          </h2>
+          <p className="text-purple-100 text-lg mb-4">
+            To continue decorating, please purchase a credit pack.
+          </p>
+          <Link
+            to="/pricing"
+            className="inline-block px-6 py-3 font-bold text-purple-600 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200"
+          >
+            Buy Credits
+          </Link>
+        </div>
       )}
 
-      {/* ... (rest of the component) ... */}
+      {error && (
+        <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
+          <p>
+            <strong>Oops!</strong> {error}
+          </p>
+        </div>
+      )}
+      {isLoading && (
+        <div className="max-w-5xl mx-auto mt-8">
+          <Loader message="Our AI is redecorating... this might take a moment!" />
+        </div>
+      )}
+      {generatedImageUrl && originalImageUrl && (
+        <ResultDisplay
+          originalImage={originalImageUrl}
+          generatedImage={generatedImageUrl}
+        />
+      )}
     </main>
   );
 };
