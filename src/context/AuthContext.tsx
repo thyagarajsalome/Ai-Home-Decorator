@@ -11,6 +11,7 @@ import { supabase } from "../supabaseClient"; // <-- Import Supabase client
 
 interface AuthContextType {
   currentUser: User | null;
+  currentUserRole: string; // <-- ADD THIS
   loading: boolean;
   getIdToken: () => Promise<string | null>;
   signOut: () => Promise<void>;
@@ -32,19 +33,40 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string>("user"); // <-- ADD THIS
   const [loading, setLoading] = useState(true);
+
+  // --- HELPER FUNCTION TO FETCH ROLE ---
+  const fetchUserRole = async (user: User | null) => {
+    if (!user) {
+      setCurrentUserRole("user");
+      return;
+    }
+    try {
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+      setCurrentUserRole(data?.role || "user");
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+      setCurrentUserRole("user"); // Default to 'user' on error
+    }
+  };
 
   useEffect(() => {
     // Get the initial user session
     supabase.auth
       .getSession()
-      .then(({ data: { session } }) => {
-        setCurrentUser(session?.user ?? null);
+      .then(async ({ data: { session } }) => {
+        const user = session?.user ?? null;
+        setCurrentUser(user);
+        await fetchUserRole(user); // <-- FETCH ROLE
         setLoading(false);
-        console.log(
-          "Initial session fetch, user:",
-          session?.user ? session.user.id : "null"
-        );
+        console.log("Initial session fetch, user:", user ? user.id : "null");
       })
       .catch((error) => {
         console.error("Error getting initial session:", error);
@@ -54,12 +76,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Listen for authentication state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCurrentUser(session?.user ?? null);
-      console.log(
-        "Auth state changed, user:",
-        session?.user ? session.user.id : "null"
-      );
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const user = session?.user ?? null;
+      setCurrentUser(user);
+      await fetchUserRole(user); // <-- FETCH ROLE
+      console.log("Auth state changed, user:", user ? user.id : "null");
     });
 
     // Cleanup subscription on unmount
@@ -93,11 +114,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Error signing out:", error);
       // Handle sign-out errors if necessary
     }
-    // currentUser state will be updated by onAuthStateChange
+    // currentUser and currentUserRole will be updated by onAuthStateChange
   };
 
   const value = {
     currentUser,
+    currentUserRole, // <-- ADD THIS
     loading,
     getIdToken,
     signOut,
