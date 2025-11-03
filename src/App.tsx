@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Legal from "./pages/Legal";
+import PolicyPage from "./pages/PolicyPage"; // <-- IMPORT NEW POLICY PAGE
 import LoginPage from "./pages/LoginPage"; // Import LoginPage
 import SignupPage from "./pages/SignupPage"; // Import SignupPage
 import PricingPage from "./pages/PricingPage"; // <-- 1. IMPORT NEW PAGE
@@ -23,6 +24,8 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/legal" element={<Legal />} />
+          <Route path="/policy" element={<PolicyPage />} />{" "}
+          {/* <-- ADD POLICY ROUTE */}
           <Route path="/login" element={<LoginPage />} />{" "}
           {/* Add Login Route */}
           <Route path="/signup" element={<SignupPage />} />{" "}
@@ -36,7 +39,9 @@ const App: React.FC = () => {
             <Link to="/legal#terms" className="hover:text-purple-400">
               Terms
             </Link>
-            <Link to="/legal#policy" className="hover:text-purple-400">
+            <Link to="/policy" className="hover:text-purple-400">
+              {" "}
+              {/* <-- UPDATED LINK */}
               Privacy
             </Link>
             <Link to="/legal#disclaimer" className="hover:text-purple-400">

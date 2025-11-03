@@ -1,3 +1,4 @@
+// src/pages/Legal.tsx
 import React from "react";
 
 const Legal: React.FC = () => {
@@ -25,20 +26,7 @@ const Legal: React.FC = () => {
           limits.
         </p>
 
-        <h2 id="policy">Privacy Policy</h2>
-        <p>
-          We respect your privacy. When you upload an image, it is sent to our
-          secure backend and the Google Gemini API for processing. We do not
-          store your images after the generation is complete, nor do we claim
-          any ownership over them. Generated images may be temporarily cached
-          for your convenience.
-        </p>
-        <p>
-          If you create an account, we will store your email address and
-          authentication details securely using{" "}
-          <strong>Supabase Authentication</strong>. We will not share your email
-          with third parties.
-        </p>
+        {/* Privacy Policy Removed */}
 
         <h2 id="disclaimer">Disclaimer</h2>
         <p>

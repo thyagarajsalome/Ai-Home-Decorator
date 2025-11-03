@@ -113,7 +113,13 @@ const Header: React.FC = () => {
             to="/legal"
             className="text-gray-300 hover:text-purple-400 transition-colors"
           >
-            Terms & Policy
+            Terms
+          </Link>
+          <Link
+            to="/policy"
+            className="text-gray-300 hover:text-purple-400 transition-colors"
+          >
+            Privacy
           </Link>
           {/* --- Conditional Auth Buttons --- */}
           {currentUser ? (
@@ -170,7 +176,14 @@ const Header: React.FC = () => {
             onClick={closeMenu}
             className="text-gray-300 hover:text-purple-400 transition-colors text-lg p-2 rounded-md hover:bg-gray-800"
           >
-            Terms & Policy
+            Terms
+          </Link>
+          <Link
+            to="/policy"
+            onClick={closeMenu}
+            className="text-gray-300 hover:text-purple-400 transition-colors text-lg p-2 rounded-md hover:bg-gray-800"
+          >
+            Privacy
           </Link>
 
           <hr className="border-gray-700 my-2" />
