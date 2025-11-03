@@ -1,50 +1,48 @@
 // App.tsx
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
+import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Legal from "./pages/Legal";
-import PolicyPage from "./pages/PolicyPage"; // <-- IMPORT NEW POLICY PAGE
-import LoginPage from "./pages/LoginPage"; // Import LoginPage
-import SignupPage from "./pages/SignupPage"; // Import SignupPage
-import PricingPage from "./pages/PricingPage"; // <-- 1. IMPORT NEW PAGE
+// --- UPDATED IMPORTS ---
+import TermsPage from "./pages/TermsPage"; // Renamed from Legal
+import PolicyPage from "./pages/PolicyPage";
+import DisclaimerPage from "./pages/DisclaimerPage"; // <-- IMPORT NEW PAGE
+// ---
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import PricingPage from "./pages/PricingPage";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      {" "}
-      {/* Wrap with AuthProvider */}
       <div className="min-h-screen bg-gray-900 text-white antialiased">
-        {" "}
-        {/* Moved styles here */}
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/legal" element={<Legal />} />
-          <Route path="/policy" element={<PolicyPage />} />{" "}
-          {/* <-- ADD POLICY ROUTE */}
-          <Route path="/login" element={<LoginPage />} />{" "}
-          {/* Add Login Route */}
-          <Route path="/signup" element={<SignupPage />} />{" "}
-          {/* Add Signup Route */}
-          <Route path="/pricing" element={<PricingPage />} />{" "}
-          {/* <-- 2. ADD NEW ROUTE */}
+          {/* --- UPDATED ROUTES --- */}
+          <Route path="/terms" element={<TermsPage />} /> {/* Was /legal */}
+          <Route path="/policy" element={<PolicyPage />} />
+          <Route path="/disclaimer" element={<DisclaimerPage />} />{" "}
+          {/* <-- ADD NEW ROUTE */}
+          {/* --- */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
         </Routes>
         <footer className="text-center py-6 text-gray-500 text-sm">
           <p>Powered by Google Gemini</p>
           <div className="flex justify-center gap-4 mt-2">
-            <Link to="/legal#terms" className="hover:text-purple-400">
+            {/* --- UPDATED FOOTER LINKS --- */}
+            <Link to="/terms" className="hover:text-purple-400">
               Terms
             </Link>
             <Link to="/policy" className="hover:text-purple-400">
-              {" "}
-              {/* <-- UPDATED LINK */}
               Privacy
             </Link>
-            <Link to="/legal#disclaimer" className="hover:text-purple-400">
+            <Link to="/disclaimer" className="hover:text-purple-400">
               Disclaimer
             </Link>
           </div>
