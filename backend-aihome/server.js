@@ -38,13 +38,7 @@ async function startServer() {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
   // --- Middlewares ---
-  app.use(
-    cors({
-      // IMPORTANT: For production, change "*" to your frontend's URL
-      // origin: "https://your-app-name.web.app"
-      origin: "*", // For local testing only
-    })
-  );
+  app.use(cors({ origin: "https://your-app-name.web.app" }));
   app.use(express.json()); // For parsing JSON bodies
 
   // --- Helper Function to convert buffer to base64 ---
