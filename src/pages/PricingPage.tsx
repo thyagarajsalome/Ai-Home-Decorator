@@ -2,36 +2,55 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../supabaseClient";
+// import { supabase } from "../supabaseClient"; // No longer needed here
+
+// --- NEW: Define types for safety ---
+declare global {
+  interface Window {
+    Razorpay: any; // Define Razorpay on the window object
+  }
+}
+
+interface CreditPack {
+  name: string;
+  credits: number;
+  price: number;
+  priceId: string; // We'll use pack.name as the ID, but keep this structure
+}
 
 // Define the credit pack options
-const creditPacks = [
+const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
     price: 1.99,
-    priceId: "YOUR_STRIPE_PRICE_ID_1", // Replace with your payment provider's ID
+    priceId: "pack_starter", // Use a simple ID
   },
   {
     name: "Best Value",
     credits: 50,
     price: 4.99,
-    priceId: "YOUR_STRIPE_PRICE_ID_2", // Replace with your payment provider's ID
+    priceId: "pack_value",
   },
   {
     name: "Pro Pack",
     credits: 120,
     price: 9.99,
-    priceId: "YOUR_STRIPE_PRICE_ID_3", // Replace with your payment provider's ID
+    priceId: "pack_pro",
   },
 ];
 
+// --- NEW: Get the backend URL (use the one from geminiService) ---
+const BACKEND_URL =
+  "https://ai-decorator-backend-177572689403.asia-south1.run.app";
+
 const PricingPage: React.FC = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, getIdToken } = useAuth(); // <-- Get getIdToken
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handlePurchase = async (priceId: string) => {
+  // --- THIS IS THE MAIN LOGIC ---
+  const handlePurchase = async (pack: CreditPack) => {
     setLoading(true);
     setError(null);
 
@@ -41,27 +60,123 @@ const PricingPage: React.FC = () => {
       return;
     }
 
-    // --- IMPORTANT ---
-    // This is where you would integrate your payment provider (e.g., Stripe).
-    // You would redirect to a checkout page.
-    // The payment provider would then call a Supabase Edge Function (webhook)
-    // to securely update the user's credits upon successful payment.
-    //
-    // DO NOT add credits from the frontend, it is not secure.
-    // The code below is a placeholder to explain the concept.
-    //
-    console.log("Redirecting to checkout for price ID:", priceId);
-    setError(
-      "Payment processing is not yet implemented. This is a developer placeholder."
-    );
-    //
-    // Example:
-    // const stripe = await getStripe();
-    // await stripe.redirectToCheckout({ lineItems: [{ price: priceId, quantity: 1 }] });
-    //
-    setLoading(false);
+    try {
+      const idToken = await getIdToken();
+      if (!idToken) {
+        setError("Could not authenticate. Please log in again.");
+        setLoading(false);
+        return;
+      }
+
+      // 1. Create Order: Call your backend to create a Razorpay order
+      const orderResponse = await fetch(`${BACKEND_URL}/api/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ packName: pack.name }),
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error("Failed to create order.");
+      }
+
+      const order = await orderResponse.json();
+
+      // 2. Define Razorpay Options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount, // Amount is in cents/paise
+        currency: order.currency,
+        name: "AI Home Decorator",
+        description: `Purchase ${pack.name}`,
+        image: "/icons/icon-512x512.png", // Your app logo
+        order_id: order.id,
+
+        // 3. Define the payment handler
+        handler: async (response: any) => {
+          try {
+            // 4. Verify Payment: Send payment details to your backend
+            const verifyResponse = await fetch(
+              `${BACKEND_URL}/api/payment-verification`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            );
+
+            if (!verifyResponse.ok) {
+              throw new Error("Payment verification failed.");
+            }
+
+            await verifyResponse.json();
+
+            // Success!
+            alert(
+              `Payment successful! ${pack.credits} credits have been added to your account.`
+            );
+            // You could also redirect to the homepage or update credits in AuthContext
+          } catch (verifyError) {
+            console.error("Verification Error:", verifyError);
+            setError("Payment verification failed. Please contact support.");
+          } finally {
+            setLoading(false);
+          }
+        },
+
+        // 5. Prefill user details
+        prefill: {
+          name: currentUser.email, // Or a name field if you collect it
+          email: currentUser.email,
+        },
+        theme: {
+          color: "#8b5cf6", // Purple
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false); // Stop loading if user closes modal
+            console.log("Payment dismissed");
+          },
+        },
+      };
+
+      // 6. Open the Razorpay Checkout Modal
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+      // Handle payment failure
+      rzp.on("payment.failed", (response: any) => {
+        console.error("Payment Failed:", response.error);
+        setError(`Payment failed: ${response.error.description}`);
+        setLoading(false);
+      });
+    } catch (err: any) {
+      console.error("Purchase Error:", err);
+      setError(err.message || "An error occurred during purchase.");
+      setLoading(false);
+    }
   };
 
+  // ... (rest of your component's return JSX)
+
+  // --- IMPORTANT: Update the onClick handler ---
+  // Inside your .map loop:
+  // <button
+  //   onClick={() => handlePurchase(pack)} // <-- Pass the entire pack object
+  //   ...
+  // >
+  // ...
+
+  // --- HERE IS THE FULL RETURN, with the onClick fix ---
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-4xl font-extrabold text-center text-white mb-4">
@@ -158,7 +273,7 @@ const PricingPage: React.FC = () => {
             </ul>
 
             <button
-              onClick={() => handlePurchase(pack.priceId)}
+              onClick={() => handlePurchase(pack)} // <-- FIX: Pass the 'pack' object
               disabled={loading || !currentUser}
               className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
                 pack.name === "Best Value"
