@@ -2,29 +2,27 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const multer = require("multer"); // For handling file uploads
-const crypto = require("crypto"); // Import crypto for signature verification
+const multer = require("multer");
+const crypto = require("crypto");
 
-// --- NEW: Import Supabase Admin Client ---
+// --- Import Supabase Admin Client ---
 const { createClient } = require("@supabase/supabase-js");
-
-// We will import GoogleGenerativeAI inside our async start function
 const verifySupabaseToken = require("./authMiddleware");
 
-// --- NEW: Define a map for your products (server-side) ---
+// --- Define credit packs with prices in INR (paise) ---
 const creditPacks = {
-  "Starter Pack": { amount: 1.99, credits: 15 },
-  "Best Value": { amount: 4.99, credits: 50 },
-  "Pro Pack": { amount: 9.99, credits: 120 },
+  "Starter Pack": { amountInPaise: 19900, credits: 15, displayAmount: "₹199" }, // ₹199
+  "Best Value": { amountInPaise: 49900, credits: 50, displayAmount: "₹499" }, // ₹499
+  "Pro Pack": { amountInPaise: 99900, credits: 120, displayAmount: "₹999" }, // ₹999
 };
 
 // --- Create an async function to load modules and start the server ---
 async function startServer() {
   let GoogleGenerativeAI;
-  let Razorpay; // --- NEW ---
+  let Razorpay;
 
   try {
-    // --- FIX: Correctly import GoogleGenerativeAI ---
+    // Import GoogleGenerativeAI
     const { GoogleGenerativeAI: GAI_Class } = await import(
       "@google/generative-ai"
     );
@@ -35,9 +33,8 @@ async function startServer() {
         "Failed to import GoogleGenerativeAI. Class is undefined."
       );
     }
-    // --- END FIX ---
 
-    // --- NEW: Import Razorpay ---
+    // Import Razorpay
     const razorpayModule = await import("razorpay");
     Razorpay = razorpayModule.default;
   } catch (err) {
@@ -45,32 +42,76 @@ async function startServer() {
     process.exit(1);
   }
 
+  // --- Validate Environment Variables ---
+  const requiredEnvVars = [
+    "RAZORPAY_KEY_ID",
+    "RAZORPAY_KEY_SECRET",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_JWT_SECRET",
+    "GEMINI_API_KEY",
+  ];
+
+  const missingVars = requiredEnvVars.filter(
+    (varName) => !process.env[varName]
+  );
+  if (missingVars.length > 0) {
+    console.error("❌ Missing required environment variables:");
+    missingVars.forEach((varName) => console.error(`   - ${varName}`));
+    process.exit(1);
+  }
+
+  console.log("✅ All required environment variables are set");
+  console.log(
+    "📌 Razorpay Key ID:",
+    process.env.RAZORPAY_KEY_ID?.substring(0, 10) + "..."
+  );
+
   // --- Initialize ---
   const app = express();
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit
+    limits: { fileSize: 10 * 1024 * 1024 },
   });
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-  // --- NEW: Initialize Razorpay ---
-  const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  });
+  // --- Initialize Razorpay ---
+  let razorpay;
+  try {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+    console.log("✅ Razorpay initialized successfully");
+  } catch (err) {
+    console.error("❌ Failed to initialize Razorpay:", err.message);
+    process.exit(1);
+  }
 
-  // --- NEW: Initialize Supabase Admin Client ---
+  // --- Initialize Supabase Admin Client ---
   const supabaseAdmin = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
   // --- Middlewares ---
-  // FIXME: Update this with your real Firebase hosting URL
-  app.use(cors({ origin: "https://your-app-name.web.app" }));
-  app.use(express.json()); // For parsing JSON bodies
+  app.use(
+    cors({
+      origin: "*",
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
+  app.use(express.json());
 
-  // --- ADDED BACK: Helper Function to convert buffer to base64 ---
+  // Add request logging
+  app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+  });
+
+  // --- Helper Function to convert buffer to base64 ---
   function bufferToGenerativePart(buffer, mimeType) {
     return {
       inlineData: {
@@ -80,22 +121,27 @@ async function startServer() {
     };
   }
 
+  // --- Health Check Route ---
+  app.get("/api/health", (req, res) => {
+    res.json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      razorpayConfigured: !!process.env.RAZORPAY_KEY_ID,
+    });
+  });
+
   // --- Main API Route (/api/decorate) ---
-  // --- ADDED BACK: Full route logic was missing ---
   app.post(
     "/api/decorate",
-    verifySupabaseToken, // 1. Check if user is logged in
-    upload.single("image"), // 2. Handle the single file upload named "image"
+    verifySupabaseToken,
+    upload.single("image"),
     async (req, res) => {
-      // 3. Run the API logic
       try {
         console.log(`Processing request for user: ${req.user.id}`);
 
-        // Get data from the form
         const { styleName, roomDescription } = req.body;
         const file = req.file;
 
-        // --- Validation ---
         if (!file) {
           return res.status(400).json({ error: "No image file provided." });
         }
@@ -105,7 +151,6 @@ async function startServer() {
             .json({ error: "Missing style or description." });
         }
 
-        // --- Call Gemini API ---
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = `You are an expert interior designer. Redesign this room, which is a "${roomDescription}", in a "${styleName}" style. Return *only* the new image. Do not return markdown, do not return text, only return the resulting image.`;
 
@@ -114,7 +159,6 @@ async function startServer() {
         const result = await model.generateContent([prompt, imagePart]);
         const response = await result.response;
 
-        // Check for safety ratings
         if (response.promptFeedback?.blockReason) {
           return res.status(400).json({
             error: `Image blocked for safety reasons: ${response.promptFeedback.blockReason}`,
@@ -128,7 +172,6 @@ async function startServer() {
           throw new Error("AI did not return a valid image.");
         }
 
-        // --- Send Success Response ---
         res.status(200).json({
           base64Image: base64Image,
         });
@@ -143,57 +186,103 @@ async function startServer() {
       }
     }
   );
-  // --- END OF /api/decorate ---
 
-  // --- NEW: ROUTE 1 - CREATE ORDER ---
+  // --- CREATE ORDER ROUTE ---
   app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
     try {
+      console.log("\n🔷 CREATE ORDER REQUEST");
+      console.log("User ID:", req.user.id);
+      console.log("User Email:", req.user.email);
+      console.log("Request Body:", req.body);
+
       const { packName } = req.body;
+
+      if (!packName) {
+        console.error("❌ No pack name provided");
+        return res.status(400).json({ error: "Pack name is required." });
+      }
+
       const pack = creditPacks[packName];
 
       if (!pack) {
-        return res.status(400).json({ error: "Invalid credit pack." });
+        console.error("❌ Invalid pack name:", packName);
+        console.log("Available packs:", Object.keys(creditPacks));
+        return res.status(400).json({
+          error: "Invalid credit pack.",
+          availablePacks: Object.keys(creditPacks),
+        });
       }
 
-      // Amount must be in the smallest currency unit (e.g., paise for INR)
-      // Let's assume your prices are in USD, so cents.
-      const amountInCents = Math.round(pack.amount * 100);
-      const currency = "USD"; // Or "INR" if your prices are in Rupees
+      console.log(`✅ Pack found: ${packName}`);
+      console.log(
+        `   Amount: ${pack.amountInPaise} paise (${pack.displayAmount})`
+      );
+      console.log(`   Credits: ${pack.credits}`);
 
       const options = {
-        amount: amountInCents,
-        currency: currency,
-        receipt: `receipt_user_${req.user.id}_${new Date().getTime()}`,
+        amount: pack.amountInPaise,
+        currency: "INR",
+        receipt: `receipt_${Date.now()}_${req.user.id.substring(0, 8)}`,
         notes: {
           userId: req.user.id,
           userEmail: req.user.email,
           packName: packName,
-          creditsToadd: pack.credits,
+          creditsToadd: pack.credits.toString(),
         },
       };
 
+      console.log("📤 Creating Razorpay order with options:");
+      console.log(JSON.stringify(options, null, 2));
+
       const order = await razorpay.orders.create(options);
+
+      console.log("✅ Order created successfully!");
+      console.log("   Order ID:", order.id);
+      console.log("   Amount:", order.amount);
+      console.log("   Currency:", order.currency);
+
       res.status(200).json(order);
     } catch (error) {
-      console.error("Error creating Razorpay order:", error);
-      res.status(500).json({ error: "Failed to create order." });
+      console.error("\n❌ ERROR CREATING ORDER:");
+      console.error("Error Message:", error.message);
+      console.error("Error Stack:", error.stack);
+
+      if (error.error) {
+        console.error(
+          "Razorpay Error Details:",
+          JSON.stringify(error.error, null, 2)
+        );
+      }
+
+      // Send detailed error to client
+      res.status(500).json({
+        error: "Failed to create order.",
+        message: error.message,
+        details: error.error?.description || "Unknown Razorpay error",
+        code: error.error?.code || "UNKNOWN",
+      });
     }
   });
 
-  // --- NEW: ROUTE 2 - VERIFY PAYMENT ---
+  // --- VERIFY PAYMENT ROUTE ---
   app.post(
     "/api/payment-verification",
     verifySupabaseToken,
     async (req, res) => {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-        req.body;
-      const userId = req.user.id; // Get user ID from our auth middleware
-
-      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-        return res.status(400).json({ error: "Missing payment details." });
-      }
-
       try {
+        console.log("\n🔷 PAYMENT VERIFICATION REQUEST");
+        console.log("User ID:", req.user.id);
+        console.log("Request Body:", req.body);
+
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+          req.body;
+        const userId = req.user.id;
+
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+          console.error("❌ Missing payment details");
+          return res.status(400).json({ error: "Missing payment details." });
+        }
+
         // 1. Verify Signature
         const body = razorpay_order_id + "|" + razorpay_payment_id;
         const expectedSignature = crypto
@@ -201,52 +290,94 @@ async function startServer() {
           .update(body.toString())
           .digest("hex");
 
+        console.log("🔐 Verifying signature...");
+        console.log("   Expected:", expectedSignature.substring(0, 20) + "...");
+        console.log(
+          "   Received:",
+          razorpay_signature.substring(0, 20) + "..."
+        );
+
         if (expectedSignature !== razorpay_signature) {
+          console.error("❌ Signature mismatch!");
           return res.status(400).json({ error: "Invalid payment signature." });
         }
 
-        // 2. Signature is valid. Fetch order notes to get credits.
+        console.log("✅ Signature verified successfully");
+
+        // 2. Fetch order details
+        console.log("📥 Fetching order details from Razorpay...");
         const order = await razorpay.orders.fetch(razorpay_order_id);
-        const creditsToAdd = order.notes.creditsToadd;
+        const creditsToAdd = parseInt(order.notes.creditsToadd);
+
+        console.log("✅ Order fetched:", order.id);
+        console.log("   Credits to add:", creditsToAdd);
+        console.log("   Order user ID:", order.notes.userId);
 
         if (!creditsToAdd || order.notes.userId !== userId) {
+          console.error("❌ Order validation failed");
           return res.status(400).json({ error: "Invalid order details." });
         }
 
-        // 3. Fetch user's current credits from Supabase
+        // 3. Fetch user's current credits
+        console.log("📥 Fetching current credits from Supabase...");
         const { data: profile, error: profileError } = await supabaseAdmin
           .from("user_profiles")
           .select("generation_credits")
           .eq("id", userId)
           .single();
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error("❌ Error fetching profile:", profileError);
+          throw profileError;
+        }
 
-        // 4. Update credits securely
-        const newCredits =
-          (profile.generation_credits || 0) + Number(creditsToAdd);
+        const currentCredits = profile.generation_credits || 0;
+        const newCredits = currentCredits + creditsToAdd;
 
+        console.log("💰 Credit Update:");
+        console.log(`   Current: ${currentCredits}`);
+        console.log(`   Adding: ${creditsToAdd}`);
+        console.log(`   New Total: ${newCredits}`);
+
+        // 4. Update credits
         const { error: updateError } = await supabaseAdmin
           .from("user_profiles")
           .update({ generation_credits: newCredits })
           .eq("id", userId);
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error("❌ Error updating credits:", updateError);
+          throw updateError;
+        }
+
+        console.log("✅ Credits updated successfully!");
 
         // 5. Success
-        res.status(200).json({ success: true, newCredits: newCredits });
+        res.status(200).json({
+          success: true,
+          newCredits: newCredits,
+          addedCredits: creditsToAdd,
+        });
       } catch (error) {
-        console.error("Error verifying payment:", error);
-        res.status(500).json({ error: "Payment verification failed." });
+        console.error("\n❌ ERROR VERIFYING PAYMENT:");
+        console.error("Error Message:", error.message);
+        console.error("Error Stack:", error.stack);
+
+        res.status(500).json({
+          error: "Payment verification failed.",
+          message: error.message,
+        });
       }
     }
   );
 
   const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log("\n🚀 Server started successfully!");
+    console.log(`📡 Listening on port ${PORT}`);
+    console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
+    console.log("\n");
   });
 }
 
-// --- Call the async function to start the application ---
 startServer();
