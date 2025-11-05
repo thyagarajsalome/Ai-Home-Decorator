@@ -24,9 +24,18 @@ async function startServer() {
   let Razorpay; // --- NEW ---
 
   try {
-    // ... (your existing GoogleGenerativeAI import)
-    const module = await import("@google/generative-ai");
-    // ...
+    // --- FIX: Correctly import GoogleGenerativeAI ---
+    const { GoogleGenerativeAI: GAI_Class } = await import(
+      "@google/generative-ai"
+    );
+    GoogleGenerativeAI = GAI_Class;
+
+    if (!GoogleGenerativeAI) {
+      throw new Error(
+        "Failed to import GoogleGenerativeAI. Class is undefined."
+      );
+    }
+    // --- END FIX ---
 
     // --- NEW: Import Razorpay ---
     const razorpayModule = await import("razorpay");
@@ -57,17 +66,84 @@ async function startServer() {
   );
 
   // --- Middlewares ---
+  // FIXME: Update this with your real Firebase hosting URL
   app.use(cors({ origin: "https://your-app-name.web.app" }));
   app.use(express.json()); // For parsing JSON bodies
 
-  // ... (your existing bufferToGenerativePart function)
+  // --- ADDED BACK: Helper Function to convert buffer to base64 ---
+  function bufferToGenerativePart(buffer, mimeType) {
+    return {
+      inlineData: {
+        data: buffer.toString("base64"),
+        mimeType,
+      },
+    };
+  }
 
   // --- Main API Route (/api/decorate) ---
+  // --- ADDED BACK: Full route logic was missing ---
   app.post(
     "/api/decorate",
-    verifySupabaseToken
-    // ... (rest of your /api/decorate route)
+    verifySupabaseToken, // 1. Check if user is logged in
+    upload.single("image"), // 2. Handle the single file upload named "image"
+    async (req, res) => {
+      // 3. Run the API logic
+      try {
+        console.log(`Processing request for user: ${req.user.id}`);
+
+        // Get data from the form
+        const { styleName, roomDescription } = req.body;
+        const file = req.file;
+
+        // --- Validation ---
+        if (!file) {
+          return res.status(400).json({ error: "No image file provided." });
+        }
+        if (!styleName || !roomDescription) {
+          return res
+            .status(400)
+            .json({ error: "Missing style or description." });
+        }
+
+        // --- Call Gemini API ---
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `You are an expert interior designer. Redesign this room, which is a "${roomDescription}", in a "${styleName}" style. Return *only* the new image. Do not return markdown, do not return text, only return the resulting image.`;
+
+        const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
+
+        const result = await model.generateContent([prompt, imagePart]);
+        const response = await result.response;
+
+        // Check for safety ratings
+        if (response.promptFeedback?.blockReason) {
+          return res.status(400).json({
+            error: `Image blocked for safety reasons: ${response.promptFeedback.blockReason}`,
+          });
+        }
+
+        const base64Image =
+          response.candidates[0].content.parts[0].inlineData.data;
+
+        if (!base64Image) {
+          throw new Error("AI did not return a valid image.");
+        }
+
+        // --- Send Success Response ---
+        res.status(200).json({
+          base64Image: base64Image,
+        });
+      } catch (error) {
+        console.error("Error processing image:", error);
+        let errorMessage = "Failed to generate image from AI.";
+        if (error.message.includes("400")) {
+          errorMessage =
+            "Image file may be invalid or too large. Please try another image.";
+        }
+        res.status(500).json({ error: errorMessage });
+      }
+    }
   );
+  // --- END OF /api/decorate ---
 
   // --- NEW: ROUTE 1 - CREATE ORDER ---
   app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
@@ -130,8 +206,6 @@ async function startServer() {
         }
 
         // 2. Signature is valid. Fetch order notes to get credits.
-        // (In a real-world app, you'd fetch the payment/order from Razorpay
-        // to double-check the amount, but for this demo, we trust the order notes)
         const order = await razorpay.orders.fetch(razorpay_order_id);
         const creditsToAdd = order.notes.creditsToadd;
 
