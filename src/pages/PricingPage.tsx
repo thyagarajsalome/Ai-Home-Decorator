@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-// import { supabase } from "../supabaseClient"; // No longer needed here
 
 // --- NEW: Define types for safety ---
 declare global {
@@ -18,8 +17,7 @@ interface CreditPack {
   priceId: string; // We'll use pack.name as the ID, but keep this structure
 }
 
-// Define the credit pack options
-// Define the credit pack options
+// --- UPDATED to INR ---
 const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
@@ -41,7 +39,7 @@ const creditPacks: CreditPack[] = [
   },
 ];
 
-// --- NEW: Get the backend URL (use the one from geminiService) ---
+// --- UPDATED to local backend ---
 const BACKEND_URL = "http://localhost:8080";
 
 const PricingPage: React.FC = () => {
@@ -79,7 +77,9 @@ const PricingPage: React.FC = () => {
       });
 
       if (!orderResponse.ok) {
-        throw new Error("Failed to create order.");
+        const errData = await orderResponse.json();
+        console.error("Failed to create order:", errData);
+        throw new Error(errData.message || "Failed to create order.");
       }
 
       const order = await orderResponse.json();
@@ -166,7 +166,6 @@ const PricingPage: React.FC = () => {
     }
   };
 
-  // --- HERE IS THE FULL RETURN, with the onClick fix ---
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-4xl font-extrabold text-center text-white mb-4">
@@ -206,7 +205,7 @@ const PricingPage: React.FC = () => {
 
             <div className="mb-6">
               <span className="text-5xl font-extrabold text-white">
-                ₹{pack.price} {/* FIX: Change '$' to '₹' */}
+                ₹{pack.price}
               </span>
               <span className="text-gray-400">/one-time</span>
             </div>
@@ -263,7 +262,7 @@ const PricingPage: React.FC = () => {
             </ul>
 
             <button
-              onClick={() => handlePurchase(pack)} // <-- FIX: Pass the 'pack' object
+              onClick={() => handlePurchase(pack)}
               disabled={loading || !currentUser}
               className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
                 pack.name === "Best Value"
@@ -276,19 +275,30 @@ const PricingPage: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* --- THIS IS THE STYLED BLOCK --- */}
       {!currentUser && (
-        <p className="text-center text-yellow-400 mt-8">
-          Please{" "}
-          <Link to="/login" className="underline hover:text-yellow-300">
-            Login
-          </Link>{" "}
-          or{" "}
-          <Link to="/signup" className="underline hover:text-yellow-300">
-            Sign Up
-          </Link>{" "}
-          to purchase credits.
-        </p>
+        <div className="mt-8 text-center bg-gray-700/50 border border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto">
+          <p className="text-lg text-gray-200">
+            Please{" "}
+            <Link
+              to="/login"
+              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+            >
+              Login
+            </Link>{" "}
+            or{" "}
+            <Link
+              to="/signup"
+              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+            >
+              Sign Up
+            </Link>{" "}
+            to purchase credits.
+          </p>
+        </div>
       )}
+      {/* --- END OF STYLED BLOCK --- */}
     </div>
   );
 };

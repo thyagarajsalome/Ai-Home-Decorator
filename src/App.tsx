@@ -13,6 +13,7 @@ import DisclaimerPage from "./pages/DisclaimerPage"; // <-- IMPORT NEW PAGE
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import PricingPage from "./pages/PricingPage";
+import InstallPWAButton from "./components/InstallPWAButton"; // <-- 1. IMPORT
 
 const App: React.FC = () => {
   return (
@@ -47,6 +48,9 @@ const App: React.FC = () => {
             </Link>
           </div>
         </footer>
+
+        {/* --- 2. ADD THE COMPONENT HERE --- */}
+        <InstallPWAButton />
       </div>
     </AuthProvider>
   );
