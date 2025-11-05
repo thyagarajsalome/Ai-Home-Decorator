@@ -19,30 +19,30 @@ interface CreditPack {
 }
 
 // Define the credit pack options
+// Define the credit pack options
 const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
-    price: 1.99,
-    priceId: "pack_starter", // Use a simple ID
+    price: 199, // Use Rupees
+    priceId: "pack_starter",
   },
   {
     name: "Best Value",
     credits: 50,
-    price: 4.99,
+    price: 499, // Use Rupees
     priceId: "pack_value",
   },
   {
     name: "Pro Pack",
     credits: 120,
-    price: 9.99,
+    price: 999, // Use Rupees
     priceId: "pack_pro",
   },
 ];
 
 // --- NEW: Get the backend URL (use the one from geminiService) ---
-const BACKEND_URL =
-  "https://ai-decorator-backend-177572689403.asia-south1.run.app";
+const BACKEND_URL = "http://localhost:8080";
 
 const PricingPage: React.FC = () => {
   const { currentUser, getIdToken } = useAuth(); // <-- Get getIdToken
@@ -166,16 +166,6 @@ const PricingPage: React.FC = () => {
     }
   };
 
-  // ... (rest of your component's return JSX)
-
-  // --- IMPORTANT: Update the onClick handler ---
-  // Inside your .map loop:
-  // <button
-  //   onClick={() => handlePurchase(pack)} // <-- Pass the entire pack object
-  //   ...
-  // >
-  // ...
-
   // --- HERE IS THE FULL RETURN, with the onClick fix ---
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -216,7 +206,7 @@ const PricingPage: React.FC = () => {
 
             <div className="mb-6">
               <span className="text-5xl font-extrabold text-white">
-                ${pack.price}
+                ₹{pack.price} {/* FIX: Change '$' to '₹' */}
               </span>
               <span className="text-gray-400">/one-time</span>
             </div>
