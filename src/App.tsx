@@ -8,11 +8,11 @@ import About from "./pages/About";
 // --- UPDATED IMPORTS ---
 import TermsPage from "./pages/TermsPage"; // Renamed from Legal
 import PolicyPage from "./pages/PolicyPage";
-import DisclaimerPage from "./pages/DisclaimerPage"; // <-- IMPORT NEW PAGE
+import DisclaimerPage from "./pages/DisclaimerPage";
 // ---
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import PricingPage from "./pages/PricingPage";
+// import PricingPage from "./pages/PricingPage"; // <-- REMOVE THIS
 import InstallPWAButton from "./components/InstallPWAButton"; // <-- 1. IMPORT
 
 const App: React.FC = () => {
@@ -31,7 +31,8 @@ const App: React.FC = () => {
           {/* --- */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
+          {/* <Route path="/pricing" element={<PricingPage />} /> */}{" "}
+          {/* <-- REMOVE THIS */}
         </Routes>
         <footer className="text-center py-6 text-gray-500 text-sm">
           <p>Powered by Google Gemini</p>

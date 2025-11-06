@@ -1,13 +1,10 @@
 // src/pages/PolicyPage.tsx
 import React from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom"; // <-- No longer needed
 
 const PolicyPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-300">
-      {/* --- FIX: Added prose-p:mb-5, prose-h2:mt-10, etc. to this div ---
-        This adds more vertical spacing to make the text less cluttered.
-      */}
       <div className="bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 prose prose-lg prose-invert max-w-none prose-p:leading-relaxed prose-p:mb-5 prose-h2:mt-10 prose-h2:mb-4 prose-ul:my-5 prose-li:my-2">
         <h1 className="text-3xl font-bold text-white mb-2">Privacy Policy</h1>
         <p>Last updated: [03-11-2025]</p>
@@ -32,26 +29,21 @@ const PolicyPage: React.FC = () => {
             the prompts you provide (e.g., "Living Room," "Japandi") to generate
             your redesigned image.
           </li>
-          <li>
-            <strong>Transaction Data:</strong> If you purchase credits, our
-            payment processor (e.g., Stripe) will handle your payment details.
-            We do not store your credit card information.
-          </li>
+          {/* --- REMOVED TRANSACTION DATA --- */}
         </ul>
 
         <h2 id="how-we-use-data">2. How Your Data Is Used</h2>
         <p>We use your data in the following ways:</p>
         <ul>
           <li>
-            To manage your account, provide you with access to the service, and
-            manage your generation credits.
+            To manage your account and provide you with access to the service.
           </li>
           <li>
             To process your uploaded images and prompts. Your images are sent to
             our secure backend and then to the Google Gemini API to generate the
             new design.
           </li>
-          <li>To manage payments for credit packs.</li>
+          {/* --- REMOVED PAYMENT MENTION --- */}
         </ul>
 
         <h2 id="data-storage">3. Data Storage and Retention</h2>
@@ -61,9 +53,9 @@ const PolicyPage: React.FC = () => {
           once the AI generation is complete.
         </p>
         <p>
-          Your account information (email, user ID, and credit balance) is
-          stored securely in our Supabase database. We will not share your email
-          with any third parties for marketing purposes.
+          Your account information (email and user ID) is stored securely in our
+          Supabase database. We will not share your email with any third parties
+          for marketing purposes.
         </p>
 
         <h2 id="third-parties">4. Third-Party Services</h2>
