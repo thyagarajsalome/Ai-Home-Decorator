@@ -65,4 +65,4 @@ export const ROOM_TYPES: RoomType[] = [
 ];
 
 // Maximum characters for the custom room description input
-export const MAX_ROOM_DESCRIPTION_LENGTH = 15; //
+export const MAX_ROOM_DESCRIPTION_LENGTH = 20; //
