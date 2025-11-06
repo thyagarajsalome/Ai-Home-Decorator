@@ -83,11 +83,9 @@ async function startServer() {
 
         // FIX: Use gemini-2.5-flash-image for image generation/editing
         // AND add responseModalities configuration
+        // Use the model explicitly designed for image output
         const model = genAI.getGenerativeModel({
           model: "gemini-2.5-flash-image",
-          generationConfig: {
-            responseModalities: ["TEXT", "IMAGE"], // CRITICAL: Required for image output
-          },
         });
 
         const prompt = `You are an expert interior designer. Redesign this room, which is a "${roomDescription}", in a "${styleName}" style. Return *only* the new image. Do not return markdown, do not return text, only return the resulting image.`;
