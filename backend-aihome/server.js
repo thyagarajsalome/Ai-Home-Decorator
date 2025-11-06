@@ -16,7 +16,6 @@ async function startServer() {
     const module = await import("@google/generative-ai");
     const GAI_Class = module.GoogleGenerativeAI;
     GoogleGenerativeAI = GAI_Class;
-    GoogleGenerativeAI = GAI_Class;
 
     if (!GoogleGenerativeAI) {
       throw new Error(
@@ -38,7 +37,32 @@ async function startServer() {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
   // --- Middlewares ---
-  app.use(cors({ origin: "https://your-app-name.web.app" }));
+
+  // --- FIX: UPDATED CORS POLICY ---
+  // Define allowed origins
+  const allowedOrigins = [
+    "http://localhost:3000", // Your local Vite server
+    "https://aihomedecorator.web.app", // Your deployed Firebase app (based on your .firebaserc)
+  ];
+
+  app.use(
+    cors({
+      origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        // Check if the origin is in the allowed list
+        if (allowedOrigins.indexOf(origin) === -1) {
+          const msg =
+            "The CORS policy for this site does not allow access from the specified Origin.";
+          return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+      },
+    })
+  );
+  // --- END FIX ---
+
   app.use(express.json()); // For parsing JSON bodies
 
   // --- Helper Function to convert buffer to base64 ---

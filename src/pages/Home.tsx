@@ -10,12 +10,11 @@ import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
 
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../supabaseClient";
+// import { supabase } from "../supabaseClient"; // <-- No longer needed here
 
 const Home: React.FC = () => {
   // --- 1. GET THE ROLE FROM CONTEXT ---
-  const { currentUser, getIdToken, currentUserRole } = useAuth();
-  const isAdmin = currentUserRole === "admin";
+  const { currentUser, getIdToken } = useAuth(); // <-- Removed currentUserRole
 
   // State declarations
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
@@ -27,10 +26,10 @@ const Home: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [generationCredits, setGenerationCredits] = useState<number>(0);
+  // const [generationCredits, setGenerationCredits] = useState<number>(0); // <-- REMOVE THIS
   const [isVerified, setIsVerified] = useState(false);
 
-  // Effect to check verification status and load generation count
+  // Effect to check verification status
   useEffect(() => {
     setIsVerified(!!currentUser?.email_confirmed_at);
 
@@ -38,37 +37,8 @@ const Home: React.FC = () => {
       setError(null);
     }
 
-    const fetchGenerationCredits = async () => {
-      if (!currentUser) return;
-
-      // --- 2. FOR ADMINS, JUST SET A HIGH NUMBER AND SKIP DB FETCH ---
-      if (isAdmin) {
-        setGenerationCredits(9999);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from("user_profiles")
-          .select("generation_credits")
-          .eq("id", currentUser.id)
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
-        if (data) {
-          setGenerationCredits(data.generation_credits);
-        }
-      } catch (dbError: any) {
-        console.error("Error fetching generation credits:", dbError);
-        setError("Could not load your user profile.");
-      }
-    };
-
-    fetchGenerationCredits();
-  }, [currentUser, isAdmin]); // <-- Add isAdmin as dependency
+    // --- All credit fetching logic is removed ---
+  }, [currentUser]); // <-- Removed isAdmin
 
   const handleImageChange = useCallback(
     (file: File | null) => {
@@ -95,12 +65,8 @@ const Home: React.FC = () => {
       return;
     }
 
-    // --- 3. UPDATE CREDIT CHECK ---
-    if (generationCredits <= 0 && !isAdmin) {
-      // <-- Check if NOT admin
-      setError("You are out of credits. Please purchase a pack to continue.");
-      return;
-    }
+    // --- 3. REMOVED CREDIT CHECK ---
+    // if (generationCredits <= 0 && !isAdmin) { ... }
 
     const idToken = await getIdToken();
     if (!idToken) {
@@ -130,21 +96,7 @@ const Home: React.FC = () => {
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
 
-      // --- 4. UPDATE DECREMENT LOGIC ---
-      // Only decrement if the user is NOT an admin
-      if (!isAdmin) {
-        const newCredits = generationCredits - 1;
-        const { error: updateError } = await supabase
-          .from("user_profiles")
-          .update({ generation_credits: newCredits }) // <-- Subtract 1 credit
-          .eq("id", currentUser.id);
-
-        if (updateError) {
-          throw updateError;
-        }
-        setGenerationCredits(newCredits); // <-- Update local state
-      }
-      // ------------------------------------------------
+      // --- 4. REMOVED DECREMENT LOGIC ---
     } catch (err) {
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
@@ -164,8 +116,8 @@ const Home: React.FC = () => {
     }
   };
 
-  // --- 5. UPDATE LIMIT CHECK ---
-  const isLimitReached = generationCredits <= 0 && !isAdmin; // <-- Check if NOT admin
+  // --- 5. REMOVED LIMIT CHECK ---
+  // const isLimitReached = generationCredits <= 0 && !isAdmin;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -224,13 +176,11 @@ const Home: React.FC = () => {
               !roomDescription ||
               isLoading ||
               !currentUser ||
-              !isVerified ||
-              isLimitReached
+              !isVerified
+              // -- Removed isLimitReached
             }
             className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
-              isLimitReached
-                ? "bg-gray-600 cursor-not-allowed opacity-70"
-                : !currentUser
+              !currentUser
                 ? "bg-gray-500 cursor-not-allowed"
                 : !isVerified
                 ? "bg-yellow-700 cursor-not-allowed"
@@ -241,39 +191,17 @@ const Home: React.FC = () => {
           >
             {isLoading
               ? "Decorating..."
-              : isLimitReached
-              ? "🔒 Out of Credits"
               : !currentUser
               ? "Login to Decorate"
               : !isVerified
               ? "Verify Email to Decorate"
               : "✨ Decorate My Room"}
           </button>
-          {currentUser && isVerified && (
-            // --- 6. UPDATE CREDITS DISPLAY ---
-            <p className="text-sm text-gray-400 mt-2">
-              Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
-            </p>
-          )}
+          {/* --- 6. REMOVED CREDITS DISPLAY --- */}
         </div>
       </div>
 
-      {isLimitReached && !isLoading && (
-        <div className="max-w-5xl mx-auto mt-8 p-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-xl text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">
-            Your Free Generations Have Ended
-          </h2>
-          <p className="text-purple-100 text-lg mb-4">
-            To continue decorating, please purchase a credit pack.
-          </p>
-          <Link
-            to="/pricing"
-            className="inline-block px-6 py-3 font-bold text-purple-600 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200"
-          >
-            Buy Credits
-          </Link>
-        </div>
-      )}
+      {/* --- REMOVED "Buy Credits" BLOCK --- */}
 
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
