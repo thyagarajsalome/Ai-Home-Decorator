@@ -2,17 +2,14 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const multer = require("multer"); // For handling file uploads
+const multer = require("multer");
 
-// We will import GoogleGenerativeAI inside our async start function
 const verifySupabaseToken = require("./authMiddleware");
 
-// --- Create an async function to load modules and start the server ---
 async function startServer() {
   let GoogleGenerativeAI;
 
   try {
-    // --- FIXED: Use correct package name @google/generative-ai ---
     const module = await import("@google/generative-ai");
     const GAI_Class = module.GoogleGenerativeAI;
     GoogleGenerativeAI = GAI_Class;
@@ -22,36 +19,27 @@ async function startServer() {
         "Failed to destructure GoogleGenerativeAI. Class is undefined."
       );
     }
-    // --- END FIX ---
   } catch (err) {
     console.error("Failed to import @google/generative-ai:", err);
     process.exit(1);
   }
 
-  // --- Initialize ---
   const app = express();
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit
+    limits: { fileSize: 10 * 1024 * 1024 },
   });
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-  // --- Middlewares ---
-
-  // --- FIX: UPDATED CORS POLICY ---
-  // Define allowed origins
   const allowedOrigins = [
-    "http://localhost:3000", // Your local Vite server
-    "https://aihomedecorator.web.app", // Your deployed Firebase app (based on your .firebaserc)
+    "http://localhost:3000",
+    "https://aihomedecorator.web.app",
   ];
 
   app.use(
     cors({
       origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-
-        // Check if the origin is in the allowed list
         if (allowedOrigins.indexOf(origin) === -1) {
           const msg =
             "The CORS policy for this site does not allow access from the specified Origin.";
@@ -61,11 +49,9 @@ async function startServer() {
       },
     })
   );
-  // --- END FIX ---
 
-  app.use(express.json()); // For parsing JSON bodies
+  app.use(express.json());
 
-  // --- Helper Function to convert buffer to base64 ---
   function bufferToGenerativePart(buffer, mimeType) {
     return {
       inlineData: {
@@ -75,21 +61,17 @@ async function startServer() {
     };
   }
 
-  // --- Main API Route ---
   app.post(
     "/api/decorate",
-    verifySupabaseToken, // 1. Check if user is logged in
-    upload.single("image"), // 2. Handle the single file upload named "image"
+    verifySupabaseToken,
+    upload.single("image"),
     async (req, res) => {
-      // 3. Run the API logic
       try {
         console.log(`Processing request for user: ${req.user.id}`);
 
-        // Get data from the form
         const { styleName, roomDescription } = req.body;
         const file = req.file;
 
-        // --- Validation ---
         if (!file) {
           return res.status(400).json({ error: "No image file provided." });
         }
@@ -99,8 +81,15 @@ async function startServer() {
             .json({ error: "Missing style or description." });
         }
 
-        // --- Call Gemini API ---
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // FIX: Use gemini-2.5-flash-image for image generation/editing
+        // AND add responseModalities configuration
+        const model = genAI.getGenerativeModel({
+          model: "gemini-2.5-flash-image",
+          generationConfig: {
+            responseModalities: ["TEXT", "IMAGE"], // CRITICAL: Required for image output
+          },
+        });
+
         const prompt = `You are an expert interior designer. Redesign this room, which is a "${roomDescription}", in a "${styleName}" style. Return *only* the new image. Do not return markdown, do not return text, only return the resulting image.`;
 
         const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
@@ -108,21 +97,25 @@ async function startServer() {
         const result = await model.generateContent([prompt, imagePart]);
         const response = await result.response;
 
-        // Check for safety ratings
         if (response.promptFeedback?.blockReason) {
           return res.status(400).json({
             error: `Image blocked for safety reasons: ${response.promptFeedback.blockReason}`,
           });
         }
 
-        const base64Image =
-          response.candidates[0].content.parts[0].inlineData.data;
+        // Loop through parts to find the image
+        let base64Image = null;
+        for (const part of response.candidates[0].content.parts) {
+          if (part.inlineData) {
+            base64Image = part.inlineData.data;
+            break;
+          }
+        }
 
         if (!base64Image) {
           throw new Error("AI did not return a valid image.");
         }
 
-        // --- Send Success Response ---
         res.status(200).json({
           base64Image: base64Image,
         });
@@ -144,5 +137,4 @@ async function startServer() {
   });
 }
 
-// --- Call the async function to start the application ---
 startServer();
