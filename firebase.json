@@ -6,8 +6,9 @@
     "rewrites": [
       {
         "source": "/api/**",
-        "destination": "https://YOUR-BACKEND-URL-OR-CLOUD-RUN-SERVICE/api"
+        "destination": "https://decorate-api-358218923651.us-central1.run.app"
       },
+
       {
         "source": "**",
         "destination": "/index.html"

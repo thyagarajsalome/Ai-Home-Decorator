@@ -6,7 +6,7 @@ export const generateDecoratedImage = async (
   roomDescription: string,
   idToken: string // <-- Pass in the user's auth token
 ): Promise<string> => {
-  const BACKEND_URL = "http://localhost:8080/api/decorate";
+  const BACKEND_URL = "/api/decorate";
 
   const formData = new FormData();
   formData.append("image", imageFile);
