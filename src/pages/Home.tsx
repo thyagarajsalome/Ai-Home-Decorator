@@ -13,8 +13,11 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient"; // <-- Import supabase client
 
 const Home: React.FC = () => {
-  // --- 1. GET THE ROLE FROM CONTEXT ---
-  const { currentUser, getIdToken } = useAuth(); // <-- Removed currentUserRole
+  // --- 1. FIX: IMPORT currentUserRole for isAdmin check ---
+  const { currentUser, getIdToken, currentUserRole } = useAuth();
+
+  // --- 2. FIX: Define isAdmin outside of the useEffect ---
+  const isAdmin = currentUserRole === "admin";
 
   // State declarations
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
@@ -26,7 +29,8 @@ const Home: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  // const [generationCredits, setGenerationCredits] = useState<number>(0); // <-- REMOVE THIS
+  // --- 3. FIX: Re-enable the generationCredits state ---
+  const [generationCredits, setGenerationCredits] = useState<number>(0);
   const [isVerified, setIsVerified] = useState(false);
 
   // Effect to check verification status
@@ -40,7 +44,7 @@ const Home: React.FC = () => {
     const fetchGenerationCredits = async () => {
       if (!currentUser) return;
 
-      // --- 2. FOR ADMINS, JUST SET A HIGH NUMBER AND SKIP DB FETCH ---
+      // Use the now-defined isAdmin
       if (isAdmin) {
         setGenerationCredits(9999);
         return;
@@ -67,7 +71,7 @@ const Home: React.FC = () => {
     };
 
     fetchGenerationCredits();
-  }, [currentUser, isAdmin]); // <-- Add isAdmin as dependency
+  }, [currentUser, isAdmin, setGenerationCredits]); // Added setGenerationCredits to fix linter warnings
 
   const handleImageChange = useCallback(
     (file: File | null) => {
@@ -95,7 +99,7 @@ const Home: React.FC = () => {
       return;
     }
 
-    // --- 3. CREDIT CHECK ---
+    // --- CREDIT CHECK ---
     const isLimitReached = generationCredits <= 0 && !isAdmin;
     if (isLimitReached) {
       setError("You are out of credits. Please purchase a pack to continue.");
@@ -132,21 +136,19 @@ const Home: React.FC = () => {
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
 
-      // --- 4. DECREMENT LOGIC (Backend check is redundant, but update local state) ---
+      // --- DECREMENT LOGIC ---
       // Only decrement if the user is NOT an admin
       if (!isAdmin) {
         const newCredits = generationCredits - 1;
         const { error: updateError } = await supabase
           .from("user_profiles")
-          .update({ generation_credits: newCredits }) // <-- Subtract 1 credit
+          .update({ generation_credits: newCredits }) // Subtract 1 credit
           .eq("id", currentUser.id);
 
         if (updateError) {
-          // IMPORTANT: If the UI updates credits, but the DB fails,
-          // log error but proceed with UX update.
           console.error("Failed to decrement credits in DB:", updateError);
         }
-        setGenerationCredits(newCredits); // <-- Update local state for immediate feedback
+        setGenerationCredits(newCredits); // Update local state for immediate feedback
       }
       // ------------------------------------------------
     } catch (err) {
@@ -174,7 +176,7 @@ const Home: React.FC = () => {
     }
   };
 
-  // --- 5. LIMIT CHECK for Button State ---
+  // --- LIMIT CHECK for Button State ---
   const isLimitReached = generationCredits <= 0 && !isAdmin;
 
   return (
@@ -228,20 +230,24 @@ const Home: React.FC = () => {
           )}
           <button
             onClick={handleDecorateClick}
+            // FIX: Re-added isLimitReached to disable the button when out of credits
             disabled={
               !uploadedImageFile ||
               !selectedStyle ||
               !roomDescription ||
               isLoading ||
               !currentUser ||
-              !isVerified
-              // -- Removed isLimitReached
+              !isVerified ||
+              isLimitReached
             }
             className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
               !currentUser
                 ? "bg-gray-500 cursor-not-allowed"
                 : !isVerified
                 ? "bg-yellow-700 cursor-not-allowed"
+                : // FIX: Added color/state for out of credits
+                isLimitReached
+                ? "bg-red-700 cursor-not-allowed"
                 : isLoading
                 ? "bg-gray-600 cursor-wait"
                 : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105"
@@ -253,18 +259,19 @@ const Home: React.FC = () => {
               ? "Login to Decorate"
               : !isVerified
               ? "Verify Email to Decorate"
+              : // FIX: Added button text for out of credits
+              isLimitReached
+              ? "Out of Credits"
               : "✨ Decorate My Room"}
           </button>
           {currentUser && isVerified && (
-            // --- 6. CREDITS DISPLAY ---
+            // --- CREDITS DISPLAY ---
             <p className="text-sm text-gray-400 mt-2">
               Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
             </p>
           )}
         </div>
       </div>
-
-      {/* --- REMOVED "Buy Credits" BLOCK --- */}
 
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
