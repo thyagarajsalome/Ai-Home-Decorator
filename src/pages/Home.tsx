@@ -10,7 +10,7 @@ import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
 
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../supabaseClient";
+import { supabase } from "../supabaseClient"; // <-- Import supabase client
 
 const Home: React.FC = () => {
   // --- 1. GET THE ROLE FROM CONTEXT ---
@@ -63,7 +63,7 @@ const Home: React.FC = () => {
         }
       } catch (dbError: any) {
         console.error("Error fetching generation credits:", dbError);
-        setError("Could not load your user profile.");
+        // Note: I've removed the setError call here to be less aggressive with errors on app load.
       }
     };
 
@@ -84,6 +84,7 @@ const Home: React.FC = () => {
   );
 
   const handleDecorateClick = async () => {
+    // --- Front-end validation (unchanged) ---
     if (!currentUser) {
       setError("Please log in or sign up to decorate.");
       return;
@@ -95,9 +96,9 @@ const Home: React.FC = () => {
       return;
     }
 
-    // --- 3. UPDATE CREDIT CHECK ---
-    if (generationCredits <= 0 && !isAdmin) {
-      // <-- Check if NOT admin
+    // --- 3. CREDIT CHECK ---
+    const isLimitReached = generationCredits <= 0 && !isAdmin;
+    if (isLimitReached) {
       setError("You are out of credits. Please purchase a pack to continue.");
       return;
     }
@@ -122,6 +123,8 @@ const Home: React.FC = () => {
       if (!uploadedImageFile || !selectedStyle) {
         throw new Error("Missing image or style selection.");
       }
+
+      // API CALL TO BACKEND
       const base64Image = await generateDecoratedImage(
         uploadedImageFile,
         selectedStyle.name,
@@ -130,7 +133,7 @@ const Home: React.FC = () => {
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
 
-      // --- 4. UPDATE DECREMENT LOGIC ---
+      // --- 4. DECREMENT LOGIC (Backend check is redundant, but update local state) ---
       // Only decrement if the user is NOT an admin
       if (!isAdmin) {
         const newCredits = generationCredits - 1;
@@ -140,9 +143,11 @@ const Home: React.FC = () => {
           .eq("id", currentUser.id);
 
         if (updateError) {
-          throw updateError;
+          // IMPORTANT: If the UI updates credits, but the DB fails,
+          // log error but proceed with UX update.
+          console.error("Failed to decrement credits in DB:", updateError);
         }
-        setGenerationCredits(newCredits); // <-- Update local state
+        setGenerationCredits(newCredits); // <-- Update local state for immediate feedback
       }
       // ------------------------------------------------
     } catch (err) {
@@ -157,6 +162,12 @@ const Home: React.FC = () => {
         message.includes("403")
       ) {
         message = "Authentication failed. Please log in again.";
+      } else if (
+        // Added check for the common 500 error message when the backend fails
+        message.includes("Failed to generate the decorated image")
+      ) {
+        message =
+          "The decoration service failed to process your request. This may be a temporary server issue or an incompatible input image. Please try again.";
       }
       setError(message);
     } finally {
@@ -164,8 +175,8 @@ const Home: React.FC = () => {
     }
   };
 
-  // --- 5. UPDATE LIMIT CHECK ---
-  const isLimitReached = generationCredits <= 0 && !isAdmin; // <-- Check if NOT admin
+  // --- 5. LIMIT CHECK for Button State ---
+  const isLimitReached = generationCredits <= 0 && !isAdmin;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -250,7 +261,7 @@ const Home: React.FC = () => {
               : "✨ Decorate My Room"}
           </button>
           {currentUser && isVerified && (
-            // --- 6. UPDATE CREDITS DISPLAY ---
+            // --- 6. CREDITS DISPLAY ---
             <p className="text-sm text-gray-400 mt-2">
               Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
             </p>
