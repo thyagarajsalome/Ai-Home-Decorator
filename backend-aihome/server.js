@@ -66,6 +66,7 @@ async function startServer() {
   const allowedOrigins = [
     "http://localhost:3000",
     "https://aihomedecorator.web.app",
+    "https://aihomedecorator.com", // <-- CORS FIX: Added the live domain
   ];
 
   app.use(
@@ -183,8 +184,7 @@ async function startServer() {
           },
           config: {
             // --- CRITICAL FIX: Removed conflicting responseMimeType setting ---
-            // responseMimeType: "image/png",
-            // ----------------------------------------------------------------
+            // This fixes the 'INVALID_ARGUMENT' API error
           },
         });
 
@@ -266,6 +266,10 @@ async function startServer() {
             error.message.includes("403")
           ) {
             errorMessage = "Authentication failed. Please log in again.";
+          } else if (error.message.includes("out of credits")) {
+            // Handle server-side credit block message
+            errorMessage =
+              "You are out of credits. Please purchase a pack to continue.";
           }
         }
 
