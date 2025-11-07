@@ -1,3 +1,4 @@
+// thyagarajsalome/ai-home-decorator/Ai-Home-Decorator-c6b6c81dbecf4822648db258894f4b95d6527f1d/src/pages/Home.tsx
 // pages/Home.tsx
 import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -33,7 +34,39 @@ const Home: React.FC = () => {
   const [generationCredits, setGenerationCredits] = useState<number>(0);
   const [isVerified, setIsVerified] = useState(false);
 
-  // Effect to check verification status
+  // --- REUSABLE FUNCTION TO FETCH CREDITS ---
+  const fetchGenerationCredits = useCallback(async () => {
+    if (!currentUser) {
+      setGenerationCredits(0);
+      return;
+    }
+
+    if (isAdmin) {
+      setGenerationCredits(9999);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("generation_credits")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        setGenerationCredits(data.generation_credits);
+      }
+    } catch (dbError: any) {
+      console.error("Error fetching generation credits:", dbError);
+    }
+  }, [currentUser, isAdmin]); // Only re-create if currentUser or isAdmin changes
+  // ------------------------------------------
+
+  // Effect to check verification status and load credits
   useEffect(() => {
     setIsVerified(!!currentUser?.email_confirmed_at);
 
@@ -41,37 +74,9 @@ const Home: React.FC = () => {
       setError(null);
     }
 
-    const fetchGenerationCredits = async () => {
-      if (!currentUser) return;
-
-      // Use the now-defined isAdmin
-      if (isAdmin) {
-        setGenerationCredits(9999);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from("user_profiles")
-          .select("generation_credits")
-          .eq("id", currentUser.id)
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
-        if (data) {
-          setGenerationCredits(data.generation_credits);
-        }
-      } catch (dbError: any) {
-        console.error("Error fetching generation credits:", dbError);
-        // Note: I've removed the setError call here to be less aggressive with errors on app load.
-      }
-    };
-
+    // Use the reusable function
     fetchGenerationCredits();
-  }, [currentUser, isAdmin, setGenerationCredits]); // Added setGenerationCredits to fix linter warnings
+  }, [currentUser, fetchGenerationCredits]); // Added fetchGenerationCredits as dependency
 
   const handleImageChange = useCallback(
     (file: File | null) => {
@@ -99,12 +104,7 @@ const Home: React.FC = () => {
       return;
     }
 
-    // --- CREDIT CHECK ---
-    const isLimitReached = generationCredits <= 0 && !isAdmin;
-    if (isLimitReached) {
-      setError("You are out of credits. Please purchase a pack to continue.");
-      return;
-    }
+    // --- Front-end credit check is for button state ONLY ---
 
     const idToken = await getIdToken();
     if (!idToken) {
@@ -136,21 +136,10 @@ const Home: React.FC = () => {
       );
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
 
-      // --- DECREMENT LOGIC ---
-      // Only decrement if the user is NOT an admin
-      if (!isAdmin) {
-        const newCredits = generationCredits - 1;
-        const { error: updateError } = await supabase
-          .from("user_profiles")
-          .update({ generation_credits: newCredits }) // Subtract 1 credit
-          .eq("id", currentUser.id);
-
-        if (updateError) {
-          console.error("Failed to decrement credits in DB:", updateError);
-        }
-        setGenerationCredits(newCredits); // Update local state for immediate feedback
-      }
-      // ------------------------------------------------
+      // --- UPDATED DECREMENT LOGIC: Now just refetch credits after success ---
+      // The backend has already debited the credit. We refetch the new balance.
+      await fetchGenerationCredits();
+      // --- END UPDATED DECREMENT LOGIC ---
     } catch (err) {
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
@@ -162,21 +151,27 @@ const Home: React.FC = () => {
         message.includes("401") ||
         message.includes("403")
       ) {
-        message = "Authentication failed. Please log in again.";
+        // Catch server-side 403 for out-of-credits message
+        message = message.includes("out of credits")
+          ? "You are out of credits. Please purchase a pack to continue."
+          : "Authentication failed. Please log in again.";
       } else if (
-        // Added check for the common 500 error message when the backend fails
+        // Catch generic 500 error message
         message.includes("Failed to generate the decorated image")
       ) {
         message =
           "The decoration service failed to process your request. This may be a temporary server issue or an incompatible input image. Please try again.";
       }
       setError(message);
+
+      // Crucial: Re-fetch credits on *any* error to catch server-side rollback state
+      fetchGenerationCredits();
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --- LIMIT CHECK for Button State ---
+  // --- LIMIT CHECK for Button State (Based on client-side state) ---
   const isLimitReached = generationCredits <= 0 && !isAdmin;
 
   return (
