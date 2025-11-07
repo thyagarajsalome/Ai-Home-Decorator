@@ -11,6 +11,7 @@ async function startServer() {
 
   try {
     const module = await import("@google/generative-ai");
+    // Ensure you grab the class from the module import
     const GAI_Class = module.GoogleGenerativeAI;
     GoogleGenerativeAI = GAI_Class;
 
@@ -81,19 +82,27 @@ async function startServer() {
             .json({ error: "Missing style or description." });
         }
 
-        // FIX: Use gemini-2.5-flash-image for image generation/editing
-        // AND add responseModalities configuration
-        // Use the model explicitly designed for image output
+        // CRITICAL FIX: Use the model explicitly designed for image-to-image editing.
         const model = genAI.getGenerativeModel({
           model: "gemini-2.5-flash-image",
         });
 
-        const prompt = `You are an expert interior designer. Redesign this room, which is a "${roomDescription}", in a "${styleName}" style. Return *only* the new image. Do not return markdown, do not return text, only return the resulting image.`;
+        // Use the strong prompt for clear instructions.
+        const prompt = `You are an expert interior designer. Redesign the input image, which is a "${roomDescription}", in a photorealistic "${styleName}" style. Generate and return a new, high-quality, photorealistic image of the redesigned room only. Do not include any text, markdown, or commentary.`;
 
         const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
 
-        const result = await model.generateContent([prompt, imagePart]);
+        // CRITICAL FIX: Switched to object-based generateContent call with config
+        const result = await model.generateContent({
+          contents: [prompt, imagePart],
+          config: {
+            // CRITICAL FIX: Explicitly set the output mime type to enforce image generation.
+            responseMimeType: "image/png",
+          },
+        });
+
         const response = await result.response;
+        // The previous file had a duplicate 'const response = await result.response;' here. It must be removed.
 
         if (response.promptFeedback?.blockReason) {
           return res.status(400).json({
@@ -111,7 +120,9 @@ async function startServer() {
         }
 
         if (!base64Image) {
-          throw new Error("AI did not return a valid image.");
+          throw new Error(
+            "AI did not return a valid image. Check model and configuration."
+          );
         }
 
         res.status(200).json({
@@ -120,7 +131,7 @@ async function startServer() {
       } catch (error) {
         console.error("Error processing image:", error);
         let errorMessage = "Failed to generate image from AI.";
-        if (error.message.includes("400")) {
+        if (error instanceof Error && error.message.includes("400")) {
           errorMessage =
             "Image file may be invalid or too large. Please try another image.";
         }
