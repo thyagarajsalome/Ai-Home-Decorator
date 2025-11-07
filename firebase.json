@@ -5,6 +5,10 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/api/**",
+        "destination": "https://YOUR-BACKEND-URL-OR-CLOUD-RUN-SERVICE/api"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
