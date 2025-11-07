@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "aihomedecorator"
-  }
+  },
+  "targets": {
+    "aihomedecorator": {
+      "hosting": {
+        "app": [
+          "aihomedecorator"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
