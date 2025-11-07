@@ -1,19 +1,24 @@
 import path from "path";
-import { defineConfig } from "vite"; // No need for loadEnv if not using define
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => {
-  // const env = loadEnv(mode, '.', ''); // No longer needed here
   return {
     server: {
       port: 3000,
       host: "0.0.0.0",
+      // --- FIX: ADD PROXY CONFIGURATION ---
+      proxy: {
+        // Redirects requests from http://localhost:3000/api/decorate to http://localhost:8080/api/decorate
+        "/api": {
+          target: "http://localhost:8080",
+          changeOrigin: true, // Needed for virtual hosting sites
+          secure: false, // Don't verify SSL for local development
+        },
+      },
+      // --- END PROXY CONFIGURATION ---
     },
     plugins: [react()],
-    // define: { // --- REMOVE THIS BLOCK ---
-    //   'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-    //   'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-    // },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "."),
