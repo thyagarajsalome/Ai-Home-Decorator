@@ -23,7 +23,7 @@ const Header: React.FC = () => {
     <header className="py-6 px-4 border-b border-gray-700/50 relative">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* --- MODIFIED BLOCK --- */}
-        <div className="flex-shrink-0 flex items-center gap-x-4">
+        <div className="flex-shrink-0 flex items-start gap-x-4">
           {/* 1. LOGO SIZE ADJUSTED */}
           <Link to="/" onClick={closeMenu}>
             <img
@@ -110,7 +110,7 @@ const Header: React.FC = () => {
             About
           </Link>
           <Link
-            to="/legal"
+            to="/terms"
             className="text-gray-300 hover:text-purple-400 transition-colors"
           >
             Terms
@@ -172,7 +172,7 @@ const Header: React.FC = () => {
             About
           </Link>
           <Link
-            to="/legal"
+            to="/terms"
             onClick={closeMenu}
             className="text-gray-300 hover:text-purple-400 transition-colors text-lg p-2 rounded-md hover:bg-gray-800"
           >

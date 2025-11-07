@@ -14,8 +14,7 @@ import { supabase } from "../supabaseClient"; // <-- Import supabase client
 
 const Home: React.FC = () => {
   // --- 1. GET THE ROLE FROM CONTEXT ---
-  const { currentUser, getIdToken, currentUserRole } = useAuth();
-  const isAdmin = currentUserRole === "admin";
+  const { currentUser, getIdToken } = useAuth(); // <-- Removed currentUserRole
 
   // State declarations
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
@@ -27,10 +26,10 @@ const Home: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [generationCredits, setGenerationCredits] = useState<number>(0);
+  // const [generationCredits, setGenerationCredits] = useState<number>(0); // <-- REMOVE THIS
   const [isVerified, setIsVerified] = useState(false);
 
-  // Effect to check verification status and load generation count
+  // Effect to check verification status
   useEffect(() => {
     setIsVerified(!!currentUser?.email_confirmed_at);
 
@@ -235,13 +234,11 @@ const Home: React.FC = () => {
               !roomDescription ||
               isLoading ||
               !currentUser ||
-              !isVerified ||
-              isLimitReached
+              !isVerified
+              // -- Removed isLimitReached
             }
             className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
-              isLimitReached
-                ? "bg-gray-600 cursor-not-allowed opacity-70"
-                : !currentUser
+              !currentUser
                 ? "bg-gray-500 cursor-not-allowed"
                 : !isVerified
                 ? "bg-yellow-700 cursor-not-allowed"
@@ -252,8 +249,6 @@ const Home: React.FC = () => {
           >
             {isLoading
               ? "Decorating..."
-              : isLimitReached
-              ? "🔒 Out of Credits"
               : !currentUser
               ? "Login to Decorate"
               : !isVerified
@@ -269,22 +264,7 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {isLimitReached && !isLoading && (
-        <div className="max-w-5xl mx-auto mt-8 p-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-xl text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">
-            Your Free Generations Have Ended
-          </h2>
-          <p className="text-purple-100 text-lg mb-4">
-            To continue decorating, please purchase a credit pack.
-          </p>
-          <Link
-            to="/pricing"
-            className="inline-block px-6 py-3 font-bold text-purple-600 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200"
-          >
-            Buy Credits
-          </Link>
-        </div>
-      )}
+      {/* --- REMOVED "Buy Credits" BLOCK --- */}
 
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
