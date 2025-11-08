@@ -12,8 +12,8 @@ import DisclaimerPage from "./pages/DisclaimerPage";
 // ---
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-// import PricingPage from "./pages/PricingPage"; // <-- REMOVE THIS
-import InstallPWAButton from "./components/InstallPWAButton"; // <-- 1. IMPORT
+import PricingPage from "./pages/PricingPage"; // <-- 1. UNCOMMENTED THIS
+import InstallPWAButton from "./components/InstallPWAButton";
 
 const App: React.FC = () => {
   return (
@@ -31,8 +31,8 @@ const App: React.FC = () => {
           {/* --- */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          {/* <Route path="/pricing" element={<PricingPage />} /> */}{" "}
-          {/* <-- REMOVE THIS */}
+          <Route path="/pricing" element={<PricingPage />} />{" "}
+          {/* <-- 2. UNCOMMENTED THIS */}
         </Routes>
         <footer className="text-center py-6 text-gray-500 text-sm">
           <p>Powered by Google Gemini</p>
@@ -50,7 +50,6 @@ const App: React.FC = () => {
           </div>
         </footer>
 
-        {/* --- 2. ADD THE COMPONENT HERE --- */}
         <InstallPWAButton />
       </div>
     </AuthProvider>

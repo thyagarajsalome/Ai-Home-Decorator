@@ -1,4 +1,3 @@
-// thyagarajsalome/ai-home-decorator/Ai-Home-Decorator-c6b6c81dbecf4822648db258894f4b95d6527f1d/src/pages/Home.tsx
 // pages/Home.tsx
 import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -265,6 +264,23 @@ const Home: React.FC = () => {
               Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
             </p>
           )}
+
+          {/* --- 1. ADDED THIS BLOCK --- */}
+          {currentUser && isVerified && isLimitReached && (
+            <div className="mt-4 p-3 bg-blue-900/50 border border-blue-700 text-blue-300 rounded-lg text-center max-w-md mx-auto">
+              <p>
+                You're out of credits!{" "}
+                <Link
+                  to="/pricing"
+                  className="font-bold text-purple-400 hover:underline"
+                >
+                  Buy more credits
+                </Link>{" "}
+                to continue decorating.
+              </p>
+            </div>
+          )}
+          {/* --- END OF ADDED BLOCK --- */}
         </div>
       </div>
 
