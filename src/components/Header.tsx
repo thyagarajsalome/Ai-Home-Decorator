@@ -109,6 +109,13 @@ const Header: React.FC = () => {
           >
             About
           </Link>
+          {/* --- 1. ADDED PRICING LINK HERE --- */}
+          <Link
+            to="/pricing"
+            className="text-gray-300 hover:text-purple-400 transition-colors"
+          >
+            Pricing
+          </Link>
           <Link
             to="/terms"
             className="text-gray-300 hover:text-purple-400 transition-colors"
@@ -170,6 +177,14 @@ const Header: React.FC = () => {
             className="text-gray-300 hover:text-purple-400 transition-colors text-lg p-2 rounded-md hover:bg-gray-800"
           >
             About
+          </Link>
+          {/* --- 2. ADDED PRICING LINK HERE --- */}
+          <Link
+            to="/pricing"
+            onClick={closeMenu}
+            className="text-gray-300 hover:text-purple-400 transition-colors text-lg p-2 rounded-md hover:bg-gray-800"
+          >
+            Pricing
           </Link>
           <Link
             to="/terms"
