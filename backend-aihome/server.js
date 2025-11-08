@@ -178,7 +178,7 @@ async function startServer() {
         const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
 
         const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash-preview-image",
+          model: "gemini-2.5-flash-image",
           contents: {
             parts: [imagePart, { text: prompt }],
           },
