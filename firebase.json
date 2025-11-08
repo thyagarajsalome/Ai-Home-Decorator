@@ -6,7 +6,7 @@
     "rewrites": [
       {
         "source": "/api/**",
-        "destination": "https://decorate-api-358218923651.us-central1.run.app"
+        "destination": "https://ai-decorator-backend-358218923651.asia-south1.run.app"
       },
 
       {

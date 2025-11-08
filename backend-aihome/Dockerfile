@@ -5,17 +5,12 @@ FROM node:20-slim
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json and install dependencies
-# FIX: Using relative paths here (./) since the Dockerfile is in the build context.
 COPY package*.json ./ 
 RUN npm install --omit=dev
 
 # Bundle app source
-# FIX: Copy everything else from the build context.
 COPY . .
 
-# Cloud Run defaults to PORT 8080.
-ENV PORT 8080
-EXPOSE 8080
-
 # Run the server
+# Cloud Run will provide the $PORT environment variable automatically.
 CMD [ "node", "server.js" ]

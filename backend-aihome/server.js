@@ -59,10 +59,12 @@ async function startServer() {
   const ai = new GoogleGenAI({ apiKey });
 
   // --- CORS FIX: Explicitly include the live domain ---
+  // thyagarajsalome/ai-home-decorator/Ai-Home-Decorator-ad9c1e97ac8b6f5c4b41d11df00696b8a5053a37/backend-aihome/server.js
   const allowedOrigins = [
     "http://localhost:3000",
     "https://aihomedecorator.web.app",
     "https://aihomedecorator.com",
+    "https://www.aihomedecorator.com", // <-- ADD THIS LINE
   ];
 
   app.use(
@@ -105,6 +107,9 @@ async function startServer() {
         // 1. INPUT & AUTH VALIDATION
         const { styleName, roomDescription } = req.body;
         const file = req.file;
+
+        // NOTE: Multer errors (like file size limit) often occur BEFORE this point,
+        // which is why the global error handler below is critical.
 
         if (!req.user || !req.user.id) {
           return res
@@ -267,6 +272,28 @@ async function startServer() {
       }
     }
   );
+
+  // --- NEW: GLOBAL ERROR HANDLER (Resolves unexpected HTML responses) ---
+  // Must be placed *after* all routes and *before* app.listen
+  app.use((err, req, res, next) => {
+    // Check for Multer-specific errors (e.g., file size limit)
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res
+          .status(400)
+          .json({ error: "Image file size is too large (max 10MB)." });
+      }
+    }
+
+    console.error("Global unhandled Express error:", err);
+    // Send a consistent 500 JSON response for any other unhandled server error
+    res.status(500).json({
+      error:
+        err.message ||
+        "An unexpected server error occurred and the connection was interrupted. Please try again.",
+    });
+  });
+  // --- END NEW ERROR HANDLER ---
 
   const PORT = process.env.PORT || 8080;
   const HOST = "0.0.0.0";
