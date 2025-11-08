@@ -6,7 +6,8 @@ export const generateDecoratedImage = async (
   roomDescription: string,
   idToken: string // <-- Pass in the user's auth token
 ): Promise<string> => {
-  const BACKEND_URL = "/api/decorate";
+  // FIX: Explicitly specify the backend's URL to bypass the Vite proxy
+  const BACKEND_URL = "http://localhost:8080/api/decorate";
 
   const formData = new FormData();
   formData.append("image", imageFile);
@@ -25,6 +26,7 @@ export const generateDecoratedImage = async (
     });
 
     if (!response.ok) {
+      // The frontend attempts to parse the response as JSON even on error statuses.
       const errorData = await response.json();
       // Pass the specific error message from the backend (e.g., "Rate limit exceeded")
       throw new Error(
