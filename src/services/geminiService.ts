@@ -6,8 +6,8 @@ export const generateDecoratedImage = async (
   roomDescription: string,
   idToken: string // <-- Pass in the user's auth token
 ): Promise<string> => {
-  // FIX: Explicitly specify the backend's URL to bypass the Vite proxy
-  const BACKEND_URL = "http://localhost:8080/api/decorate";
+  // FIX: Use a relative URL to work with both Vite proxy and Firebase rewrites
+  const BACKEND_URL = "/api/decorate";
 
   const formData = new FormData();
   formData.append("image", imageFile);
