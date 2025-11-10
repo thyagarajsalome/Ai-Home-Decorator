@@ -6,9 +6,11 @@
     "rewrites": [
       {
         "source": "/api/**",
-        "destination": "https://ai-decorator-backend-358218923651.asia-south1.run.app"
+        "run": {
+          "serviceId": "ai-decorator-backend",
+          "region": "asia-south1"
+        }
       },
-
       {
         "source": "**",
         "destination": "/index.html"
