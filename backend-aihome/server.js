@@ -5,12 +5,21 @@ const cors = require("cors");
 const multer = require("multer");
 const { createClient } = require("@supabase/supabase-js");
 
+// --- 1. ADD RAZORPAY and CRYPTO ---
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+// ---------------------------------
+
 const verifySupabaseToken = require("./authMiddleware");
 
 // --- VALIDATE ENVIRONMENT VARIABLES FIRST ---
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+
+// --- 2. VALIDATE RAZORPAY VARS ---
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
 
 if (!supabaseUrl || !supabaseServiceKey) {
   console.error(
@@ -24,6 +33,15 @@ if (!apiKey) {
   process.exit(1);
 }
 
+// --- 3. VALIDATE RAZORPAY KEYS ---
+if (!razorpayKeyId || !razorpayKeySecret) {
+  console.error(
+    "FATAL: Missing RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET in .env file."
+  );
+  process.exit(1);
+}
+// --------------------------------
+
 // Create a server-side Supabase client instance
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
@@ -31,6 +49,21 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     autoRefreshToken: false,
   },
 });
+
+// --- 4. INSTANTIATE RAZORPAY ---
+const razorpay = new Razorpay({
+  key_id: razorpayKeyId,
+  key_secret: razorpayKeySecret,
+});
+// ------------------------------
+
+// --- 5. CREATE A SECURE MAP FOR PRICES (in paise/cents) ---
+const creditPacks = {
+  pack_starter: { amount: 19900, credits: 15, name: "Starter Pack" }, // 199.00 INR
+  pack_value: { amount: 49900, credits: 50, name: "Best Value" }, // 499.00 INR
+  pack_pro: { amount: 99900, credits: 120, name: "Pro Pack" }, // 999.00 INR
+};
+// ----------------------------------------------------
 
 // --- START SERVER IMMEDIATELY ---
 const app = express();
@@ -111,6 +144,121 @@ function bufferToGenerativePart(buffer, mimeType) {
   };
 }
 
+// ---
+// --- 6. NEW ENDPOINT: CREATE ORDER ---
+// ---
+app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
+  try {
+    const { packId } = req.body; // e.g., "pack_starter"
+    const pack = creditPacks[packId];
+
+    if (!pack) {
+      return res.status(400).json({ error: "Invalid credit pack." });
+    }
+
+    const options = {
+      amount: pack.amount, // amount in the smallest currency unit (paise)
+      currency: "INR",
+      receipt: `receipt_order_${new Date().getTime()}`,
+      notes: {
+        userId: req.user.id,
+        userEmail: req.user.email,
+        pack: packId, // Note: The key is 'pack'
+      },
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    if (!order) {
+      return res.status(500).json({ error: "Error creating Razorpay order." });
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "Could not create order." });
+  }
+});
+
+// ---
+// --- 7. NEW ENDPOINT: VERIFY PAYMENT (WITH FIX) ---
+// ---
+app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+
+  const userId = req.user.id;
+
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    return res.status(400).json({ error: "Missing payment details." });
+  }
+
+  try {
+    // 1. Verify Signature
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac("sha256", razorpayKeySecret)
+      .update(body.toString())
+      .digest("hex");
+
+    if (expectedSignature !== razorpay_signature) {
+      return res.status(400).json({ error: "Invalid payment signature." });
+    }
+
+    // 2. Fetch the order to get the packId from notes
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+    if (!order) {
+      return res.status(500).json({ error: "Could not fetch Razorpay order." });
+    }
+
+    // --- THIS IS THE FIX ---
+    const packId = order.notes.pack; // Was order.notes.packId
+    // -----------------------
+
+    const pack = creditPacks[packId];
+
+    if (!pack) {
+      // This is the error you were seeing
+      return res.status(400).json({ error: "Invalid pack ID in order notes." });
+    }
+
+    // 3. Payment is VERIFIED. Grant credits to the user.
+    const { data: profile, error: fetchError } = await supabase
+      .from("user_profiles")
+      .select("generation_credits")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError || !profile) {
+      throw new Error("Could not find user profile to add credits.");
+    }
+
+    const newTotalCredits = (profile.generation_credits || 0) + pack.credits;
+
+    const { error: updateError } = await supabase
+      .from("user_profiles")
+      .update({ generation_credits: newTotalCredits })
+      .eq("id", userId);
+
+    if (updateError) {
+      throw new Error("Failed to update user credits in database.");
+    }
+
+    // 4. Success
+    res.status(200).json({
+      success: true,
+      message: "Payment successful! Credits added.",
+      newCredits: newTotalCredits,
+    });
+  } catch (error) {
+    console.error("Payment verification failed:", error);
+    res.status(500).json({ error: "Payment verification failed." });
+  }
+});
+
+// ---
+// --- DECORATE ENDPOINT (Unchanged) ---
+// ---
 app.post(
   "/api/decorate",
   verifySupabaseToken,
