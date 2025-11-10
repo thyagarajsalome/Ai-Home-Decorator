@@ -1,12 +1,12 @@
 // src/pages/PricingPage.tsx
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-// --- NEW: Define types for safety ---
+// Define Razorpay on the window object
 declare global {
   interface Window {
-    Razorpay: any; // Define Razorpay on the window object
+    Razorpay: any;
   }
 }
 
@@ -14,46 +14,82 @@ interface CreditPack {
   name: string;
   credits: number;
   price: number;
-  priceId: string; // We'll use pack.name as the ID, but keep this structure
+  priceId: string; // This is our internal ID, e.g., "pack_starter"
 }
 
-// --- UPDATED to INR ---
+// Credit packs (matches the map in your server.js)
 const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
-    price: 199, // Use Rupees
+    price: 199, // Price in INR
     priceId: "pack_starter",
   },
   {
     name: "Best Value",
     credits: 50,
-    price: 499, // Use Rupees
+    price: 499, // Price in INR
     priceId: "pack_value",
   },
   {
     name: "Pro Pack",
     credits: 120,
-    price: 999, // Use Rupees
+    price: 999, // Price in INR
     priceId: "pack_pro",
   },
 ];
 
-// --- UPDATED to local backend ---
-const BACKEND_URL = "http://localhost:8080";
+// Helper function to load the Razorpay script
+const loadScript = (src: string) => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+};
 
 const PricingPage: React.FC = () => {
-  const { currentUser, getIdToken } = useAuth(); // <-- Get getIdToken
+  const { currentUser, getIdToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // --- THIS IS THE MAIN LOGIC ---
+  // State to track if script is loaded
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+
+  // Load the Razorpay script when the component mounts
+  useEffect(() => {
+    loadScript("https://checkout.razorpay.com/v1/checkout.js").then(
+      (loaded) => {
+        if (loaded) {
+          setScriptLoaded(true);
+        } else {
+          setError("Could not load payment gateway. Please refresh the page.");
+        }
+      }
+    );
+  }, []);
+
   const handlePurchase = async (pack: CreditPack) => {
     setLoading(true);
     setError(null);
 
     if (!currentUser) {
       setError("You must be logged in to make a purchase.");
+      setLoading(false);
+      return;
+    }
+
+    if (!scriptLoaded) {
+      setError(
+        "Payment gateway is not ready. Please wait a moment or refresh."
+      );
       setLoading(false);
       return;
     }
@@ -66,20 +102,21 @@ const PricingPage: React.FC = () => {
         return;
       }
 
-      // 1. Create Order: Call your backend to create a Razorpay order
-      const orderResponse = await fetch(`${BACKEND_URL}/api/create-order`, {
+      // 1. Create Order: Call your backend
+      // We use the relative path /api/ which is proxied by Vite (dev)
+      // and rewritten by Firebase (prod)
+      const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`,
         },
-        body: JSON.stringify({ packName: pack.name }),
+        body: JSON.stringify({ packId: pack.priceId }),
       });
 
       if (!orderResponse.ok) {
         const errData = await orderResponse.json();
-        console.error("Failed to create order:", errData);
-        throw new Error(errData.message || "Failed to create order.");
+        throw new Error(errData.error || "Failed to create order.");
       }
 
       const order = await orderResponse.json();
@@ -87,47 +124,47 @@ const PricingPage: React.FC = () => {
       // 2. Define Razorpay Options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount, // Amount is in cents/paise
+        amount: order.amount, // Amount is in paise
         currency: order.currency,
         name: "AI Home Decorator",
         description: `Purchase ${pack.name}`,
-        image: "/icons/icon-512x512.png", // Your app logo
+        image: "/icons/icon-512x512.png",
         order_id: order.id,
 
         // 3. Define the payment handler
         handler: async (response: any) => {
           try {
             // 4. Verify Payment: Send payment details to your backend
-            const verifyResponse = await fetch(
-              `${BACKEND_URL}/api/payment-verification`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${idToken}`,
-                },
-                body: JSON.stringify({
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
-              }
-            );
+            const verifyResponse = await fetch(`/api/payment-verification`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
 
             if (!verifyResponse.ok) {
-              throw new Error("Payment verification failed.");
+              const errData = await verifyResponse.json();
+              throw new Error(errData.error || "Payment verification failed.");
             }
-
-            await verifyResponse.json();
 
             // Success!
             alert(
               `Payment successful! ${pack.credits} credits have been added to your account.`
             );
-            // You could also redirect to the homepage or update credits in AuthContext
-          } catch (verifyError) {
+
+            // Send user back to home page to see their new credits
+            navigate("/");
+          } catch (verifyError: any) {
             console.error("Verification Error:", verifyError);
-            setError("Payment verification failed. Please contact support.");
+            setError(
+              `Payment verification failed. Please contact support. ${verifyError.message}`
+            );
           } finally {
             setLoading(false);
           }
@@ -135,7 +172,7 @@ const PricingPage: React.FC = () => {
 
         // 5. Prefill user details
         prefill: {
-          name: currentUser.email, // Or a name field if you collect it
+          name: currentUser.email,
           email: currentUser.email,
         },
         theme: {
@@ -156,7 +193,11 @@ const PricingPage: React.FC = () => {
       // Handle payment failure
       rzp.on("payment.failed", (response: any) => {
         console.error("Payment Failed:", response.error);
-        setError(`Payment failed: ${response.error.description}`);
+        setError(
+          `Payment failed: ${
+            response.error.description || response.error.reason
+          }`
+        );
         setLoading(false);
       });
     } catch (err: any) {
@@ -263,7 +304,7 @@ const PricingPage: React.FC = () => {
 
             <button
               onClick={() => handlePurchase(pack)}
-              disabled={loading || !currentUser}
+              disabled={loading || !currentUser || !scriptLoaded}
               className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
                 pack.name === "Best Value"
                   ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
@@ -276,7 +317,6 @@ const PricingPage: React.FC = () => {
         ))}
       </div>
 
-      {/* --- THIS IS THE STYLED BLOCK --- */}
       {!currentUser && (
         <div className="mt-8 text-center bg-gray-700/50 border border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto">
           <p className="text-lg text-gray-200">
@@ -298,7 +338,6 @@ const PricingPage: React.FC = () => {
           </p>
         </div>
       )}
-      {/* --- END OF STYLED BLOCK --- */}
     </div>
   );
 };
