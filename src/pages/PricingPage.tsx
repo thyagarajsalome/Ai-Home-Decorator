@@ -56,12 +56,17 @@ const loadScript = (src: string) => {
 
 const PricingPage: React.FC = () => {
   const { currentUser, getIdToken } = useAuth();
-  const [loading, setLoading] = useState(false);
+
+  // --- 1. CHANGED: Make loading state specific to the pack ID ---
+  const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // State to track if script is loaded
   const [scriptLoaded, setScriptLoaded] = useState(false);
+
+  // --- 2. CHANGED: Add state for styled success message ---
+  const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
 
   // Load the Razorpay script when the component mounts
   useEffect(() => {
@@ -77,12 +82,13 @@ const PricingPage: React.FC = () => {
   }, []);
 
   const handlePurchase = async (pack: CreditPack) => {
-    setLoading(true);
+    // --- 3. CHANGED: Use setLoadingPackId ---
+    setLoadingPackId(pack.priceId);
     setError(null);
 
     if (!currentUser) {
       setError("You must be logged in to make a purchase.");
-      setLoading(false);
+      setLoadingPackId(null); // Reset loading
       return;
     }
 
@@ -90,7 +96,7 @@ const PricingPage: React.FC = () => {
       setError(
         "Payment gateway is not ready. Please wait a moment or refresh."
       );
-      setLoading(false);
+      setLoadingPackId(null); // Reset loading
       return;
     }
 
@@ -98,13 +104,11 @@ const PricingPage: React.FC = () => {
       const idToken = await getIdToken();
       if (!idToken) {
         setError("Could not authenticate. Please log in again.");
-        setLoading(false);
+        setLoadingPackId(null); // Reset loading
         return;
       }
 
       // 1. Create Order: Call your backend
-      // We use the relative path /api/ which is proxied by Vite (dev)
-      // and rewritten by Firebase (prod)
       const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {
@@ -124,7 +128,7 @@ const PricingPage: React.FC = () => {
       // 2. Define Razorpay Options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount, // Amount is in paise
+        amount: order.amount,
         currency: order.currency,
         name: "AI Home Decorator",
         description: `Purchase ${pack.name}`,
@@ -134,7 +138,7 @@ const PricingPage: React.FC = () => {
         // 3. Define the payment handler
         handler: async (response: any) => {
           try {
-            // 4. Verify Payment: Send payment details to your backend
+            // 4. Verify Payment
             const verifyResponse = await fetch(`/api/payment-verification`, {
               method: "POST",
               headers: {
@@ -153,24 +157,20 @@ const PricingPage: React.FC = () => {
               throw new Error(errData.error || "Payment verification failed.");
             }
 
-            // Success!
-            alert(
+            // --- 4. CHANGED: Set success message instead of alert/navigate ---
+            setLoadingPackId(null); // Stop loading
+            setPurchaseSuccess(
               `Payment successful! ${pack.credits} credits have been added to your account.`
             );
-
-            // Send user back to home page to see their new credits
-            navigate("/");
           } catch (verifyError: any) {
             console.error("Verification Error:", verifyError);
             setError(
               `Payment verification failed. Please contact support. ${verifyError.message}`
             );
-          } finally {
-            setLoading(false);
+            setLoadingPackId(null); // Stop loading
           }
         },
 
-        // 5. Prefill user details
         prefill: {
           name: currentUser.email,
           email: currentUser.email,
@@ -180,7 +180,7 @@ const PricingPage: React.FC = () => {
         },
         modal: {
           ondismiss: () => {
-            setLoading(false); // Stop loading if user closes modal
+            setLoadingPackId(null); // Stop loading if user closes modal
             console.log("Payment dismissed");
           },
         },
@@ -190,7 +190,6 @@ const PricingPage: React.FC = () => {
       const rzp = new window.Razorpay(options);
       rzp.open();
 
-      // Handle payment failure
       rzp.on("payment.failed", (response: any) => {
         console.error("Payment Failed:", response.error);
         setError(
@@ -198,14 +197,37 @@ const PricingPage: React.FC = () => {
             response.error.description || response.error.reason
           }`
         );
-        setLoading(false);
+        setLoadingPackId(null); // Stop loading
       });
     } catch (err: any) {
       console.error("Purchase Error:", err);
       setError(err.message || "An error occurred during purchase.");
-      setLoading(false);
+      setLoadingPackId(null); // Stop loading
     }
   };
+
+  // --- 2. (CONTINUED) RENDER STYLED SUCCESS MESSAGE ---
+  if (purchaseSuccess) {
+    return (
+      <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <div className="bg-gray-800 rounded-2xl shadow-xl p-8 border border-green-700">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Payment Successful!
+          </h2>
+          <p className="text-lg text-green-300 mb-8">{purchaseSuccess}</p>
+          <button
+            onClick={() => navigate("/")}
+            className="w-full max-w-xs mx-auto px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+          >
+            Go to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // --- 1. (CONTINUED) Check if *any* pack is processing ---
+  const isProcessing = loadingPackId !== null;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -224,97 +246,108 @@ const PricingPage: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {creditPacks.map((pack) => (
-          <div
-            key={pack.name}
-            className={`bg-gray-800 rounded-2xl shadow-xl p-8 border ${
-              pack.name === "Best Value"
-                ? "border-purple-500"
-                : "border-gray-700"
-            } flex flex-col`}
-          >
-            <h2 className="text-2xl font-bold text-white mb-2">{pack.name}</h2>
-            <p
-              className={`text-sm font-semibold mb-4 ${
-                pack.name === "Best Value" ? "text-purple-400" : "text-gray-400"
-              }`}
-            >
-              {pack.name === "Best Value"
-                ? "Most Popular"
-                : "One-time purchase"}
-            </p>
+        {creditPacks.map((pack) => {
+          // --- 1. (CONTINUED) Check if *this* pack is the one processing ---
+          const isThisPackLoading = loadingPackId === pack.priceId;
 
-            <div className="mb-6">
-              <span className="text-5xl font-extrabold text-white">
-                ₹{pack.price}
-              </span>
-              <span className="text-gray-400">/one-time</span>
-            </div>
-
-            <ul className="space-y-2 text-gray-300 mb-8 flex-grow">
-              <li className="flex items-center">
-                <svg
-                  className="h-5 w-5 text-green-400 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <strong>{pack.credits}</strong>&nbsp;Generations
-              </li>
-              <li className="flex items-center">
-                <svg
-                  className="h-5 w-5 text-green-400 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                All Styles Included
-              </li>
-              <li className="flex items-center">
-                <svg
-                  className="h-5 w-5 text-green-400 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                No Expiry
-              </li>
-            </ul>
-
-            <button
-              onClick={() => handlePurchase(pack)}
-              disabled={loading || !currentUser || !scriptLoaded}
-              className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
+          return (
+            <div
+              key={pack.name}
+              className={`bg-gray-800 rounded-2xl shadow-xl p-8 border ${
                 pack.name === "Best Value"
-                  ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                  : "bg-gray-700 hover:bg-gray-600"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  ? "border-purple-500"
+                  : "border-gray-700"
+              } flex flex-col`}
             >
-              {loading ? "Processing..." : "Buy Now"}
-            </button>
-          </div>
-        ))}
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {pack.name}
+              </h2>
+              <p
+                className={`text-sm font-semibold mb-4 ${
+                  pack.name === "Best Value"
+                    ? "text-purple-400"
+                    : "text-gray-400"
+                }`}
+              >
+                {pack.name === "Best Value"
+                  ? "Most Popular"
+                  : "One-time purchase"}
+              </p>
+
+              <div className="mb-6">
+                <span className="text-5xl font-extrabold text-white">
+                  ₹{pack.price}
+                </span>
+                <span className="text-gray-400">/one-time</span>
+              </div>
+
+              <ul className="space-y-2 text-gray-300 mb-8 flex-grow">
+                <li className="flex items-center">
+                  <svg
+                    className="h-5 w-5 text-green-400 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <strong>{pack.credits}</strong>&nbsp;Generations
+                </li>
+                <li className="flex items-center">
+                  <svg
+                    className="h-5 w-5 text-green-400 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  All Styles Included
+                </li>
+                <li className="flex items-center">
+                  <svg
+                    className="h-5 w-5 text-green-400 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  No Expiry
+                </li>
+              </ul>
+
+              <button
+                onClick={() => handlePurchase(pack)}
+                // Disable all buttons if any purchase is processing
+                disabled={isProcessing || !currentUser || !scriptLoaded}
+                className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
+                  pack.name === "Best Value"
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                    : "bg-gray-700 hover:bg-gray-600"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {/* Only show "Processing..." on the clicked button */}
+                {isThisPackLoading ? "Processing..." : "Buy Now"}
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       {!currentUser && (
