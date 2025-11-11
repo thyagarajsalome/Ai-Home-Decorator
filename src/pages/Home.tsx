@@ -12,6 +12,7 @@ import type { DesignStyle } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient";
 import { STYLE_GENERATION_COST, CUSTOM_GENERATION_COST } from "../constants";
+import { designTips } from "../designTips"; // <-- 1. IMPORT TIPS
 
 const Home: React.FC = () => {
   const { currentUser, getIdToken, currentUserRole } = useAuth();
@@ -32,6 +33,9 @@ const Home: React.FC = () => {
   const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
   const [customPrompt, setCustomPrompt] = useState<string>("");
 
+  const [loadingTip, setLoadingTip] = useState<string>(""); // <-- 2. ADD TIP STATE
+
+  // ... (keep fetchGenerationCredits and useEffect hooks unchanged)
   const fetchGenerationCredits = useCallback(async () => {
     if (!currentUser) {
       setGenerationCredits(0);
@@ -66,6 +70,7 @@ const Home: React.FC = () => {
     fetchGenerationCredits();
   }, [currentUser, fetchGenerationCredits]);
 
+  // ... (keep handleImageChange unchanged)
   const handleImageChange = useCallback(
     (file: File | null) => {
       setUploadedImageFile(file);
@@ -81,7 +86,31 @@ const Home: React.FC = () => {
     [originalImageUrl]
   );
 
+  // --- 3. HELPER FUNCTION TO GET A TIP ---
+  const getLoadingTip = (prompt: string, room: string): string => {
+    const p = prompt.toLowerCase();
+    const r = room.toLowerCase();
+
+    let tipKey = "default"; // Start with default
+
+    // Check for style keywords first
+    if (p.includes("japandi")) tipKey = "japandi";
+    else if (p.includes("minimalist")) tipKey = "minimalist";
+    else if (p.includes("industrial")) tipKey = "industrial";
+    else if (p.includes("boho")) tipKey = "boho";
+    // Check for room type if no style matched
+    else if (r.includes("living room")) tipKey = "living room";
+    else if (r.includes("bedroom")) tipKey = "bedroom";
+    else if (r.includes("kitchen")) tipKey = "kitchen";
+
+    // Get the array of tips for the found key
+    const tipsArray = designTips[tipKey] || designTips["default"];
+    // Return a random tip from that array
+    return tipsArray[Math.floor(Math.random() * tipsArray.length)];
+  };
+
   const handleDecorateClick = async () => {
+    // ... (keep validation checks)
     if (!currentUser) {
       setError("Please log in or sign up to decorate.");
       return;
@@ -92,16 +121,13 @@ const Home: React.FC = () => {
       );
       return;
     }
-
     const idToken = await getIdToken();
     if (!idToken) {
       setError("Could not authenticate. Please try logging in again.");
       return;
     }
-
     const designInput =
       designMode === "style" ? selectedStyle?.name : customPrompt;
-
     if (!uploadedImageFile || !designInput || !roomDescription) {
       setError(
         "Please upload an image, describe the room, and select a style or provide a custom prompt."
@@ -109,15 +135,17 @@ const Home: React.FC = () => {
       return;
     }
 
+    // --- 4. SET THE TIP BEFORE LOADING ---
+    setLoadingTip(getLoadingTip(designInput, roomDescription));
     setIsLoading(true);
     setError(null);
     setGeneratedImageUrl(null);
 
     try {
+      // ... (rest of the try block is unchanged)
       if (!uploadedImageFile) {
         throw new Error("Missing image.");
       }
-
       const base64Image = await generateDecoratedImage(
         uploadedImageFile,
         designInput,
@@ -125,10 +153,10 @@ const Home: React.FC = () => {
         idToken,
         designMode
       );
-
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
       await fetchGenerationCredits();
     } catch (err) {
+      // ... (error handling is unchanged)
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
       if (message.includes("Rate limit exceeded")) {
@@ -158,6 +186,7 @@ const Home: React.FC = () => {
     }
   };
 
+  // ... (keep variable checks: costForCurrentMode, isLimitReached, etc.)
   const costForCurrentMode =
     designMode === "style" ? STYLE_GENERATION_COST : CUSTOM_GENERATION_COST;
   const isLimitReached = generationCredits < costForCurrentMode && !isAdmin;
@@ -173,6 +202,7 @@ const Home: React.FC = () => {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* ... (keep verification warning) */}
       {currentUser && !isVerified && !isLoading && (
         <div className="max-w-5xl mx-auto mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-300 rounded-lg text-center">
           <p>
@@ -181,8 +211,11 @@ const Home: React.FC = () => {
           </p>
         </div>
       )}
+
+      {/* ... (keep main layout) */}
       <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          {/* ... (keep ImageUploader) */}
           <ImageUploader
             onImageChange={handleImageChange}
             currentImage={uploadedImageFile}
@@ -191,11 +224,13 @@ const Home: React.FC = () => {
             disabled={isDisabled}
           />
 
+          {/* ... (keep conditional rendering for step 2) */}
           <div
             className={`transition-opacity duration-300 ${
               !isStep1Complete ? "opacity-50 pointer-events-none" : ""
             }`}
           >
+            {/* ... (keep toggle buttons) */}
             <div className="flex w-full rounded-lg bg-gray-900/50 p-1 mb-4 gap-1">
               <button
                 onClick={() => setDesignMode("style")}
@@ -217,7 +252,7 @@ const Home: React.FC = () => {
               </button>
             </div>
 
-            {/* --- STYLED NOTIFICATION --- */}
+            {/* ... (keep styled notification) */}
             {designMode === "custom" && !isDisabled && (
               <div className="flex items-center justify-center gap-2 text-sm text-purple-300 bg-purple-900/40 border border-purple-700/60 p-2.5 rounded-lg -mt-2 mb-4">
                 <svg
@@ -239,9 +274,8 @@ const Home: React.FC = () => {
                 </span>
               </div>
             )}
-            {/* --- END NOTIFICATION --- */}
 
-            {/* Conditional Component */}
+            {/* ... (keep conditional components) */}
             {designMode === "style" ? (
               <StyleSelector
                 onStyleSelect={setSelectedStyle}
@@ -257,6 +291,8 @@ const Home: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* ... (keep decorate button and credit display) */}
         <div className="text-center">
           {!currentUser && !isLoading && (
             <div className="max-w-lg mx-auto mb-6 p-4 bg-gray-700/50 border border-purple-800/60 rounded-lg text-center shadow-lg">
@@ -337,6 +373,7 @@ const Home: React.FC = () => {
         </div>
       </div>
 
+      {/* --- 8. UPDATE LOADER COMPONENT CALL --- */}
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
@@ -346,7 +383,10 @@ const Home: React.FC = () => {
       )}
       {isLoading && (
         <div className="max-w-5xl mx-auto mt-8">
-          <Loader message="Our AI is redecorating... this might take a moment!" />
+          <Loader
+            message="Our AI is redecorating... this might take a moment!"
+            tip={loadingTip}
+          />
         </div>
       )}
       {generatedImageUrl && originalImageUrl && (
