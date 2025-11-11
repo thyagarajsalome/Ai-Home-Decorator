@@ -65,6 +65,11 @@ const creditPacks = {
 };
 // ----------------------------------------------------
 
+// --- 6. DEFINE GENERATION COSTS ---
+const STYLE_GENERATION_COST = 1;
+const CUSTOM_GENERATION_COST = 3; // Must match src/constants.ts
+// ----------------------------------
+
 // --- START SERVER IMMEDIATELY ---
 const app = express();
 const upload = multer({
@@ -76,6 +81,7 @@ const PORT = process.env.PORT || 8080;
 const HOST = "0.0.0.0";
 
 // CORS configuration
+// ... (keep CORS setup unchanged)
 const allowedOrigins = [
   "http://localhost:3000",
   "https://aihomedecorator.web.app",
@@ -102,6 +108,7 @@ app.use(
 app.use(express.json());
 
 // --- HEALTH CHECK ENDPOINT (CRITICAL FOR CLOUD RUN) ---
+// ... (keep / and /health unchanged)
 app.get("/", (req, res) => {
   res.status(200).json({ status: "ok", service: "ai-decorator-backend" });
 });
@@ -111,6 +118,7 @@ app.get("/health", (req, res) => {
 });
 
 // --- INITIALIZE AI ASYNCHRONOUSLY AFTER SERVER STARTS ---
+// ... (keep initializeAI and bufferToGenerativePart unchanged)
 let ai = null;
 let GoogleGenAI = null;
 
@@ -128,11 +136,9 @@ async function initializeAI() {
     console.log("Google Gen AI initialized successfully");
   } catch (err) {
     console.error("FATAL: Failed to initialize @google/genai:", err);
-    // Don't exit - let health checks work, but API will fail gracefully
   }
 }
 
-// Start AI initialization (non-blocking)
 initializeAI();
 
 function bufferToGenerativePart(buffer, mimeType) {
@@ -145,8 +151,8 @@ function bufferToGenerativePart(buffer, mimeType) {
 }
 
 // ---
-// --- 6. NEW ENDPOINT: CREATE ORDER ---
-// ---
+// --- CREATE ORDER ENDPOINT ---
+// ... (keep /api/create-order unchanged)
 app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
   try {
     const { packId } = req.body; // e.g., "pack_starter"
@@ -181,8 +187,8 @@ app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
 });
 
 // ---
-// --- 7. NEW ENDPOINT: VERIFY PAYMENT (WITH FIX) ---
-// ---
+// --- VERIFY PAYMENT ENDPOINT ---
+// ... (keep /api/payment-verification unchanged)
 app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body;
@@ -211,14 +217,10 @@ app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
       return res.status(500).json({ error: "Could not fetch Razorpay order." });
     }
 
-    // --- THIS IS THE FIX ---
-    const packId = order.notes.pack; // Was order.notes.packId
-    // -----------------------
-
+    const packId = order.notes.pack;
     const pack = creditPacks[packId];
 
     if (!pack) {
-      // This is the error you were seeing
       return res.status(400).json({ error: "Invalid pack ID in order notes." });
     }
 
@@ -257,14 +259,13 @@ app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
 });
 
 // ---
-// --- DECORATE ENDPOINT (Unchanged) ---
+// --- DECORATE ENDPOINT (UPDATED) ---
 // ---
 app.post(
   "/api/decorate",
   verifySupabaseToken,
   upload.single("image"),
   async (req, res) => {
-    // Check if AI is initialized
     if (!ai) {
       return res.status(503).json({
         error:
@@ -277,7 +278,7 @@ app.post(
 
     try {
       // 1. INPUT & AUTH VALIDATION
-      const { styleName, roomDescription } = req.body;
+      const { designPrompt, roomDescription, designMode } = req.body; // <-- ADD designMode
       const file = req.file;
 
       if (!req.user || !req.user.id) {
@@ -290,11 +291,18 @@ app.post(
       if (!file) {
         return res.status(400).json({ error: "No image file provided." });
       }
-      if (!styleName || !roomDescription) {
-        return res.status(400).json({ error: "Missing style or description." });
+      if (!designPrompt || !roomDescription || !designMode) {
+        return res.status(400).json({
+          error: "Missing design prompt, description, or design mode.",
+        });
       }
 
-      // 2. CREDIT CHECK AND DEBIT (Secure, server-side)
+      // --- 2. DETERMINE COST & CHECK CREDITS ---
+      const costToDebit =
+        designMode === "custom"
+          ? CUSTOM_GENERATION_COST
+          : STYLE_GENERATION_COST;
+
       const { data: fetchedProfile, error: fetchError } = await supabase
         .from("user_profiles")
         .select("generation_credits, role")
@@ -313,14 +321,16 @@ app.post(
       const isAdmin = profile.role === "admin";
       originalCredits = profile.generation_credits;
 
-      if (!isAdmin && profile.generation_credits <= 0) {
+      // Check if user has enough credits
+      if (!isAdmin && profile.generation_credits < costToDebit) {
         return res.status(403).json({
-          error: "You are out of credits. Please purchase a pack to continue.",
+          error: `You do not have enough credits. This action requires ${costToDebit} credit(s), but you only have ${profile.generation_credits}.`,
         });
       }
 
+      // Debit the credits
       if (!isAdmin) {
-        const newCredits = profile.generation_credits - 1;
+        const newCredits = profile.generation_credits - costToDebit;
         const { error: debitError } = await supabase
           .from("user_profiles")
           .update({ generation_credits: newCredits })
@@ -333,13 +343,14 @@ app.post(
             .json({ error: "Failed to debit credit for generation." });
         }
       }
+      // --- END CREDIT LOGIC ---
 
       // 3. AI GENERATION
       const userContext = roomDescription
         ? `This is a photo of a ${roomDescription}.`
         : "This is a photo of a room.";
 
-      const prompt = `${userContext} Redecorate this room in the style of ${styleName}. The new design should be photorealistic, maintaining the original room's layout, windows, and doors, but changing the furniture, wall color, flooring, and decor.`;
+      const prompt = `${userContext} Redecorate this room using the following instructions: ${designPrompt}. The new design should be photorealistic, maintaining the original room's layout, windows, and doors, but changing the furniture, wall color, flooring, and decor.`;
 
       const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
 
@@ -352,8 +363,8 @@ app.post(
       });
 
       // 4. CHECK AI RESPONSE AND EXTRACT IMAGE
+      // ... (Rest of the function is unchanged, rollback logic is correct)
       if (response.candidates[0]?.finishReason === "SAFETY") {
-        // AI Blocked the request: Rollback credit.
         if (!isAdmin) {
           await supabase
             .from("user_profiles")
@@ -378,7 +389,6 @@ app.post(
 
       if (!base64Image) {
         const debited = originalCredits > (profile?.generation_credits || 0);
-
         if (debited && profile?.role !== "admin") {
           await supabase
             .from("user_profiles")
@@ -424,8 +434,14 @@ app.post(
           error.message.includes("401") ||
           error.message.includes("403")
         ) {
-          errorMessage = "Authentication failed. Please log in again.";
+          // Use the specific error message from the credit check if available
+          errorMessage = error.message.includes(
+            "You do not have enough credits"
+          )
+            ? error.message
+            : "Authentication failed. Please log in again.";
         } else if (error.message.includes("out of credits")) {
+          // This is a fallback
           errorMessage =
             "You are out of credits. Please purchase a pack to continue.";
         }
@@ -437,8 +453,8 @@ app.post(
 );
 
 // --- GLOBAL ERROR HANDLER ---
+// ... (keep unchanged)
 app.use((err, req, res, next) => {
-  // Check for Multer-specific errors
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
       return res
@@ -454,7 +470,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// --- START SERVER (This MUST happen to satisfy Cloud Run health checks) ---
+// --- START SERVER ---
+// ... (keep unchanged)
 app.listen(PORT, HOST, () => {
   console.log(`✅ Server running on http://${HOST}:${PORT}`);
   console.log(`✅ Health check available at http://${HOST}:${PORT}/health`);

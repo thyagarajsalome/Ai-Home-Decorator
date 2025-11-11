@@ -4,78 +4,67 @@ import { Link } from "react-router-dom";
 
 import ImageUploader from "../components/ImageUploader";
 import StyleSelector from "../components/StyleSelector";
+import CustomDesignInput from "../components/CustomDesignInput";
 import ResultDisplay from "../components/ResultDisplay";
 import Loader from "../components/Loader";
 import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
-
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../supabaseClient"; // <-- Import supabase client
+import { supabase } from "../supabaseClient";
+import { STYLE_GENERATION_COST, CUSTOM_GENERATION_COST } from "../constants";
 
 const Home: React.FC = () => {
-  // --- 1. FIX: IMPORT currentUserRole for isAdmin check ---
   const { currentUser, getIdToken, currentUserRole } = useAuth();
-
-  // --- 2. FIX: Define isAdmin outside of the useEffect ---
   const isAdmin = currentUserRole === "admin";
 
   // State declarations
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
-  const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
   const [roomDescription, setRoomDescription] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [generationCredits, setGenerationCredits] = useState<number>(0);
+  const [isVerified, setIsVerified] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
     null
   );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  // --- 3. FIX: Re-enable the generationCredits state ---
-  const [generationCredits, setGenerationCredits] = useState<number>(0);
-  const [isVerified, setIsVerified] = useState(false);
+  const [designMode, setDesignMode] = useState<"style" | "custom">("style");
+  const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
+  const [customPrompt, setCustomPrompt] = useState<string>("");
 
-  // --- REUSABLE FUNCTION TO FETCH CREDITS ---
   const fetchGenerationCredits = useCallback(async () => {
     if (!currentUser) {
       setGenerationCredits(0);
       return;
     }
-
     if (isAdmin) {
       setGenerationCredits(9999);
       return;
     }
-
     try {
       const { data, error } = await supabase
         .from("user_profiles")
         .select("generation_credits")
         .eq("id", currentUser.id)
         .single();
-
       if (error) {
         throw error;
       }
-
       if (data) {
         setGenerationCredits(data.generation_credits);
       }
     } catch (dbError: any) {
       console.error("Error fetching generation credits:", dbError);
     }
-  }, [currentUser, isAdmin]); // Only re-create if currentUser or isAdmin changes
-  // ------------------------------------------
+  }, [currentUser, isAdmin]);
 
-  // Effect to check verification status and load credits
   useEffect(() => {
     setIsVerified(!!currentUser?.email_confirmed_at);
-
     if (currentUser && !currentUser.email_confirmed_at) {
       setError(null);
     }
-
-    // Use the reusable function
     fetchGenerationCredits();
-  }, [currentUser, fetchGenerationCredits]); // Added fetchGenerationCredits as dependency
+  }, [currentUser, fetchGenerationCredits]);
 
   const handleImageChange = useCallback(
     (file: File | null) => {
@@ -86,12 +75,13 @@ const Home: React.FC = () => {
       setError(null);
       setRoomDescription("");
       setSelectedStyle(null);
+      setCustomPrompt("");
+      setDesignMode("style");
     },
     [originalImageUrl]
   );
 
   const handleDecorateClick = async () => {
-    // --- Front-end validation (unchanged) ---
     if (!currentUser) {
       setError("Please log in or sign up to decorate.");
       return;
@@ -103,16 +93,18 @@ const Home: React.FC = () => {
       return;
     }
 
-    // --- Front-end credit check is for button state ONLY ---
-
     const idToken = await getIdToken();
     if (!idToken) {
       setError("Could not authenticate. Please try logging in again.");
       return;
     }
-    if (!uploadedImageFile || !selectedStyle || !roomDescription) {
+
+    const designInput =
+      designMode === "style" ? selectedStyle?.name : customPrompt;
+
+    if (!uploadedImageFile || !designInput || !roomDescription) {
       setError(
-        "Please upload an image, describe the room, and select a style."
+        "Please upload an image, describe the room, and select a style or provide a custom prompt."
       );
       return;
     }
@@ -122,23 +114,20 @@ const Home: React.FC = () => {
     setGeneratedImageUrl(null);
 
     try {
-      if (!uploadedImageFile || !selectedStyle) {
-        throw new Error("Missing image or style selection.");
+      if (!uploadedImageFile) {
+        throw new Error("Missing image.");
       }
 
-      // API CALL TO BACKEND
       const base64Image = await generateDecoratedImage(
         uploadedImageFile,
-        selectedStyle.name,
+        designInput,
         roomDescription,
-        idToken
+        idToken,
+        designMode
       );
-      setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
 
-      // --- UPDATED DECREMENT LOGIC: Now just refetch credits after success ---
-      // The backend has already debited the credit. We refetch the new balance.
+      setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
       await fetchGenerationCredits();
-      // --- END UPDATED DECREMENT LOGIC ---
     } catch (err) {
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
@@ -150,28 +139,37 @@ const Home: React.FC = () => {
         message.includes("401") ||
         message.includes("403")
       ) {
-        // Catch server-side 403 for out-of-credits message
-        message = message.includes("out of credits")
-          ? "You are out of credits. Please purchase a pack to continue."
-          : "Authentication failed. Please log in again.";
-      } else if (
-        // Catch generic 500 error message
-        message.includes("Failed to generate the decorated image")
-      ) {
+        if (message.includes("You do not have enough credits")) {
+          message = message;
+        } else if (message.includes("out of credits")) {
+          message =
+            "You are out of credits. Please purchase a pack to continue.";
+        } else {
+          message = "Authentication failed. Please log in again.";
+        }
+      } else if (message.includes("Failed to generate the decorated image")) {
         message =
           "The decoration service failed to process your request. This may be a temporary server issue or an incompatible input image. Please try again.";
       }
       setError(message);
-
-      // Crucial: Re-fetch credits on *any* error to catch server-side rollback state
       fetchGenerationCredits();
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --- LIMIT CHECK for Button State (Based on client-side state) ---
-  const isLimitReached = generationCredits <= 0 && !isAdmin;
+  const costForCurrentMode =
+    designMode === "style" ? STYLE_GENERATION_COST : CUSTOM_GENERATION_COST;
+  const isLimitReached = generationCredits < costForCurrentMode && !isAdmin;
+  const isStep1Complete = !!uploadedImageFile;
+  const isDisabled = isLoading || !currentUser || !isVerified;
+  const isDesignMissing =
+    designMode === "style" ? !selectedStyle : !customPrompt;
+
+  const getButtonActiveStyle = (isActive: boolean) =>
+    isActive
+      ? "bg-purple-600 text-white font-bold"
+      : "bg-gray-700 text-gray-300 hover:bg-gray-600";
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -190,15 +188,74 @@ const Home: React.FC = () => {
             currentImage={uploadedImageFile}
             currentDescription={roomDescription}
             onDescriptionChange={setRoomDescription}
-            disabled={isLoading || !currentUser || !isVerified}
+            disabled={isDisabled}
           />
-          <StyleSelector
-            onStyleSelect={setSelectedStyle}
-            selectedStyle={selectedStyle}
-            disabled={
-              !uploadedImageFile || isLoading || !currentUser || !isVerified
-            }
-          />
+
+          <div
+            className={`transition-opacity duration-300 ${
+              !isStep1Complete ? "opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            <div className="flex w-full rounded-lg bg-gray-900/50 p-1 mb-4 gap-1">
+              <button
+                onClick={() => setDesignMode("style")}
+                disabled={!isStep1Complete || isDisabled}
+                className={`w-1/2 p-2 rounded-md text-sm font-semibold transition-all ${getButtonActiveStyle(
+                  designMode === "style"
+                )} disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Choose a Style
+              </button>
+              <button
+                onClick={() => setDesignMode("custom")}
+                disabled={!isStep1Complete || isDisabled}
+                className={`w-1/2 p-2 rounded-md text-sm font-semibold transition-all ${getButtonActiveStyle(
+                  designMode === "custom"
+                )} disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Custom Design
+              </button>
+            </div>
+
+            {/* --- STYLED NOTIFICATION --- */}
+            {designMode === "custom" && !isDisabled && (
+              <div className="flex items-center justify-center gap-2 text-sm text-purple-300 bg-purple-900/40 border border-purple-700/60 p-2.5 rounded-lg -mt-2 mb-4">
+                <svg
+                  className="h-5 w-5 flex-shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="text-xs">
+                  <strong>Note:</strong> Custom designs require{" "}
+                  <strong>{CUSTOM_GENERATION_COST} credits</strong> per
+                  generation.
+                </span>
+              </div>
+            )}
+            {/* --- END NOTIFICATION --- */}
+
+            {/* Conditional Component */}
+            {designMode === "style" ? (
+              <StyleSelector
+                onStyleSelect={setSelectedStyle}
+                selectedStyle={selectedStyle}
+                disabled={!isStep1Complete || isDisabled}
+              />
+            ) : (
+              <CustomDesignInput
+                onPromptChange={setCustomPrompt}
+                currentPrompt={customPrompt}
+                disabled={!isStep1Complete || isDisabled}
+              />
+            )}
+          </div>
         </div>
         <div className="text-center">
           {!currentUser && !isLoading && (
@@ -224,11 +281,10 @@ const Home: React.FC = () => {
           )}
           <button
             onClick={handleDecorateClick}
-            // FIX: Re-added isLimitReached to disable the button when out of credits
             disabled={
-              !uploadedImageFile ||
-              !selectedStyle ||
+              !isStep1Complete ||
               !roomDescription ||
+              isDesignMissing ||
               isLoading ||
               !currentUser ||
               !isVerified ||
@@ -239,8 +295,7 @@ const Home: React.FC = () => {
                 ? "bg-gray-500 cursor-not-allowed"
                 : !isVerified
                 ? "bg-yellow-700 cursor-not-allowed"
-                : // FIX: Added color/state for out of credits
-                isLimitReached
+                : isLimitReached
                 ? "bg-red-700 cursor-not-allowed"
                 : isLoading
                 ? "bg-gray-600 cursor-wait"
@@ -253,19 +308,18 @@ const Home: React.FC = () => {
               ? "Login to Decorate"
               : !isVerified
               ? "Verify Email to Decorate"
-              : // FIX: Added button text for out of credits
-              isLimitReached
-              ? "Out of Credits"
-              : "✨ Decorate My Room"}
+              : isLimitReached
+              ? "Not Enough Credits"
+              : `✨ Decorate (${costForCurrentMode} Credit${
+                  costForCurrentMode > 1 ? "s" : ""
+                })`}
           </button>
           {currentUser && isVerified && (
-            // --- CREDITS DISPLAY ---
             <p className="text-sm text-gray-400 mt-2">
               Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
             </p>
           )}
 
-          {/* --- 1. ADDED THIS BLOCK --- */}
           {currentUser && isVerified && isLimitReached && (
             <div className="mt-4 p-3 bg-blue-900/50 border border-blue-700 text-blue-300 rounded-lg text-center max-w-md mx-auto">
               <p>
@@ -280,7 +334,6 @@ const Home: React.FC = () => {
               </p>
             </div>
           )}
-          {/* --- END OF ADDED BLOCK --- */}
         </div>
       </div>
 
