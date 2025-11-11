@@ -102,13 +102,34 @@ const PolicyPage: React.FC = () => {
           If you have any questions about this privacy policy, please contact us
           at{" "}
           <a
-            href="mailto:contact@aihomedecorator.com"
+            href="mailto:contactaihomedecorator@gmail.com"
             className="text-purple-400 hover:underline"
           >
             contactaihomedecorator@gmail.com
           </a>
           .
         </p>
+
+        {/* --- ADDED THIS SECTION --- */}
+        <h2
+          id="deletion"
+          className="text-2xl font-semibold text-white mt-8 mb-4"
+        >
+          6. Account Deletion
+        </h2>
+        <p className="mb-4">
+          If you wish to delete your account and associated personal data (your
+          email address and user ID), please send a request to us at{" "}
+          <a
+            href="mailto:contactaihomedecorator@gmail.com"
+            className="text-purple-400 hover:underline"
+          >
+            contactaihomedecorator@gmail.com
+          </a>
+          . We will process your request and delete your account information
+          from our database.
+        </p>
+        {/* --- END ADDED SECTION --- */}
       </div>
     </div>
   );
