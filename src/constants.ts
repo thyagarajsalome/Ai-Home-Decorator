@@ -6,9 +6,15 @@ import type { DesignStyle, RoomType, StyleRegion } from "./types"; // <-- Import
 // First, define all the styles
 const styles: { [key: string]: DesignStyle } = {
   japandi: { id: "japandi", name: "Japandi" },
+  wabiSabi: { id: "wabi-sabi", name: "Wabi-Sabi" }, // <-- ADDED
+  zen: { id: "zen", name: "Zen" }, // <-- ADDED
+  chineseZen: { id: "chinese-zen", name: "Chinese Zen" }, // <-- ADDED
   midCentury: { id: "mid-century-modern", name: "Mid-Century Modern" },
-  cyberpunk: { id: "cyberpunk", name: "Cyberpunk" },
+  // cyberpunk: { id: "cyberpunk", name: "Cyberpunk" }, // <-- REMOVED
   barbiecore: { id: "barbiecore", name: "Barbiecore" },
+  steampunk: { id: "steampunk", name: "Steampunk" }, // <-- ADDED
+  artNouveau: { id: "art-nouveau", name: "Art Nouveau" }, // <-- ADDED
+  gothicRevival: { id: "gothic-revival", name: "Gothic Revival" }, // <-- ADDED
   artDeco: { id: "art-deco", name: "Art Deco" },
   boho: { id: "boho", name: "Boho" },
   minimalist: { id: "minimalist", name: "Minimalist" },
@@ -40,12 +46,17 @@ export const STYLE_REGIONS: StyleRegion[] = [
   {
     regionId: "asian",
     regionName: "Asian Styles",
-    styles: [styles.japandi],
+    styles: [styles.japandi, styles.wabiSabi, styles.zen, styles.chineseZen], // <-- UPDATED
   },
   {
     regionId: "themed",
     regionName: "Themed & Eclectic",
-    styles: [styles.cyberpunk, styles.barbiecore],
+    styles: [
+      styles.barbiecore,
+      styles.steampunk,
+      styles.artNouveau,
+      styles.gothicRevival,
+    ], // <-- UPDATED
   },
 ];
 // --- END NEW STRUCTURE ---
