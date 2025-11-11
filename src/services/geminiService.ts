@@ -2,33 +2,32 @@
 
 export const generateDecoratedImage = async (
   imageFile: File,
-  styleName: string,
+  designPrompt: string, // <-- This is already correct
   roomDescription: string,
-  idToken: string // <-- Pass in the user's auth token
+  idToken: string,
+  designMode: "style" | "custom" // <-- ADD THIS
 ): Promise<string> => {
   // FIX: Use a relative URL to work with both Vite proxy and Firebase rewrites
   const BACKEND_URL = "/api/decorate";
 
   const formData = new FormData();
   formData.append("image", imageFile);
-  formData.append("styleName", styleName);
+  formData.append("designPrompt", designPrompt);
   formData.append("roomDescription", roomDescription);
+  formData.append("designMode", designMode); // <-- ADD THIS
 
   try {
     const response = await fetch(BACKEND_URL, {
       method: "POST",
+      // ... (rest of the function is the same)
       body: formData,
       headers: {
-        // --- ADDED AUTHORIZATION HEADER ---
         Authorization: `Bearer ${idToken}`,
       },
-      // Note: Don't set 'Content-Type' header manually for FormData.
     });
 
     if (!response.ok) {
-      // The frontend attempts to parse the response as JSON even on error statuses.
       const errorData = await response.json();
-      // Pass the specific error message from the backend (e.g., "Rate limit exceeded")
       throw new Error(
         errorData.error || `Request failed with status ${response.status}`
       );
@@ -43,7 +42,6 @@ export const generateDecoratedImage = async (
     return result.base64Image;
   } catch (error) {
     console.error("Error communicating with backend:", error);
-    // Re-throw the error so the component can catch it
     throw error;
   }
 };
