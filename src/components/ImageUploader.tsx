@@ -136,29 +136,40 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             className="w-full h-full object-contain rounded-lg" // Changed to object-contain
           />
         ) : (
+          // --- THIS BLOCK IS UPDATED ---
           <div className="text-center p-4">
+            {/* 1. ADDED CAMERA ICON */}
             <svg
+              xmlns="http://www.w3.org/2000/svg"
               className="mx-auto h-12 w-12 text-gray-400"
-              stroke="currentColor"
               fill="none"
-              viewBox="0 0 48 48"
-              aria-hidden="true"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
             >
               <path
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 4v.01M28 8L36 16m0 0v12m0-12h8m-8 4v8m-12 4h.01M16 20h.01M20 16h.01M24 20h.01M12 24h.01M16 28h.01M20 24h.01M12 16h.01"
-                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
+            {/* 2. UPDATED TEXT */}
             <p className="mt-2 text-gray-400">
               <span className="font-semibold text-purple-400">
-                {isDragActive ? "Drop the image here..." : "Click to upload"}
-              </span>{" "}
-              or drag and drop
+                {isDragActive
+                  ? "Drop the image here..."
+                  : "Tap to Take Photo or Upload"}
+              </span>
             </p>
+            <p className="text-xs text-gray-500 mt-1">or drag and drop</p>
             <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 10MB</p>
           </div>
+          // --- END UPDATED BLOCK ---
         )}
         {previewUrl && !disabled && (
           <button
