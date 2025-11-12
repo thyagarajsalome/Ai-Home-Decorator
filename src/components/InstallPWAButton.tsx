@@ -70,6 +70,12 @@ const InstallPWAButton: React.FC = () => {
     console.log("User dismissed the custom PWA install banner.");
   };
 
+  // --- TEMPORARILY DISABLED ---
+  // To re-enable, remove the line below.
+  // This is now placed AFTER all hooks and handlers.
+  return null;
+  // --------------------------
+
   if (!isVisible) {
     return null;
   }
