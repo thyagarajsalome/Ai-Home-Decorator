@@ -73,7 +73,7 @@ const InstallPWAButton: React.FC = () => {
   // --- TEMPORARILY DISABLED ---
   // To re-enable, remove the line below.
   // This is now placed AFTER all hooks and handlers.
-  return null;
+  // return null; // <-- THIS LINE WAS REMOVED
   // --------------------------
 
   if (!isVisible) {
