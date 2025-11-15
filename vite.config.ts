@@ -1,6 +1,7 @@
 import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa"; // <-- 1. IMPORT THE PLUGIN
 
 export default defineConfig(({ mode }) => {
   return {
@@ -20,7 +21,51 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    plugins: [react()],
+    plugins: [
+      react(),
+      // --- 2. ADD THE PLUGIN CONFIGURATION ---
+      VitePWA({
+        registerType: "autoUpdate", // Automatically updates the app
+        injectRegister: "auto", // Automatically registers the service worker
+
+        // This tells the plugin to find your existing manifest.json
+        // and automatically include all your icons.
+        manifest: {
+          name: "AI Home Decorator",
+          short_name: "AI Decorator",
+          description:
+            "Upload a photo of your room, choose a style, and let AI redesign it in seconds. Visualize your dream space with trendy filters like Japandi, Cyberpunk, and more.",
+          theme_color: "#8b5cf6",
+          background_color: "#111827",
+          display: "standalone",
+          orientation: "portrait-primary",
+          icons: [
+            {
+              src: "/icons/icon-192x192.png",
+              type: "image/png",
+              sizes: "192x192",
+            },
+            {
+              src: "/icons/icon-512x512.png",
+              type: "image/png",
+              sizes: "512x512",
+            },
+            {
+              src: "/icons/maskable-icon-512x512.png",
+              type: "image/png",
+              sizes: "512x512",
+              purpose: "maskable",
+            },
+          ],
+        },
+
+        // This ensures ALL your app's files are cached
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,ico,png,svg,json,webp}"],
+        },
+      }),
+      // --- END OF PLUGIN CONFIG ---
+    ],
 
     resolve: {
       alias: {

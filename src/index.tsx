@@ -4,19 +4,9 @@ import { BrowserRouter } from "react-router-dom"; // <-- IMPORT
 import App from "./App";
 import "./index.css";
 
-// Register Service Worker for PWA
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("SW registered: ", registration);
-      })
-      .catch((registrationError) => {
-        console.log("SW registration failed: ", registrationError);
-      });
-  });
-}
+// The old service worker registration block that you deleted was correct.
+// The new vite-plugin-pwa handles this automatically, so this file
+// should no longer contain any service worker code.
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
