@@ -26,4 +26,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# ... (all your other rules)
 .firebase/
+
+# --- ADD THIS LINE ---
+# Do not ignore the TWA verification file
+!public/.well-known/assetlinks.json
