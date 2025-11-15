@@ -84,7 +84,8 @@ const HOST = "0.0.0.0";
 // ... (keep CORS setup unchanged)
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://aihomedecorator.web.app",
+  "https://aihomedecorator.web.app", // Your new domain
+  "https://aihomedecorator.firebaseapp.com", // The default domain
   "https://aihomedecorator.com",
   "https://www.aihomedecorator.com",
 ];
