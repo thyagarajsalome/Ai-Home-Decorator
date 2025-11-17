@@ -1,4 +1,3 @@
-// pages/Home.tsx
 import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -12,13 +11,12 @@ import type { DesignStyle } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient";
 import { STYLE_GENERATION_COST, CUSTOM_GENERATION_COST } from "../constants";
-import { designTips } from "../designTips"; // <-- 1. IMPORT TIPS
+import { designTips } from "../designTips";
 
 const Home: React.FC = () => {
-  const { currentUser, getIdToken, currentUserRole } = useAuth();
+  const { currentUser, getIdToken, currentUserRole, isAppMode } = useAuth(); // <--- GET isAppMode
   const isAdmin = currentUserRole === "admin";
 
-  // State declarations
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [roomDescription, setRoomDescription] = useState<string>("");
@@ -32,10 +30,8 @@ const Home: React.FC = () => {
   const [designMode, setDesignMode] = useState<"style" | "custom">("style");
   const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
   const [customPrompt, setCustomPrompt] = useState<string>("");
+  const [loadingTip, setLoadingTip] = useState<string>("");
 
-  const [loadingTip, setLoadingTip] = useState<string>(""); // <-- 2. ADD TIP STATE
-
-  // ... (keep fetchGenerationCredits and useEffect hooks unchanged)
   const fetchGenerationCredits = useCallback(async () => {
     if (!currentUser) {
       setGenerationCredits(0);
@@ -51,12 +47,8 @@ const Home: React.FC = () => {
         .select("generation_credits")
         .eq("id", currentUser.id)
         .single();
-      if (error) {
-        throw error;
-      }
-      if (data) {
-        setGenerationCredits(data.generation_credits);
-      }
+      if (error) throw error;
+      if (data) setGenerationCredits(data.generation_credits);
     } catch (dbError: any) {
       console.error("Error fetching generation credits:", dbError);
     }
@@ -70,7 +62,6 @@ const Home: React.FC = () => {
     fetchGenerationCredits();
   }, [currentUser, fetchGenerationCredits]);
 
-  // ... (keep handleImageChange unchanged)
   const handleImageChange = useCallback(
     (file: File | null) => {
       setUploadedImageFile(file);
@@ -86,31 +77,22 @@ const Home: React.FC = () => {
     [originalImageUrl]
   );
 
-  // --- 3. HELPER FUNCTION TO GET A TIP ---
   const getLoadingTip = (prompt: string, room: string): string => {
     const p = prompt.toLowerCase();
     const r = room.toLowerCase();
-
-    let tipKey = "default"; // Start with default
-
-    // Check for style keywords first
+    let tipKey = "default";
     if (p.includes("japandi")) tipKey = "japandi";
     else if (p.includes("minimalist")) tipKey = "minimalist";
     else if (p.includes("industrial")) tipKey = "industrial";
     else if (p.includes("boho")) tipKey = "boho";
-    // Check for room type if no style matched
     else if (r.includes("living room")) tipKey = "living room";
     else if (r.includes("bedroom")) tipKey = "bedroom";
     else if (r.includes("kitchen")) tipKey = "kitchen";
-
-    // Get the array of tips for the found key
     const tipsArray = designTips[tipKey] || designTips["default"];
-    // Return a random tip from that array
     return tipsArray[Math.floor(Math.random() * tipsArray.length)];
   };
 
   const handleDecorateClick = async () => {
-    // ... (keep validation checks)
     if (!currentUser) {
       setError("Please log in or sign up to decorate.");
       return;
@@ -135,17 +117,13 @@ const Home: React.FC = () => {
       return;
     }
 
-    // --- 4. SET THE TIP BEFORE LOADING ---
     setLoadingTip(getLoadingTip(designInput, roomDescription));
     setIsLoading(true);
     setError(null);
     setGeneratedImageUrl(null);
 
     try {
-      // ... (rest of the try block is unchanged)
-      if (!uploadedImageFile) {
-        throw new Error("Missing image.");
-      }
+      if (!uploadedImageFile) throw new Error("Missing image.");
       const base64Image = await generateDecoratedImage(
         uploadedImageFile,
         designInput,
@@ -156,28 +134,20 @@ const Home: React.FC = () => {
       setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
       await fetchGenerationCredits();
     } catch (err) {
-      // ... (error handling is unchanged)
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
       if (message.includes("Rate limit exceeded")) {
         message = "The AI is busy, please try again in a moment.";
       } else if (
         message.includes("Invalid token") ||
-        message.includes("No token provided") ||
         message.includes("401") ||
         message.includes("403")
       ) {
         if (message.includes("You do not have enough credits")) {
-          message = message;
-        } else if (message.includes("out of credits")) {
-          message =
-            "You are out of credits. Please purchase a pack to continue.";
+          message = message; // Show the credit error directly
         } else {
           message = "Authentication failed. Please log in again.";
         }
-      } else if (message.includes("Failed to generate the decorated image")) {
-        message =
-          "The decoration service failed to process your request. This may be a temporary server issue or an incompatible input image. Please try again.";
       }
       setError(message);
       fetchGenerationCredits();
@@ -186,7 +156,6 @@ const Home: React.FC = () => {
     }
   };
 
-  // ... (keep variable checks: costForCurrentMode, isLimitReached, etc.)
   const costForCurrentMode =
     designMode === "style" ? STYLE_GENERATION_COST : CUSTOM_GENERATION_COST;
   const isLimitReached = generationCredits < costForCurrentMode && !isAdmin;
@@ -200,9 +169,15 @@ const Home: React.FC = () => {
       ? "bg-purple-600 text-white font-bold"
       : "bg-gray-700 text-gray-300 hover:bg-gray-600";
 
+  // --- HELPER FOR EXTERNAL LINK ---
+  const handleExternalPurchase = () => {
+    // Opens the pricing page in the system browser (Chrome/Safari)
+    // This effectively "leaves" the app context.
+    window.open("https://aihomedecorator.com/pricing", "_blank");
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* ... (keep verification warning) */}
       {currentUser && !isVerified && !isLoading && (
         <div className="max-w-5xl mx-auto mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-300 rounded-lg text-center">
           <p>
@@ -212,10 +187,8 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {/* ... (keep main layout) */}
       <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* ... (keep ImageUploader) */}
           <ImageUploader
             onImageChange={handleImageChange}
             currentImage={uploadedImageFile}
@@ -224,13 +197,11 @@ const Home: React.FC = () => {
             disabled={isDisabled}
           />
 
-          {/* ... (keep conditional rendering for step 2) */}
           <div
             className={`transition-opacity duration-300 ${
               !isStep1Complete ? "opacity-50 pointer-events-none" : ""
             }`}
           >
-            {/* ... (keep toggle buttons) */}
             <div className="flex w-full rounded-lg bg-gray-900/50 p-1 mb-4 gap-1">
               <button
                 onClick={() => setDesignMode("style")}
@@ -252,21 +223,8 @@ const Home: React.FC = () => {
               </button>
             </div>
 
-            {/* ... (keep styled notification) */}
             {designMode === "custom" && !isDisabled && (
               <div className="flex items-center justify-center gap-2 text-sm text-purple-300 bg-purple-900/40 border border-purple-700/60 p-2.5 rounded-lg -mt-2 mb-4">
-                <svg
-                  className="h-5 w-5 flex-shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clipRule="evenodd"
-                  />
-                </svg>
                 <span className="text-xs">
                   <strong>Note:</strong> Custom designs require{" "}
                   <strong>{CUSTOM_GENERATION_COST} credits</strong> per
@@ -275,7 +233,6 @@ const Home: React.FC = () => {
               </div>
             )}
 
-            {/* ... (keep conditional components) */}
             {designMode === "style" ? (
               <StyleSelector
                 onStyleSelect={setSelectedStyle}
@@ -292,7 +249,6 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* ... (keep decorate button and credit display) */}
         <div className="text-center">
           {!currentUser && !isLoading && (
             <div className="max-w-lg mx-auto mb-6 p-4 bg-gray-700/50 border border-purple-800/60 rounded-lg text-center shadow-lg">
@@ -356,24 +312,35 @@ const Home: React.FC = () => {
             </p>
           )}
 
+          {/* --- CREDIT LIMIT MESSAGE: CONDITIONAL --- */}
           {currentUser && isVerified && isLimitReached && (
             <div className="mt-4 p-3 bg-blue-900/50 border border-blue-700 text-blue-300 rounded-lg text-center max-w-md mx-auto">
               <p>
                 You're out of credits!{" "}
-                <Link
-                  to="/pricing"
-                  className="font-bold text-purple-400 hover:underline"
-                >
-                  Buy more credits
-                </Link>{" "}
+                {/* If in App, show external link button. If Web, show internal link. */}
+                {isAppMode ? (
+                  <button
+                    onClick={handleExternalPurchase}
+                    className="font-bold text-purple-400 hover:underline bg-transparent border-none cursor-pointer"
+                  >
+                    Visit website to buy more
+                  </button>
+                ) : (
+                  <Link
+                    to="/pricing"
+                    className="font-bold text-purple-400 hover:underline"
+                  >
+                    Buy more credits
+                  </Link>
+                )}{" "}
                 to continue decorating.
               </p>
             </div>
           )}
+          {/* ----------------------------------------- */}
         </div>
       </div>
 
-      {/* --- 8. UPDATE LOADER COMPONENT CALL --- */}
       {error && (
         <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
           <p>
