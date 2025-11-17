@@ -4,41 +4,13 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 
-// --- FIX: GENTLE CLEANUP (Load First, Then Clean) ---
-const cleanupServiceWorkers = () => {
-  console.log("App loaded. Starting cleanup...");
-
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (const registration of registrations) {
-        console.log("Unregistering Service Worker:", registration);
-        registration.unregister();
-      }
-    });
-  }
-
-  if ("caches" in window) {
-    caches.keys().then((names) => {
-      names.forEach((name) => {
-        console.log("Deleting cache:", name);
-        caches.delete(name);
-      });
-    });
-  }
-};
-
-// CRITICAL: Wait for the 'load' event before running cleanup.
-// This ensures the app paints the screen FIRST, then deletes the cache.
-window.addEventListener("load", () => {
-  // Add a tiny delay (1s) just to be safe
-  setTimeout(cleanupServiceWorkers, 1000);
-});
-
-// Keep-alive ping for Android background
+// --- BACKGROUND KEEPER ---
+// This simple interval keeps the JavaScript engine active on Android
+// to prevent "White Screen on Resume"
 setInterval(() => {
   console.log("Keep-alive ping");
-}, 30000);
-// ----------------------------------------------------
+}, 25000);
+// -------------------------
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {

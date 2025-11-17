@@ -1,4 +1,3 @@
-// src/pages/PricingPage.tsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -49,32 +48,28 @@ const loadScript = (src: string) => {
 };
 
 const PricingPage: React.FC = () => {
-  const { currentUser, getIdToken } = useAuth();
+  // @ts-ignore - Ignore TS error if AuthContext isn't fully updated yet
+  const { currentUser, getIdToken, isAppMode } = useAuth();
+  const navigate = useNavigate();
+
+  // --- SECURITY: HIDE PAGE IN APP ---
+  // If user is in the Android App, kick them to Home immediately
+  useEffect(() => {
+    if (isAppMode) {
+      navigate("/");
+    }
+  }, [isAppMode, navigate]);
+
+  // Stop rendering if we are in the app (prevents flash of content)
+  if (isAppMode) return null;
+  // ----------------------------------
+
   const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
 
-  // --- NEW: STATE TO DETECT ANDROID TWA ---
-  const [isAndroidApp, setIsAndroidApp] = useState(false);
-
   useEffect(() => {
-    // 1. Check for TWA (Trusted Web Activity)
-    // TWAs usually have a referrer starting with android-app://
-    const isTwa = document.referrer.includes("android-app://");
-
-    // 2. Optional: Check for standalone mode (Installable PWA or TWA)
-    const isStandalone = window.matchMedia(
-      "(display-mode: standalone)"
-    ).matches;
-
-    // If it's the Android App, we set this to true
-    if (isTwa || (isStandalone && /Android/.test(navigator.userAgent))) {
-      setIsAndroidApp(true);
-    }
-
-    // Load Razorpay script
     loadScript("https://checkout.razorpay.com/v1/checkout.js").then(
       (loaded) => {
         if (loaded) {
@@ -85,7 +80,6 @@ const PricingPage: React.FC = () => {
       }
     );
   }, []);
-  // ----------------------------------------
 
   const handlePurchase = async (pack: CreditPack) => {
     setLoadingPackId(pack.priceId);
@@ -113,6 +107,7 @@ const PricingPage: React.FC = () => {
         return;
       }
 
+      // 1. Create Order
       const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {
@@ -129,6 +124,7 @@ const PricingPage: React.FC = () => {
 
       const order = await orderResponse.json();
 
+      // 2. Define Razorpay Options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
@@ -137,6 +133,7 @@ const PricingPage: React.FC = () => {
         description: `Purchase ${pack.name}`,
         image: "/icons/icon-512x512.png",
         order_id: order.id,
+
         handler: async (response: any) => {
           try {
             const verifyResponse = await fetch(`/api/payment-verification`, {
@@ -163,12 +160,11 @@ const PricingPage: React.FC = () => {
             );
           } catch (verifyError: any) {
             console.error("Verification Error:", verifyError);
-            setError(
-              `Payment verification failed. Please contact support. ${verifyError.message}`
-            );
+            setError(`Payment verification failed: ${verifyError.message}`);
             setLoadingPackId(null);
           }
         },
+
         prefill: {
           name: currentUser.email,
           email: currentUser.email,
@@ -230,22 +226,9 @@ const PricingPage: React.FC = () => {
         Get More Credits
       </h1>
       <p className="text-lg text-gray-300 text-center mb-10">
-        Your free trial credits are just the beginning.
+        Your free trial credits are just the beginning. Purchase a credit pack
+        to continue creating.
       </p>
-
-      {/* --- GOOGLE POLICY COMPLIANCE WARNING --- */}
-      {isAndroidApp && (
-        <div className="mb-8 p-4 bg-blue-900/40 border border-blue-500/50 rounded-lg text-center max-w-2xl mx-auto">
-          <p className="text-blue-200 text-sm md:text-base">
-            ℹ️ <strong>Note for App Users:</strong> To comply with platform
-            policies, purchases are currently unavailable inside the app.
-            <br className="hidden md:block" />
-            Please visit <strong>aihomedecorator.com</strong> on your browser to
-            purchase credits.
-          </p>
-        </div>
-      )}
-      {/* -------------------------------------- */}
 
       {error && (
         <div className="mb-6 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
@@ -256,7 +239,6 @@ const PricingPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {creditPacks.map((pack) => {
           const isThisPackLoading = loadingPackId === pack.priceId;
-
           return (
             <div
               key={pack.name}
@@ -321,44 +303,58 @@ const PricingPage: React.FC = () => {
                   </svg>
                   All Styles Included
                 </li>
+                <li className="flex items-center">
+                  <svg
+                    className="h-5 w-5 text-green-400 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  No Expiry
+                </li>
               </ul>
 
-              {/* --- CONDITIONAL RENDERING FOR BUTTON --- */}
-              {isAndroidApp ? (
-                <button
-                  disabled={true}
-                  className="w-full px-6 py-3 text-lg font-bold text-gray-400 bg-gray-700/50 rounded-lg cursor-not-allowed border border-gray-600"
-                >
-                  Unavailable in App
-                </button>
-              ) : (
-                <button
-                  onClick={() => handlePurchase(pack)}
-                  disabled={isProcessing || !currentUser || !scriptLoaded}
-                  className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
-                    pack.name === "Best Value"
-                      ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                      : "bg-gray-700 hover:bg-gray-600"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isThisPackLoading ? "Processing..." : "Buy Now"}
-                </button>
-              )}
-              {/* -------------------------------------- */}
+              <button
+                onClick={() => handlePurchase(pack)}
+                disabled={isProcessing || !currentUser || !scriptLoaded}
+                className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
+                  pack.name === "Best Value"
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                    : "bg-gray-700 hover:bg-gray-600"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {isThisPackLoading ? "Processing..." : "Buy Now"}
+              </button>
             </div>
           );
         })}
       </div>
 
-      {/* Footer Login/Signup note (keep existing) */}
       {!currentUser && (
         <div className="mt-8 text-center bg-gray-700/50 border border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto">
           <p className="text-lg text-gray-200">
             Please{" "}
-            <Link to="/login" className="font-bold text-purple-400">
+            <Link
+              to="/login"
+              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+            >
               Login
             </Link>{" "}
-            to purchase.
+            or{" "}
+            <Link
+              to="/signup"
+              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+            >
+              Sign Up
+            </Link>{" "}
+            to purchase credits.
           </p>
         </div>
       )}
