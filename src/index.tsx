@@ -1,22 +1,29 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom"; // <-- IMPORT
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 
-// Register Service Worker for PWA
+// --- CRITICAL FIX: UNREGISTER ALL SERVICE WORKERS ---
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("SW registered: ", registration);
-      })
-      .catch((registrationError) => {
-        console.log("SW registration failed: ", registrationError);
-      });
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      console.log("Unregistering Service Worker:", registration);
+      registration.unregister();
+    }
   });
+
+  // Also clear caches programmatically to be safe
+  if ("caches" in window) {
+    caches.keys().then((names) => {
+      names.forEach((name) => {
+        console.log("Deleting cache:", name);
+        caches.delete(name);
+      });
+    });
+  }
 }
+// ----------------------------------------------------
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -27,8 +34,6 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      {" "}
-      {/* <-- WRAP */}
       <App />
     </BrowserRouter>
   </React.StrictMode>
