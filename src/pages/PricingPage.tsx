@@ -14,62 +14,67 @@ interface CreditPack {
   name: string;
   credits: number;
   price: number;
-  priceId: string; // This is our internal ID, e.g., "pack_starter"
+  priceId: string;
 }
 
-// Credit packs (matches the map in your server.js)
 const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
-    price: 199, // Price in INR
+    price: 199,
     priceId: "pack_starter",
   },
   {
     name: "Best Value",
     credits: 50,
-    price: 499, // Price in INR
+    price: 499,
     priceId: "pack_value",
   },
   {
     name: "Pro Pack",
     credits: 120,
-    price: 999, // Price in INR
+    price: 999,
     priceId: "pack_pro",
   },
 ];
 
-// Helper function to load the Razorpay script
 const loadScript = (src: string) => {
   return new Promise((resolve) => {
     const script = document.createElement("script");
     script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
 };
 
 const PricingPage: React.FC = () => {
   const { currentUser, getIdToken } = useAuth();
-
-  // --- 1. CHANGED: Make loading state specific to the pack ID ---
   const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  // State to track if script is loaded
   const [scriptLoaded, setScriptLoaded] = useState(false);
-
-  // --- 2. CHANGED: Add state for styled success message ---
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
 
-  // Load the Razorpay script when the component mounts
+  // --- NEW: STATE TO DETECT ANDROID TWA ---
+  const [isAndroidApp, setIsAndroidApp] = useState(false);
+
   useEffect(() => {
+    // 1. Check for TWA (Trusted Web Activity)
+    // TWAs usually have a referrer starting with android-app://
+    const isTwa = document.referrer.includes("android-app://");
+
+    // 2. Optional: Check for standalone mode (Installable PWA or TWA)
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches;
+
+    // If it's the Android App, we set this to true
+    if (isTwa || (isStandalone && /Android/.test(navigator.userAgent))) {
+      setIsAndroidApp(true);
+    }
+
+    // Load Razorpay script
     loadScript("https://checkout.razorpay.com/v1/checkout.js").then(
       (loaded) => {
         if (loaded) {
@@ -80,15 +85,15 @@ const PricingPage: React.FC = () => {
       }
     );
   }, []);
+  // ----------------------------------------
 
   const handlePurchase = async (pack: CreditPack) => {
-    // --- 3. CHANGED: Use setLoadingPackId ---
     setLoadingPackId(pack.priceId);
     setError(null);
 
     if (!currentUser) {
       setError("You must be logged in to make a purchase.");
-      setLoadingPackId(null); // Reset loading
+      setLoadingPackId(null);
       return;
     }
 
@@ -96,7 +101,7 @@ const PricingPage: React.FC = () => {
       setError(
         "Payment gateway is not ready. Please wait a moment or refresh."
       );
-      setLoadingPackId(null); // Reset loading
+      setLoadingPackId(null);
       return;
     }
 
@@ -104,11 +109,10 @@ const PricingPage: React.FC = () => {
       const idToken = await getIdToken();
       if (!idToken) {
         setError("Could not authenticate. Please log in again.");
-        setLoadingPackId(null); // Reset loading
+        setLoadingPackId(null);
         return;
       }
 
-      // 1. Create Order: Call your backend
       const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {
@@ -125,7 +129,6 @@ const PricingPage: React.FC = () => {
 
       const order = await orderResponse.json();
 
-      // 2. Define Razorpay Options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
@@ -134,11 +137,8 @@ const PricingPage: React.FC = () => {
         description: `Purchase ${pack.name}`,
         image: "/icons/icon-512x512.png",
         order_id: order.id,
-
-        // 3. Define the payment handler
         handler: async (response: any) => {
           try {
-            // 4. Verify Payment
             const verifyResponse = await fetch(`/api/payment-verification`, {
               method: "POST",
               headers: {
@@ -157,8 +157,7 @@ const PricingPage: React.FC = () => {
               throw new Error(errData.error || "Payment verification failed.");
             }
 
-            // --- 4. CHANGED: Set success message instead of alert/navigate ---
-            setLoadingPackId(null); // Stop loading
+            setLoadingPackId(null);
             setPurchaseSuccess(
               `Payment successful! ${pack.credits} credits have been added to your account.`
             );
@@ -167,26 +166,24 @@ const PricingPage: React.FC = () => {
             setError(
               `Payment verification failed. Please contact support. ${verifyError.message}`
             );
-            setLoadingPackId(null); // Stop loading
+            setLoadingPackId(null);
           }
         },
-
         prefill: {
           name: currentUser.email,
           email: currentUser.email,
         },
         theme: {
-          color: "#8b5cf6", // Purple
+          color: "#8b5cf6",
         },
         modal: {
           ondismiss: () => {
-            setLoadingPackId(null); // Stop loading if user closes modal
+            setLoadingPackId(null);
             console.log("Payment dismissed");
           },
         },
       };
 
-      // 6. Open the Razorpay Checkout Modal
       const rzp = new window.Razorpay(options);
       rzp.open();
 
@@ -197,16 +194,15 @@ const PricingPage: React.FC = () => {
             response.error.description || response.error.reason
           }`
         );
-        setLoadingPackId(null); // Stop loading
+        setLoadingPackId(null);
       });
     } catch (err: any) {
       console.error("Purchase Error:", err);
       setError(err.message || "An error occurred during purchase.");
-      setLoadingPackId(null); // Stop loading
+      setLoadingPackId(null);
     }
   };
 
-  // --- 2. (CONTINUED) RENDER STYLED SUCCESS MESSAGE ---
   if (purchaseSuccess) {
     return (
       <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
@@ -226,7 +222,6 @@ const PricingPage: React.FC = () => {
     );
   }
 
-  // --- 1. (CONTINUED) Check if *any* pack is processing ---
   const isProcessing = loadingPackId !== null;
 
   return (
@@ -235,9 +230,22 @@ const PricingPage: React.FC = () => {
         Get More Credits
       </h1>
       <p className="text-lg text-gray-300 text-center mb-10">
-        Your free trial credits are just the beginning. Purchase a credit pack
-        to continue creating.
+        Your free trial credits are just the beginning.
       </p>
+
+      {/* --- GOOGLE POLICY COMPLIANCE WARNING --- */}
+      {isAndroidApp && (
+        <div className="mb-8 p-4 bg-blue-900/40 border border-blue-500/50 rounded-lg text-center max-w-2xl mx-auto">
+          <p className="text-blue-200 text-sm md:text-base">
+            ℹ️ <strong>Note for App Users:</strong> To comply with platform
+            policies, purchases are currently unavailable inside the app.
+            <br className="hidden md:block" />
+            Please visit <strong>aihomedecorator.com</strong> on your browser to
+            purchase credits.
+          </p>
+        </div>
+      )}
+      {/* -------------------------------------- */}
 
       {error && (
         <div className="mb-6 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
@@ -247,7 +255,6 @@ const PricingPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {creditPacks.map((pack) => {
-          // --- 1. (CONTINUED) Check if *this* pack is the one processing ---
           const isThisPackLoading = loadingPackId === pack.priceId;
 
           return (
@@ -314,60 +321,44 @@ const PricingPage: React.FC = () => {
                   </svg>
                   All Styles Included
                 </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-400 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  No Expiry
-                </li>
               </ul>
 
-              <button
-                onClick={() => handlePurchase(pack)}
-                // Disable all buttons if any purchase is processing
-                disabled={isProcessing || !currentUser || !scriptLoaded}
-                className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
-                  pack.name === "Best Value"
-                    ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                    : "bg-gray-700 hover:bg-gray-600"
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {/* Only show "Processing..." on the clicked button */}
-                {isThisPackLoading ? "Processing..." : "Buy Now"}
-              </button>
+              {/* --- CONDITIONAL RENDERING FOR BUTTON --- */}
+              {isAndroidApp ? (
+                <button
+                  disabled={true}
+                  className="w-full px-6 py-3 text-lg font-bold text-gray-400 bg-gray-700/50 rounded-lg cursor-not-allowed border border-gray-600"
+                >
+                  Unavailable in App
+                </button>
+              ) : (
+                <button
+                  onClick={() => handlePurchase(pack)}
+                  disabled={isProcessing || !currentUser || !scriptLoaded}
+                  className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
+                    pack.name === "Best Value"
+                      ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                      : "bg-gray-700 hover:bg-gray-600"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {isThisPackLoading ? "Processing..." : "Buy Now"}
+                </button>
+              )}
+              {/* -------------------------------------- */}
             </div>
           );
         })}
       </div>
 
+      {/* Footer Login/Signup note (keep existing) */}
       {!currentUser && (
         <div className="mt-8 text-center bg-gray-700/50 border border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto">
           <p className="text-lg text-gray-200">
             Please{" "}
-            <Link
-              to="/login"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
-            >
+            <Link to="/login" className="font-bold text-purple-400">
               Login
             </Link>{" "}
-            or{" "}
-            <Link
-              to="/signup"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
-            >
-              Sign Up
-            </Link>{" "}
-            to purchase credits.
+            to purchase.
           </p>
         </div>
       )}

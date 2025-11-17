@@ -48,7 +48,7 @@ const About: React.FC = () => {
             href="mailto:contact@aihomedecorator.com"
             className="text-purple-400 hover:underline"
           >
-            contactaihomedecorator@gmail.com
+            contact@toolwebsite.in
           </a>
         </p>
       </div>
