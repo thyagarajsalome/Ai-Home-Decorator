@@ -4,34 +4,39 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 
-// --- CRITICAL FIX: UNREGISTER ALL SERVICE WORKERS ---
-// Keeps the app stable by forcing network loading
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    for (const registration of registrations) {
-      console.log("Unregistering Service Worker:", registration);
-      registration.unregister();
-    }
-  });
+// --- FIX: GENTLE CLEANUP (Load First, Then Clean) ---
+const cleanupServiceWorkers = () => {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) {
+        console.log("Unregistering Service Worker (Background):", registration);
+        registration.unregister();
+      }
+    });
+  }
 
-  // Also clear caches programmatically to be safe
   if ("caches" in window) {
     caches.keys().then((names) => {
       names.forEach((name) => {
-        console.log("Deleting cache:", name);
+        console.log("Deleting cache (Background):", name);
         caches.delete(name);
       });
     });
   }
-}
-// ----------------------------------------------------
+};
 
-// --- FIX: KEEP-ALIVE PING ---
-// This prevents the Android WebView from deep-sleeping too aggressively
+// Wait for the window to fully load before cleaning up
+// This ensures the app paints successfully first
+window.addEventListener("load", () => {
+  // Add a small delay to ensure main thread is free
+  setTimeout(cleanupServiceWorkers, 1000);
+});
+
+// Keep-alive ping for Android background
 setInterval(() => {
   console.log("Keep-alive ping");
-}, 30000); // Runs every 30 seconds
-// ----------------------------
+}, 30000);
+// ----------------------------------------------------
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
