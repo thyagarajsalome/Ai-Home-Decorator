@@ -8,16 +8,13 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: "0.0.0.0",
-      // --- FIX: ADD PROXY CONFIGURATION ---
       proxy: {
-        // Redirects requests from http://localhost:3000/api/decorate to http://localhost:8080/api/decorate
         "/api": {
           target: "http://localhost:8080",
-          changeOrigin: true, // Needed for virtual hosting sites
-          secure: false, // Don't verify SSL for local development
+          changeOrigin: true,
+          secure: false,
         },
       },
-      // --- END PROXY CONFIGURATION ---
     },
     plugins: [react()],
     resolve: {
@@ -25,5 +22,29 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "."),
       },
     },
+    // --- FIX: CHUNK SPLITTING ---
+    build: {
+      chunkSizeWarningLimit: 1000, // Increase limit to 1MB to silence minor warnings
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            // Split vendor modules (node_modules) into separate chunks
+            if (id.includes("node_modules")) {
+              if (id.includes("firebase")) {
+                return "firebase"; // Separate Firebase chunk
+              }
+              if (id.includes("react")) {
+                return "vendor-react"; // Separate React chunk
+              }
+              if (id.includes("@google/genai")) {
+                return "genai"; // Separate AI SDK chunk
+              }
+              return "vendor"; // All other dependencies
+            }
+          },
+        },
+      },
+    },
+    // ----------------------------
   };
 });
