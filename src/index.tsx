@@ -6,10 +6,12 @@ import "./index.css";
 
 // --- FIX: GENTLE CLEANUP (Load First, Then Clean) ---
 const cleanupServiceWorkers = () => {
+  console.log("App loaded. Starting cleanup...");
+
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.getRegistrations().then((registrations) => {
       for (const registration of registrations) {
-        console.log("Unregistering Service Worker (Background):", registration);
+        console.log("Unregistering Service Worker:", registration);
         registration.unregister();
       }
     });
@@ -18,17 +20,17 @@ const cleanupServiceWorkers = () => {
   if ("caches" in window) {
     caches.keys().then((names) => {
       names.forEach((name) => {
-        console.log("Deleting cache (Background):", name);
+        console.log("Deleting cache:", name);
         caches.delete(name);
       });
     });
   }
 };
 
-// Wait for the window to fully load before cleaning up
-// This ensures the app paints successfully first
+// CRITICAL: Wait for the 'load' event before running cleanup.
+// This ensures the app paints the screen FIRST, then deletes the cache.
 window.addEventListener("load", () => {
-  // Add a small delay to ensure main thread is free
+  // Add a tiny delay (1s) just to be safe
   setTimeout(cleanupServiceWorkers, 1000);
 });
 
