@@ -5,6 +5,7 @@ import App from "./App";
 import "./index.css";
 
 // --- CRITICAL FIX: UNREGISTER ALL SERVICE WORKERS ---
+// Keeps the app stable by forcing network loading
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.getRegistrations().then((registrations) => {
     for (const registration of registrations) {
@@ -24,6 +25,13 @@ if ("serviceWorker" in navigator) {
   }
 }
 // ----------------------------------------------------
+
+// --- FIX: KEEP-ALIVE PING ---
+// This prevents the Android WebView from deep-sleeping too aggressively
+setInterval(() => {
+  console.log("Keep-alive ping");
+}, 30000); // Runs every 30 seconds
+// ----------------------------
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {

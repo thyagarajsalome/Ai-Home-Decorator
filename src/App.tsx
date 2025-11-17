@@ -1,21 +1,41 @@
-// App.tsx
-import React from "react";
+// src/App.tsx
+import React, { useEffect } from "react"; // <-- Imported useEffect
 import { Routes, Route, Link } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import About from "./pages/About";
-// --- UPDATED IMPORTS ---
-import TermsPage from "./pages/TermsPage"; // Renamed from Legal
+import TermsPage from "./pages/TermsPage";
 import PolicyPage from "./pages/PolicyPage";
 import DisclaimerPage from "./pages/DisclaimerPage";
-// ---
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import PricingPage from "./pages/PricingPage"; // <-- 1. UNCOMMENTED THIS
+import PricingPage from "./pages/PricingPage";
 import InstallPWAButton from "./components/InstallPWAButton";
 
 const App: React.FC = () => {
+  // --- FIX: Handle App Resume/Multitasking ---
+  // This detects when the user switches back to the app.
+  // If the screen is blank (body empty), it forces a reload.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        console.log("App resumed");
+
+        // Safety check: If the app woke up blank, force a reload
+        if (document.body.childNodes.length === 0) {
+          window.location.reload();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+  // -------------------------------------------
+
   return (
     <AuthProvider>
       <div className="min-h-screen bg-gray-900 text-white antialiased">
@@ -23,21 +43,16 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          {/* --- UPDATED ROUTES --- */}
-          <Route path="/terms" element={<TermsPage />} /> {/* Was /legal */}
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/policy" element={<PolicyPage />} />
-          <Route path="/disclaimer" element={<DisclaimerPage />} />{" "}
-          {/* <-- ADD NEW ROUTE */}
-          {/* --- */}
+          <Route path="/disclaimer" element={<DisclaimerPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/pricing" element={<PricingPage />} />{" "}
-          {/* <-- 2. UNCOMMENTED THIS */}
+          <Route path="/pricing" element={<PricingPage />} />
         </Routes>
         <footer className="text-center py-6 text-gray-500 text-sm">
           <p>Powered by Google Gemini</p>
           <div className="flex justify-center gap-4 mt-2">
-            {/* --- UPDATED FOOTER LINKS --- */}
             <Link to="/terms" className="hover:text-purple-400">
               Terms
             </Link>
