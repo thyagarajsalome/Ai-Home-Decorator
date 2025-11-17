@@ -7,12 +7,13 @@ import React, {
   ReactNode,
 } from "react";
 import { User } from "@supabase/supabase-js";
-import { supabase } from "../supabaseClient"; // <-- Import Supabase client
+import { supabase } from "../supabaseClient";
 
 interface AuthContextType {
   currentUser: User | null;
-  currentUserRole: string; // <-- ADD THIS
+  currentUserRole: string;
   loading: boolean;
+  isAppMode: boolean; // <--- IMPORTANT: Tells the app if it's in TWA mode
   getIdToken: () => Promise<string | null>;
   signOut: () => Promise<void>;
 }
@@ -33,10 +34,10 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentUserRole, setCurrentUserRole] = useState<string>("user"); // <-- ADD THIS
+  const [currentUserRole, setCurrentUserRole] = useState<string>("user");
   const [loading, setLoading] = useState(true);
+  const [isAppMode, setIsAppMode] = useState(false); // <--- STATE
 
-  // --- HELPER FUNCTION TO FETCH ROLE ---
   const fetchUserRole = async (user: User | null) => {
     if (!user) {
       setCurrentUserRole("user");
@@ -53,37 +54,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setCurrentUserRole(data?.role || "user");
     } catch (error) {
       console.error("Error fetching user role:", error);
-      setCurrentUserRole("user"); // Default to 'user' on error
+      setCurrentUserRole("user");
     }
   };
 
   useEffect(() => {
-    // Get the initial user session
-    supabase.auth
-      .getSession()
-      .then(async ({ data: { session } }) => {
-        const user = session?.user ?? null;
-        setCurrentUser(user);
-        await fetchUserRole(user); // <-- FETCH ROLE
-        setLoading(false);
-        console.log("Initial session fetch, user:", user ? user.id : "null");
-      })
-      .catch((error) => {
-        console.error("Error getting initial session:", error);
-        setLoading(false);
-      });
+    // --- DETECT APP MODE ---
+    const isTWA = document.referrer.includes("android-app://");
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches;
 
-    // Listen for authentication state changes
+    // If either is true, we are running as an installed app
+    setIsAppMode(isTWA || isStandalone);
+    // -----------------------
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const user = session?.user ?? null;
+      setCurrentUser(user);
+      await fetchUserRole(user);
+      setLoading(false);
+    });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const user = session?.user ?? null;
       setCurrentUser(user);
-      await fetchUserRole(user); // <-- FETCH ROLE
-      console.log("Auth state changed, user:", user ? user.id : "null");
+      await fetchUserRole(user);
     });
 
-    // Cleanup subscription on unmount
     return () => {
       subscription?.unsubscribe();
     };
@@ -94,38 +94,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       data: { session },
       error,
     } = await supabase.auth.getSession();
-
-    if (error) {
-      console.error("Error getting session token:", error);
-      return null;
-    }
-
-    if (!session) {
-      console.log("getIdToken: No current session.");
-      return null;
-    }
-
+    if (error || !session) return null;
     return session.access_token;
   };
 
   const signOut = async (): Promise<void> => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error);
-      // Handle sign-out errors if necessary
-    }
-    // currentUser and currentUserRole will be updated by onAuthStateChange
+    await supabase.auth.signOut();
   };
 
   const value = {
     currentUser,
-    currentUserRole, // <-- ADD THIS
+    currentUserRole,
     loading,
+    isAppMode, // <--- EXPOSED
     getIdToken,
     signOut,
   };
 
-  // Don't render children until loading is false
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}
