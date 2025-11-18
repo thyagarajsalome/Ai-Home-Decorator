@@ -42,7 +42,6 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 });
 
 // --- 4. INSTANTIATE RAZORPAY ---
-// Only instantiate if keys exist to prevent crash on dev without keys
 const razorpay =
   razorpayKeyId && razorpayKeySecret
     ? new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret })
@@ -72,7 +71,7 @@ const allowedOrigins = [
   // Add your Expo local URL if testing on device, e.g., "exp://..." or "*" for dev
 ];
 
-app.use(cors({ origin: true })); // Allow all for now to prevent mobile issues, restrict later
+app.use(cors({ origin: true })); // Allow all for now to prevent mobile issues
 app.use(express.json());
 
 // --- HEALTH CHECK ENDPOINT ---
@@ -112,8 +111,21 @@ function bufferToGenerativePart(buffer, mimeType) {
   };
 }
 
+// --- CREATE ORDER ENDPOINT ---
+app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
+  // ... (This endpoint can remain as is, assuming it's not used by mobile yet)
+  // If used, ensure it updates 'user_profiles' not 'profiles' if logic exists here
+  // For now, focusing on decorate endpoint as requested.
+  try {
+    // ... logic ...
+    res.status(501).json({ error: "Not implemented for mobile demo yet" });
+  } catch (error) {
+    res.status(500).json({ error: "Error" });
+  }
+});
+
 // ---
-// --- DECORATE ENDPOINT (UPDATED FOR MOBILE UNIFICATION) ---
+// --- DECORATE ENDPOINT (FIXED) ---
 // ---
 app.post(
   "/api/decorate",
@@ -131,13 +143,13 @@ app.post(
 
     try {
       // 1. INPUT & AUTH VALIDATION
-      // Default to 'style' mode if not provided, and empty prompt if not provided
       const {
         designPrompt = "",
         roomDescription = "",
         designMode = "style",
         roomType,
       } = req.body;
+
       const file = req.file;
       const userId = req.user.id;
 
@@ -151,11 +163,10 @@ app.post(
           ? CUSTOM_GENERATION_COST
           : STYLE_GENERATION_COST;
 
-      // NOTE: We are now using the 'profiles' table and 'credits' column
-      // to match the Mobile App SQL setup.
+      // FIX: Use 'user_profiles' table and 'generation_credits' column
       const { data: fetchedProfile, error: fetchError } = await supabase
-        .from("profiles") // <--- CHANGED from user_profiles
-        .select("credits") // <--- CHANGED from generation_credits, role
+        .from("user_profiles") // <--- CORRECT TABLE
+        .select("generation_credits") // <--- CORRECT COLUMN
         .eq("id", userId)
         .single();
 
@@ -163,34 +174,35 @@ app.post(
 
       if (fetchError || !profile) {
         console.error("Supabase fetch profile error:", fetchError);
-        // Fallback: Try creating a profile if it doesn't exist (self-healing)
+        // Fallback: Try creating a profile if it doesn't exist
         await supabase
-          .from("profiles")
-          .insert([{ id: userId, credits: 119 }])
+          .from("user_profiles") // <--- CORRECT TABLE
+          .insert([{ id: userId, generation_credits: 119 }]) // <--- CORRECT COLUMN
           .select();
-        profile = { credits: 119 };
+        profile = { generation_credits: 119 };
       }
 
-      originalCredits = profile.credits;
+      originalCredits = profile.generation_credits;
 
-      // Check if user has enough credits
-      if (profile.credits < costToDebit) {
+      // Check credits
+      if (originalCredits < costToDebit) {
         return res.status(403).json({
-          error: `You do not have enough credits. This requires ${costToDebit} credit(s), but you have ${profile.credits}.`,
+          error: `You do not have enough credits. This requires ${costToDebit} credit(s), but you have ${originalCredits}.`,
         });
       }
 
-      // Debit the credits
-      const newCredits = profile.credits - costToDebit;
-      const { error: debitError } = await supabase
-        .from("profiles") // <--- CHANGED
-        .update({ credits: newCredits }) // <--- CHANGED
-        .eq("id", userId);
+      // FIX: Debit Credits using the secure RPC function
+      const { error: debitError } = await supabase.rpc("decrement_credits", {
+        user_id: userId,
+        amount: costToDebit,
+      });
 
       if (debitError) {
         console.error("Supabase debit error:", debitError);
         return res.status(500).json({ error: "Failed to debit credit." });
       }
+
+      const newCredits = originalCredits - costToDebit;
       // --- END CREDIT LOGIC ---
 
       // 3. AI GENERATION
@@ -212,10 +224,10 @@ app.post(
 
       // 4. CHECK AI RESPONSE
       if (response.candidates[0]?.finishReason === "SAFETY") {
-        // Rollback
+        // Rollback (FIX: Use correct table/column)
         await supabase
-          .from("profiles")
-          .update({ credits: originalCredits })
+          .from("user_profiles")
+          .update({ generation_credits: originalCredits })
           .eq("id", userId);
 
         return res.status(400).json({
@@ -235,16 +247,15 @@ app.post(
       }
 
       if (!base64Image) {
-        // Rollback
+        // Rollback (FIX: Use correct table/column)
         await supabase
-          .from("profiles")
-          .update({ credits: originalCredits })
+          .from("user_profiles")
+          .update({ generation_credits: originalCredits })
           .eq("id", userId);
         throw new Error("AI did not return a valid image.");
       }
 
-      // 5. SUCCESS: Return the image
-      // Return in the format the mobile app expects
+      // 5. SUCCESS
       res.status(200).json({
         generatedImage: `data:image/jpeg;base64,${base64Image}`,
         remainingCredits: newCredits,
@@ -254,9 +265,9 @@ app.post(
       // Only rollback if we actually debited
       if (profile && originalCredits > 0) {
         await supabase
-          .from("profiles")
-          .update({ credits: originalCredits })
-          .eq("id", userId);
+          .from("user_profiles") // <--- CORRECT TABLE
+          .update({ generation_credits: originalCredits }) // <--- CORRECT COLUMN
+          .eq("id", req.user.id);
       }
 
       console.error("Error processing image:", error);
