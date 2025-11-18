@@ -1,26 +1,29 @@
-// This is a Node.js / Express example
-// (You'll need to install jsonwebtoken: npm install jsonwebtoken)
+const { createClient } = require("@supabase/supabase-js");
 
-const jwt = require("jsonwebtoken");
+// Load environment variables
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
-// Get the secret from your environment variables
-const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
-
-if (!SUPABASE_JWT_SECRET) {
-  throw new Error(
-    "SUPABASE_JWT_SECRET is not set in your backend environment variables."
-  );
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_KEY in .env");
 }
 
-// This is your new middleware function
-const verifySupabaseToken = (req, res, next) => {
+// Create a Supabase client specifically for Auth verification
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+});
+
+const verifySupabaseToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ error: "No token provided." });
+    return res.status(401).json({ error: "No authorization header provided." });
   }
 
-  // The token looks like "Bearer YOUR_TOKEN_HERE"
+  // The token looks like "Bearer <token>"
   const token = authHeader.split(" ")[1];
 
   if (!token) {
@@ -28,19 +31,24 @@ const verifySupabaseToken = (req, res, next) => {
   }
 
   try {
-    // Verify the token using your Supabase secret
-    const decodedToken = jwt.verify(token, SUPABASE_JWT_SECRET);
+    // Ask Supabase to verify the token
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
 
-    // The 'decodedToken' contains user info like { sub: 'user-uuid', ... }
-    // Attach the user's ID (the 'sub' property) to the request object
-    // so your routes can access it.
-    req.user = { id: decodedToken.sub, email: decodedToken.email };
+    if (error || !user) {
+      console.error("Auth Error:", error?.mjessage);
+      return res.status(401).json({ error: "Invalid or expired token." });
+    }
 
-    // Token is valid! Proceed to the next function (your API logic)
+    // Attach the valid user to the request
+    req.user = user;
+
     next();
-  } catch (error) {
-    console.error("JWT verification failed:", error.message);
-    return res.status(401).json({ error: "Invalid token." });
+  } catch (err) {
+    console.error("Unexpected Auth Error:", err);
+    return res.status(500).json({ error: "Authentication failed." });
   }
 };
 
