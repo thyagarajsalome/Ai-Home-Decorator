@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { MAX_ROOM_DESCRIPTION_LENGTH, ROOM_TYPES } from "../constants";
 import type { RoomType } from "../types";
@@ -22,9 +22,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   );
   const [selectedRoomType, setSelectedRoomType] = useState<RoomType | "">("");
   const [customDescription, setCustomDescription] = useState<string>("");
-  const [isCompressing, setIsCompressing] = useState(false); // New loading state
+  const [isCompressing, setIsCompressing] = useState(false); // Shows "Optimizing..." UI
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedRoomType === "Other") {
       onDescriptionChange(customDescription);
     } else if (selectedRoomType) {
@@ -35,6 +35,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   }, [selectedRoomType, customDescription, onDescriptionChange]);
 
   // --- MOBILE OPTIMIZATION: COMPRESS IMAGE ---
+  // Resizes large photos (e.g. 4000px) down to 1024px to prevent crashes
   const compressImage = (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -44,10 +45,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         img.src = event.target?.result as string;
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 1024; // Resize to max 1024px (Good for AI, fast for mobile)
+          const MAX_WIDTH = 1024; // Safe size for mobile AI apps
           const scaleSize = MAX_WIDTH / img.width;
 
-          // If image is already small, don't resize
+          // If image is already small enough, return original
           if (scaleSize >= 1) {
             resolve(file);
             return;
@@ -62,6 +63,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           canvas.toBlob(
             (blob) => {
               if (blob) {
+                // Create new small file
                 const newFile = new File([blob], file.name, {
                   type: "image/jpeg",
                   lastModified: Date.now(),
@@ -72,9 +74,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               }
             },
             "image/jpeg",
-            0.8 // Compress quality (0.8 is very good quality but small size)
+            0.8 // 80% quality is perfect for AI
           );
         };
+        img.onerror = (error) => reject(error);
       };
       reader.onerror = (error) => reject(error);
     });
@@ -84,15 +87,20 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        setIsCompressing(true); // Show loading state
+        setIsCompressing(true); // Start loading UI
         try {
           const originalFile = acceptedFiles[0];
 
-          // Compress before doing anything else
-          console.log(`Original size: ${originalFile.size / 1024 / 1024} MB`);
-          const compressedFile = await compressImage(originalFile);
+          // Log sizes for debugging
           console.log(
-            `Compressed size: ${compressedFile.size / 1024 / 1024} MB`
+            `Original: ${(originalFile.size / 1024 / 1024).toFixed(2)} MB`
+          );
+
+          // Compress!
+          const compressedFile = await compressImage(originalFile);
+
+          console.log(
+            `Compressed: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`
           );
 
           if (previewUrl) {
@@ -101,12 +109,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
           const newUrl = URL.createObjectURL(compressedFile);
           setPreviewUrl(newUrl);
-          onImageChange(compressedFile); // Pass the SMALL file to parent
+          onImageChange(compressedFile); // Send SMALL file to parent
         } catch (error) {
           console.error("Error processing image:", error);
           alert("Could not process this image. Please try another.");
         } finally {
-          setIsCompressing(false);
+          setIsCompressing(false); // Stop loading UI
         }
       }
     },
@@ -117,7 +125,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     onDrop,
     accept: { "image/*": [".jpeg", ".png", ".jpg", ".webp"] },
     multiple: false,
-    disabled: disabled || isCompressing, // Disable while compressing
+    disabled: disabled || isCompressing, // Disable input while working
   });
 
   const handleRemoveImage = () => {

@@ -4,8 +4,8 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 
-// --- SAFE CLEANUP LOGIC ---
-// This runs only AFTER the app has fully loaded and painted the screen.
+// --- SAFE CLEANUP LOGIC (The Missing Kill Switch) ---
+// This runs only AFTER the app has fully loaded to prevent blank screens.
 window.addEventListener("load", () => {
   // 1. Unregister Service Workers
   if ("serviceWorker" in navigator) {
@@ -17,7 +17,7 @@ window.addEventListener("load", () => {
     });
   }
 
-  // 2. Clear Caches (Optional but good for fixing broken files)
+  // 2. Clear Caches
   if ("caches" in window) {
     caches.keys().then((names) => {
       names.forEach((name) => {
@@ -27,13 +27,13 @@ window.addEventListener("load", () => {
     });
   }
 });
-// ---------------------------
+// ----------------------------------------------------
 
-// --- BACKGROUND KEEPER (Keep this) ---
+// --- BACKGROUND KEEPER ---
 setInterval(() => {
   console.log("Keep-alive ping");
 }, 25000);
-// -------------------------------------
+// -------------------------
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
