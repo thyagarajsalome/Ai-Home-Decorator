@@ -124,14 +124,17 @@ const Home: React.FC = () => {
 
     try {
       if (!uploadedImageFile) throw new Error("Missing image.");
-      const base64Image = await generateDecoratedImage(
+
+      // NEW FIXED CODE
+      const fullImageUrl = await generateDecoratedImage(
         uploadedImageFile,
         designInput,
         roomDescription,
         idToken,
         designMode
       );
-      setGeneratedImageUrl(`data:image/png;base64,${base64Image}`);
+      setGeneratedImageUrl(fullImageUrl); // <--- Backend now provides the full URL
+
       await fetchGenerationCredits();
     } catch (err) {
       let message = "An unknown error occurred.";
