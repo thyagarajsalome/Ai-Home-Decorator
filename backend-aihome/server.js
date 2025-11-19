@@ -30,6 +30,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+// --- RAZORPAY SETUP ---
 const razorpay =
   razorpayKeyId && razorpayKeySecret
     ? new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret })
@@ -76,7 +77,109 @@ function bufferToGenerativePart(buffer, mimeType) {
   };
 }
 
-// --- DECORATE ENDPOINT ---
+// ==================================================
+//  PAYMENT ENDPOINTS (Restored)
+// ==================================================
+
+// Pack Definitions (Must match frontend)
+const CREDIT_PACKS = {
+  pack_starter: { credits: 15, amount: 199 },
+  pack_value: { credits: 50, amount: 499 },
+  pack_pro: { credits: 120, amount: 999 },
+};
+
+// 1. Create Order
+app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
+  if (!razorpay) {
+    return res.status(503).json({ error: "Payment gateway not configured." });
+  }
+
+  try {
+    const { packId } = req.body;
+    const pack = CREDIT_PACKS[packId];
+
+    if (!pack) {
+      return res.status(400).json({ error: "Invalid pack ID." });
+    }
+
+    const options = {
+      amount: pack.amount * 100, // amount in the smallest currency unit (paisa)
+      currency: "INR",
+      receipt: `rcpt_${Date.now()}_${req.user.id.substring(0, 5)}`,
+      notes: {
+        userId: req.user.id,
+        packId: packId,
+        credits: pack.credits,
+      },
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (error) {
+    console.error("Create Order Error:", error);
+    res.status(500).json({ error: "Failed to create payment order." });
+  }
+});
+
+// 2. Verify Payment & Add Credits
+app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+  const userId = req.user.id;
+
+  try {
+    // Verify Signature
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac("sha256", razorpayKeySecret)
+      .update(body.toString())
+      .digest("hex");
+
+    const isAuthentic = expectedSignature === razorpay_signature;
+
+    if (!isAuthentic) {
+      return res.status(400).json({ error: "Invalid payment signature." });
+    }
+
+    // Fetch order details to know how many credits to add
+    // (Fetching from Razorpay ensures we trust the source, not the client)
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+
+    if (!order || !order.notes || !order.notes.credits) {
+      return res.status(400).json({ error: "Could not verify order details." });
+    }
+
+    const creditsToAdd = parseInt(order.notes.credits);
+
+    // Add credits to user profile
+    // First get current credits
+    const { data: profile, error: fetchError } = await supabase
+      .from("user_profiles")
+      .select("generation_credits")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const newCreditTotal = (profile.generation_credits || 0) + creditsToAdd;
+
+    const { error: updateError } = await supabase
+      .from("user_profiles")
+      .update({ generation_credits: newCreditTotal })
+      .eq("id", userId);
+
+    if (updateError) throw updateError;
+
+    res.json({ success: true, newCredits: newCreditTotal });
+  } catch (error) {
+    console.error("Payment Verification Error:", error);
+    res.status(500).json({ error: "Payment verification failed." });
+  }
+});
+
+// ==================================================
+//  IMAGE GENERATION ENDPOINT (Fixed)
+// ==================================================
 app.post(
   "/api/decorate",
   verifySupabaseToken,
