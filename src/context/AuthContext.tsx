@@ -13,7 +13,7 @@ interface AuthContextType {
   currentUser: User | null;
   currentUserRole: string;
   loading: boolean;
-  isAppMode: boolean; // <--- IMPORTANT: Tells the app if it's in TWA mode
+  isAppMode: boolean; // <--- IMPORTANT: Tells the app if it's in TWA/PWA mode
   getIdToken: () => Promise<string | null>;
   signOut: () => Promise<void>;
 }
@@ -60,7 +60,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // --- DETECT APP MODE ---
+    // 1. Check for TWA specific referrer (Android)
     const isTWA = document.referrer.includes("android-app://");
+    // 2. Check for Standalone mode (PWA/Installed)
     const isStandalone = window.matchMedia(
       "(display-mode: standalone)"
     ).matches;
