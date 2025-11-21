@@ -1,9 +1,9 @@
-// src/pages/PricingPage.tsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-// Define Razorpay on the window object
+// ... (keep imports and interfaces the same)
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -14,61 +14,58 @@ interface CreditPack {
   name: string;
   credits: number;
   price: number;
-  priceId: string; // This is our internal ID, e.g., "pack_starter"
+  priceId: string;
 }
 
-// Credit packs (matches the map in your server.js)
 const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
-    price: 199, // Price in INR
+    price: 199,
     priceId: "pack_starter",
   },
   {
     name: "Best Value",
     credits: 50,
-    price: 499, // Price in INR
+    price: 499,
     priceId: "pack_value",
   },
   {
     name: "Pro Pack",
     credits: 120,
-    price: 999, // Price in INR
+    price: 999,
     priceId: "pack_pro",
   },
 ];
 
-// Helper function to load the Razorpay script
 const loadScript = (src: string) => {
   return new Promise((resolve) => {
     const script = document.createElement("script");
     script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
 };
 
 const PricingPage: React.FC = () => {
-  const { currentUser, getIdToken } = useAuth();
-
-  // --- 1. CHANGED: Make loading state specific to the pack ID ---
-  const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // @ts-ignore
+  const { currentUser, getIdToken, isAppMode } = useAuth();
   const navigate = useNavigate();
 
-  // State to track if script is loaded
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+  useEffect(() => {
+    if (isAppMode) {
+      navigate("/");
+    }
+  }, [isAppMode, navigate]);
 
-  // --- 2. CHANGED: Add state for styled success message ---
+  if (isAppMode) return null;
+
+  const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
 
-  // Load the Razorpay script when the component mounts
   useEffect(() => {
     loadScript("https://checkout.razorpay.com/v1/checkout.js").then(
       (loaded) => {
@@ -82,13 +79,13 @@ const PricingPage: React.FC = () => {
   }, []);
 
   const handlePurchase = async (pack: CreditPack) => {
-    // --- 3. CHANGED: Use setLoadingPackId ---
+    // ... (Keep logic exactly the same as before)
     setLoadingPackId(pack.priceId);
     setError(null);
 
     if (!currentUser) {
       setError("You must be logged in to make a purchase.");
-      setLoadingPackId(null); // Reset loading
+      setLoadingPackId(null);
       return;
     }
 
@@ -96,7 +93,7 @@ const PricingPage: React.FC = () => {
       setError(
         "Payment gateway is not ready. Please wait a moment or refresh."
       );
-      setLoadingPackId(null); // Reset loading
+      setLoadingPackId(null);
       return;
     }
 
@@ -104,11 +101,10 @@ const PricingPage: React.FC = () => {
       const idToken = await getIdToken();
       if (!idToken) {
         setError("Could not authenticate. Please log in again.");
-        setLoadingPackId(null); // Reset loading
+        setLoadingPackId(null);
         return;
       }
 
-      // 1. Create Order: Call your backend
       const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {
@@ -125,7 +121,6 @@ const PricingPage: React.FC = () => {
 
       const order = await orderResponse.json();
 
-      // 2. Define Razorpay Options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
@@ -135,10 +130,8 @@ const PricingPage: React.FC = () => {
         image: "/icons/icon-512x512.png",
         order_id: order.id,
 
-        // 3. Define the payment handler
         handler: async (response: any) => {
           try {
-            // 4. Verify Payment
             const verifyResponse = await fetch(`/api/payment-verification`, {
               method: "POST",
               headers: {
@@ -157,17 +150,14 @@ const PricingPage: React.FC = () => {
               throw new Error(errData.error || "Payment verification failed.");
             }
 
-            // --- 4. CHANGED: Set success message instead of alert/navigate ---
-            setLoadingPackId(null); // Stop loading
+            setLoadingPackId(null);
             setPurchaseSuccess(
               `Payment successful! ${pack.credits} credits have been added to your account.`
             );
           } catch (verifyError: any) {
             console.error("Verification Error:", verifyError);
-            setError(
-              `Payment verification failed. Please contact support. ${verifyError.message}`
-            );
-            setLoadingPackId(null); // Stop loading
+            setError(`Payment verification failed: ${verifyError.message}`);
+            setLoadingPackId(null);
           }
         },
 
@@ -176,17 +166,16 @@ const PricingPage: React.FC = () => {
           email: currentUser.email,
         },
         theme: {
-          color: "#8b5cf6", // Purple
+          color: "#8b5cf6",
         },
         modal: {
           ondismiss: () => {
-            setLoadingPackId(null); // Stop loading if user closes modal
+            setLoadingPackId(null);
             console.log("Payment dismissed");
           },
         },
       };
 
-      // 6. Open the Razorpay Checkout Modal
       const rzp = new window.Razorpay(options);
       rzp.open();
 
@@ -197,24 +186,26 @@ const PricingPage: React.FC = () => {
             response.error.description || response.error.reason
           }`
         );
-        setLoadingPackId(null); // Stop loading
+        setLoadingPackId(null);
       });
     } catch (err: any) {
       console.error("Purchase Error:", err);
       setError(err.message || "An error occurred during purchase.");
-      setLoadingPackId(null); // Stop loading
+      setLoadingPackId(null);
     }
   };
 
-  // --- 2. (CONTINUED) RENDER STYLED SUCCESS MESSAGE ---
   if (purchaseSuccess) {
     return (
       <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="bg-gray-800 rounded-2xl shadow-xl p-8 border border-green-700">
-          <h2 className="text-3xl font-bold text-white mb-4">
+        {/* Updated Success Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-green-500 dark:border-green-700 transition-colors duration-300">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Payment Successful!
           </h2>
-          <p className="text-lg text-green-300 mb-8">{purchaseSuccess}</p>
+          <p className="text-lg text-green-600 dark:text-green-300 mb-8">
+            {purchaseSuccess}
+          </p>
           <button
             onClick={() => navigate("/")}
             className="w-full max-w-xs mx-auto px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
@@ -226,47 +217,44 @@ const PricingPage: React.FC = () => {
     );
   }
 
-  // --- 1. (CONTINUED) Check if *any* pack is processing ---
   const isProcessing = loadingPackId !== null;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-extrabold text-center text-white mb-4">
+      <h1 className="text-4xl font-extrabold text-center text-gray-900 dark:text-white mb-4">
         Get More Credits
       </h1>
-      <p className="text-lg text-gray-300 text-center mb-10">
+      <p className="text-lg text-gray-600 dark:text-gray-300 text-center mb-10">
         Your free trial credits are just the beginning. Purchase a credit pack
         to continue creating.
       </p>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-300 rounded-lg text-center">
           <p>{error}</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {creditPacks.map((pack) => {
-          // --- 1. (CONTINUED) Check if *this* pack is the one processing ---
           const isThisPackLoading = loadingPackId === pack.priceId;
-
           return (
             <div
               key={pack.name}
-              className={`bg-gray-800 rounded-2xl shadow-xl p-8 border ${
+              className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border transition-colors duration-300 ${
                 pack.name === "Best Value"
-                  ? "border-purple-500"
-                  : "border-gray-700"
+                  ? "border-purple-500 ring-2 ring-purple-500/20 dark:ring-purple-500/10"
+                  : "border-gray-200 dark:border-gray-700"
               } flex flex-col`}
             >
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {pack.name}
               </h2>
               <p
                 className={`text-sm font-semibold mb-4 ${
                   pack.name === "Best Value"
-                    ? "text-purple-400"
-                    : "text-gray-400"
+                    ? "text-purple-600 dark:text-purple-400"
+                    : "text-gray-500 dark:text-gray-400"
                 }`}
               >
                 {pack.name === "Best Value"
@@ -275,16 +263,18 @@ const PricingPage: React.FC = () => {
               </p>
 
               <div className="mb-6">
-                <span className="text-5xl font-extrabold text-white">
+                <span className="text-5xl font-extrabold text-gray-900 dark:text-white">
                   ₹{pack.price}
                 </span>
-                <span className="text-gray-400">/one-time</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  /one-time
+                </span>
               </div>
 
-              <ul className="space-y-2 text-gray-300 mb-8 flex-grow">
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300 mb-8 flex-grow">
                 <li className="flex items-center">
                   <svg
-                    className="h-5 w-5 text-green-400 mr-2"
+                    className="h-5 w-5 text-green-500 dark:text-green-400 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -300,7 +290,7 @@ const PricingPage: React.FC = () => {
                 </li>
                 <li className="flex items-center">
                   <svg
-                    className="h-5 w-5 text-green-400 mr-2"
+                    className="h-5 w-5 text-green-500 dark:text-green-400 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -316,7 +306,7 @@ const PricingPage: React.FC = () => {
                 </li>
                 <li className="flex items-center">
                   <svg
-                    className="h-5 w-5 text-green-400 mr-2"
+                    className="h-5 w-5 text-green-500 dark:text-green-400 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -334,15 +324,13 @@ const PricingPage: React.FC = () => {
 
               <button
                 onClick={() => handlePurchase(pack)}
-                // Disable all buttons if any purchase is processing
                 disabled={isProcessing || !currentUser || !scriptLoaded}
                 className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
                   pack.name === "Best Value"
                     ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                    : "bg-gray-700 hover:bg-gray-600"
+                    : "bg-gray-700 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600"
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {/* Only show "Processing..." on the clicked button */}
                 {isThisPackLoading ? "Processing..." : "Buy Now"}
               </button>
             </div>
@@ -351,19 +339,19 @@ const PricingPage: React.FC = () => {
       </div>
 
       {!currentUser && (
-        <div className="mt-8 text-center bg-gray-700/50 border border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto">
-          <p className="text-lg text-gray-200">
+        <div className="mt-8 text-center bg-gray-100 dark:bg-gray-700/50 border border-purple-200 dark:border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto transition-colors duration-300">
+          <p className="text-lg text-gray-700 dark:text-gray-200">
             Please{" "}
             <Link
               to="/login"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors duration-200"
             >
               Login
             </Link>{" "}
             or{" "}
             <Link
               to="/signup"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors duration-200"
             >
               Sign Up
             </Link>{" "}

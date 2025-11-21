@@ -2,9 +2,9 @@ import React from "react";
 
 const About: React.FC = () => {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-300">
-      <div className="bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50">
-        <h1 className="text-3xl font-bold text-white mb-6">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-600 dark:text-gray-300">
+      <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-700/50 transition-colors duration-300">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
           About AI Home Decorator
         </h1>
 
@@ -15,7 +15,7 @@ const About: React.FC = () => {
           and instantly see it redesigned in a variety of styles.
         </p>
 
-        <h2 className="text-2xl font-semibold text-white mt-8 mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
           How It Works
         </h2>
         <ol className="list-decimal list-inside space-y-2 mb-4">
@@ -36,7 +36,7 @@ const About: React.FC = () => {
           </li>
         </ol>
 
-        <h2 className="text-2xl font-semibold text-white mt-8 mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
           Contact Us
         </h2>
         <p>
@@ -46,9 +46,9 @@ const About: React.FC = () => {
           Please reach out to us at:{" "}
           <a
             href="mailto:contact@aihomedecorator.com"
-            className="text-purple-400 hover:underline"
+            className="text-purple-600 dark:text-purple-400 hover:underline"
           >
-            contactaihomedecorator@gmail.com
+            contact@toolwebsite.in
           </a>
         </p>
       </div>
