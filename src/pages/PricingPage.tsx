@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-// Define Razorpay on the window object
+// ... (keep imports and interfaces the same)
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -48,21 +49,32 @@ const loadScript = (src: string) => {
 };
 
 const PricingPage: React.FC = () => {
+<<<<<<< HEAD
+  // @ts-ignore
+  const { currentUser, getIdToken, isAppMode } = useAuth();
+  const navigate = useNavigate();
+
+=======
   // @ts-ignore - Ignore TS error if AuthContext isn't fully updated yet
   const { currentUser, getIdToken, isAppMode } = useAuth();
   const navigate = useNavigate();
 
   // --- SECURITY: HIDE PAGE IN APP ---
   // If user is in the Android App, kick them to Home immediately
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
   useEffect(() => {
     if (isAppMode) {
       navigate("/");
     }
   }, [isAppMode, navigate]);
 
+<<<<<<< HEAD
+  if (isAppMode) return null;
+=======
   // Stop rendering if we are in the app (prevents flash of content)
   if (isAppMode) return null;
   // ----------------------------------
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
 
   const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +94,10 @@ const PricingPage: React.FC = () => {
   }, []);
 
   const handlePurchase = async (pack: CreditPack) => {
+<<<<<<< HEAD
+    // ... (Keep logic exactly the same as before)
+=======
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
     setLoadingPackId(pack.priceId);
     setError(null);
 
@@ -107,7 +123,10 @@ const PricingPage: React.FC = () => {
         return;
       }
 
+<<<<<<< HEAD
+=======
       // 1. Create Order
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
       const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {
@@ -124,7 +143,6 @@ const PricingPage: React.FC = () => {
 
       const order = await orderResponse.json();
 
-      // 2. Define Razorpay Options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
@@ -202,11 +220,14 @@ const PricingPage: React.FC = () => {
   if (purchaseSuccess) {
     return (
       <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="bg-gray-800 rounded-2xl shadow-xl p-8 border border-green-700">
-          <h2 className="text-3xl font-bold text-white mb-4">
+        {/* Updated Success Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-green-500 dark:border-green-700 transition-colors duration-300">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Payment Successful!
           </h2>
-          <p className="text-lg text-green-300 mb-8">{purchaseSuccess}</p>
+          <p className="text-lg text-green-600 dark:text-green-300 mb-8">
+            {purchaseSuccess}
+          </p>
           <button
             onClick={() => navigate("/")}
             className="w-full max-w-xs mx-auto px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
@@ -222,16 +243,16 @@ const PricingPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-extrabold text-center text-white mb-4">
+      <h1 className="text-4xl font-extrabold text-center text-gray-900 dark:text-white mb-4">
         Get More Credits
       </h1>
-      <p className="text-lg text-gray-300 text-center mb-10">
+      <p className="text-lg text-gray-600 dark:text-gray-300 text-center mb-10">
         Your free trial credits are just the beginning. Purchase a credit pack
         to continue creating.
       </p>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-300 rounded-lg text-center">
           <p>{error}</p>
         </div>
       )}
@@ -242,20 +263,20 @@ const PricingPage: React.FC = () => {
           return (
             <div
               key={pack.name}
-              className={`bg-gray-800 rounded-2xl shadow-xl p-8 border ${
+              className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border transition-colors duration-300 ${
                 pack.name === "Best Value"
-                  ? "border-purple-500"
-                  : "border-gray-700"
+                  ? "border-purple-500 ring-2 ring-purple-500/20 dark:ring-purple-500/10"
+                  : "border-gray-200 dark:border-gray-700"
               } flex flex-col`}
             >
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {pack.name}
               </h2>
               <p
                 className={`text-sm font-semibold mb-4 ${
                   pack.name === "Best Value"
-                    ? "text-purple-400"
-                    : "text-gray-400"
+                    ? "text-purple-600 dark:text-purple-400"
+                    : "text-gray-500 dark:text-gray-400"
                 }`}
               >
                 {pack.name === "Best Value"
@@ -264,16 +285,18 @@ const PricingPage: React.FC = () => {
               </p>
 
               <div className="mb-6">
-                <span className="text-5xl font-extrabold text-white">
+                <span className="text-5xl font-extrabold text-gray-900 dark:text-white">
                   ₹{pack.price}
                 </span>
-                <span className="text-gray-400">/one-time</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  /one-time
+                </span>
               </div>
 
-              <ul className="space-y-2 text-gray-300 mb-8 flex-grow">
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300 mb-8 flex-grow">
                 <li className="flex items-center">
                   <svg
-                    className="h-5 w-5 text-green-400 mr-2"
+                    className="h-5 w-5 text-green-500 dark:text-green-400 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -289,7 +312,7 @@ const PricingPage: React.FC = () => {
                 </li>
                 <li className="flex items-center">
                   <svg
-                    className="h-5 w-5 text-green-400 mr-2"
+                    className="h-5 w-5 text-green-500 dark:text-green-400 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -305,7 +328,7 @@ const PricingPage: React.FC = () => {
                 </li>
                 <li className="flex items-center">
                   <svg
-                    className="h-5 w-5 text-green-400 mr-2"
+                    className="h-5 w-5 text-green-500 dark:text-green-400 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -327,7 +350,7 @@ const PricingPage: React.FC = () => {
                 className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
                   pack.name === "Best Value"
                     ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                    : "bg-gray-700 hover:bg-gray-600"
+                    : "bg-gray-700 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600"
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {isThisPackLoading ? "Processing..." : "Buy Now"}
@@ -338,19 +361,19 @@ const PricingPage: React.FC = () => {
       </div>
 
       {!currentUser && (
-        <div className="mt-8 text-center bg-gray-700/50 border border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto">
-          <p className="text-lg text-gray-200">
+        <div className="mt-8 text-center bg-gray-100 dark:bg-gray-700/50 border border-purple-200 dark:border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto transition-colors duration-300">
+          <p className="text-lg text-gray-700 dark:text-gray-200">
             Please{" "}
             <Link
               to="/login"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors duration-200"
             >
               Login
             </Link>{" "}
             or{" "}
             <Link
               to="/signup"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors duration-200"
             >
               Sign Up
             </Link>{" "}

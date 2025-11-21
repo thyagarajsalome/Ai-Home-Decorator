@@ -3,14 +3,16 @@ import React from "react";
 
 const DisclaimerPage: React.FC = () => {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-300">
-      <div className="bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50">
-        <h1 className="text-3xl font-bold text-white mb-6">Disclaimer</h1>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-600 dark:text-gray-300">
+      <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-700/50 transition-colors duration-300">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          Disclaimer
+        </h1>
         <p className="mb-4">Last updated: [03-11-2025]</p>
 
         <h2
           id="no-advice"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           1. Not Professional Advice
         </h2>
@@ -26,7 +28,10 @@ const DisclaimerPage: React.FC = () => {
           risk.
         </p>
 
-        <h2 id="as-is" className="text-2xl font-semibold text-white mt-8 mb-4">
+        <h2
+          id="as-is"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
+        >
           2. "As Is" Service
         </h2>
         <p className="mb-4">
@@ -38,7 +43,7 @@ const DisclaimerPage: React.FC = () => {
 
         <h2
           id="liability"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           3. Limitation of Liability
         </h2>

@@ -22,7 +22,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   );
   const [selectedRoomType, setSelectedRoomType] = useState<RoomType | "">("");
   const [customDescription, setCustomDescription] = useState<string>("");
+<<<<<<< HEAD
+  const [isCompressing, setIsCompressing] = useState(false);
+=======
   const [isCompressing, setIsCompressing] = useState(false); // Shows "Optimizing..." UI
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
 
   useEffect(() => {
     if (selectedRoomType === "Other") {
@@ -34,8 +38,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   }, [selectedRoomType, customDescription, onDescriptionChange]);
 
+<<<<<<< HEAD
+=======
   // --- MOBILE OPTIMIZATION: COMPRESS IMAGE ---
   // Resizes large photos (e.g. 4000px) down to 1024px to prevent crashes
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
   const compressImage = (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -45,10 +52,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         img.src = event.target?.result as string;
         img.onload = () => {
           const canvas = document.createElement("canvas");
+<<<<<<< HEAD
+          const MAX_WIDTH = 1024;
+          const scaleSize = MAX_WIDTH / img.width;
+
+=======
           const MAX_WIDTH = 1024; // Safe size for mobile AI apps
           const scaleSize = MAX_WIDTH / img.width;
 
           // If image is already small enough, return original
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
           if (scaleSize >= 1) {
             resolve(file);
             return;
@@ -63,7 +76,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           canvas.toBlob(
             (blob) => {
               if (blob) {
+<<<<<<< HEAD
+=======
                 // Create new small file
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
                 const newFile = new File([blob], file.name, {
                   type: "image/jpeg",
                   lastModified: Date.now(),
@@ -74,7 +90,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               }
             },
             "image/jpeg",
+<<<<<<< HEAD
+            0.8
+=======
             0.8 // 80% quality is perfect for AI
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
           );
         };
         img.onerror = (error) => reject(error);
@@ -82,11 +102,21 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       reader.onerror = (error) => reject(error);
     });
   };
+<<<<<<< HEAD
+=======
   // -------------------------------------------
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
+<<<<<<< HEAD
+        setIsCompressing(true);
+        try {
+          const originalFile = acceptedFiles[0];
+          const compressedFile = await compressImage(originalFile);
+
+=======
         setIsCompressing(true); // Start loading UI
         try {
           const originalFile = acceptedFiles[0];
@@ -103,18 +133,27 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             `Compressed: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`
           );
 
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
           if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
           }
 
           const newUrl = URL.createObjectURL(compressedFile);
           setPreviewUrl(newUrl);
+<<<<<<< HEAD
+          onImageChange(compressedFile);
+=======
           onImageChange(compressedFile); // Send SMALL file to parent
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
         } catch (error) {
           console.error("Error processing image:", error);
           alert("Could not process this image. Please try another.");
         } finally {
+<<<<<<< HEAD
+          setIsCompressing(false);
+=======
           setIsCompressing(false); // Stop loading UI
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
         }
       }
     },
@@ -125,7 +164,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     onDrop,
     accept: { "image/*": [".jpeg", ".png", ".jpg", ".webp"] },
     multiple: false,
+<<<<<<< HEAD
+    disabled: disabled || isCompressing,
+=======
     disabled: disabled || isCompressing, // Disable input while working
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
   });
 
   const handleRemoveImage = () => {
@@ -162,24 +205,39 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         disabled ? "opacity-50 pointer-events-none" : ""
       }`}
     >
-      <h2 className="text-2xl font-bold text-gray-200 mb-4">
+      {/* UPDATED: Heading color */}
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
         1. Upload & Describe
       </h2>
 
+<<<<<<< HEAD
+      {/* UPDATED: Container background and border colors */}
+=======
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
       <div
         {...getRootProps()}
         className={`relative w-full aspect-video rounded-lg border-2 ${
           isDragActive
+<<<<<<< HEAD
+            ? "border-purple-500 bg-gray-100 dark:bg-gray-700"
+            : "border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-800"
+        } flex items-center justify-center text-center text-gray-500 dark:text-gray-400 cursor-pointer transition-colors duration-200 p-4 overflow-hidden`}
+=======
             ? "border-purple-500 bg-gray-700"
             : "border-gray-600 bg-gray-800"
         } flex items-center justify-center text-center text-gray-400 cursor-pointer transition-colors duration-200 p-4 overflow-hidden`}
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
       >
         <input {...getInputProps()} disabled={disabled || isCompressing} />
 
         {isCompressing ? (
           <div className="flex flex-col items-center animate-pulse">
             <svg
+<<<<<<< HEAD
+              className="w-8 h-8 text-purple-500 animate-spin mb-2"
+=======
               className="w-8 h-8 text-purple-400 animate-spin mb-2"
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -210,7 +268,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           <div className="text-center p-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -227,22 +285,42 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
+<<<<<<< HEAD
+            {/* UPDATED: Text colors */}
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              <span className="font-semibold text-purple-500 dark:text-purple-400">
+                {isDragActive ? "Drop image here..." : "Tap to Take Photo"}
+              </span>
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              Optimized for Mobile
+            </p>
+=======
             <p className="mt-2 text-gray-400">
               <span className="font-semibold text-purple-400">
                 {isDragActive ? "Drop image here..." : "Tap to Take Photo"}
               </span>
             </p>
             <p className="text-xs text-gray-500 mt-1">Optimized for Mobile</p>
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
           </div>
         )}
 
         {previewUrl && !disabled && !isCompressing && (
+<<<<<<< HEAD
+          // UPDATED: Button styling for visibility on light/dark images
+=======
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleRemoveImage();
             }}
+<<<<<<< HEAD
+            className="absolute top-2 right-2 bg-white/90 text-gray-800 hover:bg-white dark:bg-gray-900/70 dark:text-white dark:hover:bg-gray-800 px-3 py-1 rounded-md text-sm font-semibold transition-colors shadow-sm"
+=======
             className="absolute top-2 right-2 bg-gray-900/70 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-800 transition-colors"
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
           >
             Change
           </button>
@@ -251,19 +329,21 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       {previewUrl && !isCompressing && (
         <div className="mt-6">
+          {/* UPDATED: Label color */}
           <label
             htmlFor="room-type-select"
-            className="block text-gray-200 text-lg font-semibold mb-2"
+            className="block text-gray-800 dark:text-gray-200 text-lg font-semibold mb-2"
           >
             Describe the room
           </label>
           <div className="relative mb-2">
+            {/* UPDATED: Select background, text, border */}
             <select
               id="room-type-select"
               value={selectedRoomType}
               onChange={handleRoomTypeChange}
               disabled={disabled}
-              className="block w-full appearance-none bg-gray-700 border border-gray-600 text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+              className="block w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
             >
               <option value="" disabled>
                 -- Select Room Type --
@@ -274,7 +354,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 </option>
               ))}
             </select>
+<<<<<<< HEAD
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 dark:text-gray-400">
+=======
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
               <svg
                 className="fill-current h-4 w-4"
                 xmlns="http://www.w3.org/2000/svg"
@@ -287,6 +371,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
           {selectedRoomType === "Other" && (
             <div className="mt-2">
+<<<<<<< HEAD
+              {/* UPDATED: Input background, text, border */}
+=======
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
               <input
                 type="text"
                 value={customDescription}
@@ -294,15 +382,17 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 maxLength={MAX_ROOM_DESCRIPTION_LENGTH}
                 disabled={disabled}
                 placeholder="Describe your room here..."
-                className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-                  isTooLong ? "border-red-500" : "border-gray-600"
+                className={`w-full p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border ${
+                  isTooLong
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400 disabled:opacity-70 disabled:cursor-not-allowed`}
               />
             </div>
           )}
           <p
             className={`text-right text-xs mt-1 ${
-              isTooLong ? "text-red-500" : "text-gray-400"
+              isTooLong ? "text-red-500" : "text-gray-500 dark:text-gray-400"
             }`}
           >
             {characterCount}/{MAX_ROOM_DESCRIPTION_LENGTH}

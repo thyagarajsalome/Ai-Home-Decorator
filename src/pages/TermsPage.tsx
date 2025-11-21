@@ -1,12 +1,13 @@
-// src/pages/TermsPage.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 
 const TermsPage: React.FC = () => {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-300">
-      <div className="bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50">
-        <h1 className="text-3xl font-bold text-white mb-6">Terms of Service</h1>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-600 dark:text-gray-300">
+      <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-700/50 transition-colors duration-300">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          Terms of Service
+        </h1>
         <p className="mb-4">Last updated: [03-11-2025]</p>
         <p className="mb-4">
           Welcome to AI Home Decorator ("Service"). By accessing or using our
@@ -14,7 +15,7 @@ const TermsPage: React.FC = () => {
         </p>
         <h2
           id="accounts"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           1. Accounts
         </h2>
@@ -28,7 +29,7 @@ const TermsPage: React.FC = () => {
         {/* --- MODIFIED SECTION 2 --- */}
         <h2
           id="service"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           2. Service Usage
         </h2>
@@ -42,7 +43,7 @@ const TermsPage: React.FC = () => {
 
         <h2
           id="content"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           3. User Content
         </h2>
@@ -63,7 +64,7 @@ const TermsPage: React.FC = () => {
         </p>
         <h2
           id="conduct"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           4. Prohibited Conduct
         </h2>
@@ -81,7 +82,7 @@ const TermsPage: React.FC = () => {
         </ul>
         <h2
           id="termination"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           5. Termination
         </h2>
@@ -90,16 +91,25 @@ const TermsPage: React.FC = () => {
           notice or liability, for any reason, including if you breach these
           Terms.
         </p>
-        <h2 id="links" className="text-2xl font-semibold text-white mt-8 mb-4">
+        <h2
+          id="links"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
+        >
           6. Other Legal Policies
         </h2>
         <p className="mb-4">
           By agreeing to these Terms, you also agree to our{" "}
-          <Link to="/policy" className="text-purple-400 hover:underline">
+          <Link
+            to="/policy"
+            className="text-purple-600 dark:text-purple-400 hover:underline"
+          >
             Privacy Policy
           </Link>{" "}
           and{" "}
-          <Link to="/disclaimer" className="text-purple-400 hover:underline">
+          <Link
+            to="/disclaimer"
+            className="text-purple-600 dark:text-purple-400 hover:underline"
+          >
             Disclaimer
           </Link>
           , which are incorporated herein by reference.

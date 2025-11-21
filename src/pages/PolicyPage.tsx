@@ -4,9 +4,11 @@ import React from "react";
 
 const PolicyPage: React.FC = () => {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-300">
-      <div className="bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50">
-        <h1 className="text-3xl font-bold text-white mb-6">Privacy Policy</h1>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-600 dark:text-gray-300">
+      <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-700/50 transition-colors duration-300">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          Privacy Policy
+        </h1>
         <p className="mb-4">Last updated: [03-11-2025]</p>
 
         <p className="mb-4">
@@ -18,7 +20,7 @@ const PolicyPage: React.FC = () => {
 
         <h2
           id="data-we-collect"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           1. The Data We Collect
         </h2>
@@ -41,7 +43,7 @@ const PolicyPage: React.FC = () => {
 
         <h2
           id="how-we-use-data"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           2. How Your Data Is Used
         </h2>
@@ -60,7 +62,7 @@ const PolicyPage: React.FC = () => {
 
         <h2
           id="data-storage"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           3. Data Storage and Retention
         </h2>
@@ -77,7 +79,7 @@ const PolicyPage: React.FC = () => {
 
         <h2
           id="third-parties"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           4. Third-Party Services
         </h2>
@@ -94,7 +96,7 @@ const PolicyPage: React.FC = () => {
 
         <h2
           id="contact"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           5. Contact Us
         </h2>
@@ -103,7 +105,7 @@ const PolicyPage: React.FC = () => {
           at{" "}
           <a
             href="mailto:contactaihomedecorator@gmail.com"
-            className="text-purple-400 hover:underline"
+            className="text-purple-600 dark:text-purple-400 hover:underline"
           >
             contactaihomedecorator@gmail.com
           </a>
@@ -113,7 +115,7 @@ const PolicyPage: React.FC = () => {
         {/* --- ADDED THIS SECTION --- */}
         <h2
           id="deletion"
-          className="text-2xl font-semibold text-white mt-8 mb-4"
+          className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
         >
           6. Account Deletion
         </h2>
@@ -122,7 +124,7 @@ const PolicyPage: React.FC = () => {
           email address and user ID), please send a request to us at{" "}
           <a
             href="mailto:contactaihomedecorator@gmail.com"
-            className="text-purple-400 hover:underline"
+            className="text-purple-600 dark:text-purple-400 hover:underline"
           >
             contactaihomedecorator@gmail.com
           </a>

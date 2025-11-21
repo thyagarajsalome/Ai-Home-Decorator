@@ -1,3 +1,4 @@
+// src/pages/Home.tsx
 import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -80,7 +81,9 @@ const Home: React.FC = () => {
   const getLoadingTip = (prompt: string, room: string): string => {
     const p = prompt.toLowerCase();
     const r = room.toLowerCase();
+
     let tipKey = "default";
+
     if (p.includes("japandi")) tipKey = "japandi";
     else if (p.includes("minimalist")) tipKey = "minimalist";
     else if (p.includes("industrial")) tipKey = "industrial";
@@ -88,6 +91,7 @@ const Home: React.FC = () => {
     else if (r.includes("living room")) tipKey = "living room";
     else if (r.includes("bedroom")) tipKey = "bedroom";
     else if (r.includes("kitchen")) tipKey = "kitchen";
+
     const tipsArray = designTips[tipKey] || designTips["default"];
     return tipsArray[Math.floor(Math.random() * tipsArray.length)];
   };
@@ -125,7 +129,6 @@ const Home: React.FC = () => {
     try {
       if (!uploadedImageFile) throw new Error("Missing image.");
 
-      // NEW FIXED CODE
       const fullImageUrl = await generateDecoratedImage(
         uploadedImageFile,
         designInput,
@@ -167,10 +170,11 @@ const Home: React.FC = () => {
   const isDesignMissing =
     designMode === "style" ? !selectedStyle : !customPrompt;
 
+  // UPDATED: Added styles for light mode
   const getButtonActiveStyle = (isActive: boolean) =>
     isActive
       ? "bg-purple-600 text-white font-bold"
-      : "bg-gray-700 text-gray-300 hover:bg-gray-600";
+      : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600";
 
   // --- HELPER FOR EXTERNAL LINK ---
   const handleExternalPurchase = () => {
@@ -182,7 +186,8 @@ const Home: React.FC = () => {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {currentUser && !isVerified && !isLoading && (
-        <div className="max-w-5xl mx-auto mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-300 rounded-lg text-center">
+        // UPDATED: Added light mode colors
+        <div className="max-w-5xl mx-auto mb-6 p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 dark:bg-yellow-900/50 dark:border-yellow-700 dark:text-yellow-300 rounded-lg text-center">
           <p>
             Please check your email ({currentUser.email}) to verify your account
             before you can decorate.
@@ -190,7 +195,8 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8">
+      {/* UPDATED: Main Card styling for light/dark mode */}
+      <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-700/50 backdrop-blur-sm flex flex-col space-y-8 transition-colors duration-300">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <ImageUploader
             onImageChange={handleImageChange}
@@ -205,7 +211,8 @@ const Home: React.FC = () => {
               !isStep1Complete ? "opacity-50 pointer-events-none" : ""
             }`}
           >
-            <div className="flex w-full rounded-lg bg-gray-900/50 p-1 mb-4 gap-1">
+            {/* UPDATED: Toggle background color */}
+            <div className="flex w-full rounded-lg bg-gray-100 dark:bg-gray-900/50 p-1 mb-4 gap-1">
               <button
                 onClick={() => setDesignMode("style")}
                 disabled={!isStep1Complete || isDisabled}
@@ -227,7 +234,20 @@ const Home: React.FC = () => {
             </div>
 
             {designMode === "custom" && !isDisabled && (
-              <div className="flex items-center justify-center gap-2 text-sm text-purple-300 bg-purple-900/40 border border-purple-700/60 p-2.5 rounded-lg -mt-2 mb-4">
+              // UPDATED: Info box styling
+              <div className="flex items-center justify-center gap-2 text-sm text-purple-600 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/40 border border-purple-200 dark:border-purple-700/60 p-2.5 rounded-lg -mt-2 mb-4">
+                <svg
+                  className="h-5 w-5 flex-shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
                 <span className="text-xs">
                   <strong>Note:</strong> Custom designs require{" "}
                   <strong>{CUSTOM_GENERATION_COST} credits</strong> per
@@ -254,19 +274,20 @@ const Home: React.FC = () => {
 
         <div className="text-center">
           {!currentUser && !isLoading && (
-            <div className="max-w-lg mx-auto mb-6 p-4 bg-gray-700/50 border border-purple-800/60 rounded-lg text-center shadow-lg">
-              <p className="text-lg text-gray-200">
+            // UPDATED: Login Box styling
+            <div className="max-w-lg mx-auto mb-6 p-4 bg-gray-100 dark:bg-gray-700/50 border border-purple-300 dark:border-purple-800/60 rounded-lg text-center shadow-lg">
+              <p className="text-lg text-gray-800 dark:text-gray-200">
                 Please{" "}
                 <Link
                   to="/login"
-                  className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                  className="font-bold text-purple-500 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition-colors duration-200"
                 >
                   Login
                 </Link>{" "}
                 or{" "}
                 <Link
                   to="/signup"
-                  className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                  className="font-bold text-purple-500 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition-colors duration-200"
                 >
                   Sign Up
                 </Link>{" "}
@@ -287,13 +308,13 @@ const Home: React.FC = () => {
             }
             className={`px-8 py-4 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
               !currentUser
-                ? "bg-gray-500 cursor-not-allowed"
+                ? "bg-gray-400 dark:bg-gray-500 cursor-not-allowed"
                 : !isVerified
-                ? "bg-yellow-700 cursor-not-allowed"
+                ? "bg-yellow-600 dark:bg-yellow-700 cursor-not-allowed"
                 : isLimitReached
-                ? "bg-red-700 cursor-not-allowed"
+                ? "bg-red-600 dark:bg-red-700 cursor-not-allowed"
                 : isLoading
-                ? "bg-gray-600 cursor-wait"
+                ? "bg-gray-500 dark:bg-gray-600 cursor-wait"
                 : "bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:scale-105"
             } disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100`}
           >
@@ -310,28 +331,29 @@ const Home: React.FC = () => {
                 })`}
           </button>
           {currentUser && isVerified && (
-            <p className="text-sm text-gray-400 mt-2">
+            // UPDATED: Text color
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               Credits remaining: {isAdmin ? "∞ (Admin)" : generationCredits}
             </p>
           )}
 
           {/* --- CREDIT LIMIT MESSAGE: CONDITIONAL --- */}
           {currentUser && isVerified && isLimitReached && (
-            <div className="mt-4 p-3 bg-blue-900/50 border border-blue-700 text-blue-300 rounded-lg text-center max-w-md mx-auto">
+            // UPDATED: Info box styling with merged App Mode logic
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 dark:bg-blue-900/50 dark:border-blue-700 dark:text-blue-300 rounded-lg text-center max-w-md mx-auto">
               <p>
                 You're out of credits!{" "}
-                {/* If in App, show external link button. If Web, show internal link. */}
                 {isAppMode ? (
                   <button
                     onClick={handleExternalPurchase}
-                    className="font-bold text-purple-400 hover:underline bg-transparent border-none cursor-pointer"
+                    className="font-bold text-purple-500 dark:text-purple-400 hover:underline bg-transparent border-none cursor-pointer"
                   >
                     Visit website to buy more
                   </button>
                 ) : (
                   <Link
                     to="/pricing"
-                    className="font-bold text-purple-400 hover:underline"
+                    className="font-bold text-purple-500 dark:text-purple-400 hover:underline"
                   >
                     Buy more credits
                   </Link>
@@ -340,12 +362,12 @@ const Home: React.FC = () => {
               </p>
             </div>
           )}
-          {/* ----------------------------------------- */}
         </div>
       </div>
 
       {error && (
-        <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
+        // UPDATED: Error box styling
+        <div className="max-w-5xl mx-auto mt-8 p-4 bg-red-50 border border-red-200 text-red-800 dark:bg-red-900/50 dark:border-red-700 dark:text-red-300 rounded-lg text-center">
           <p>
             <strong>Oops!</strong> {error}
           </p>
