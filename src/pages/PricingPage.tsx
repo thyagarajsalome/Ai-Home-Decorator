@@ -49,17 +49,32 @@ const loadScript = (src: string) => {
 };
 
 const PricingPage: React.FC = () => {
+<<<<<<< HEAD
   // @ts-ignore
   const { currentUser, getIdToken, isAppMode } = useAuth();
   const navigate = useNavigate();
 
+=======
+  // @ts-ignore - Ignore TS error if AuthContext isn't fully updated yet
+  const { currentUser, getIdToken, isAppMode } = useAuth();
+  const navigate = useNavigate();
+
+  // --- SECURITY: HIDE PAGE IN APP ---
+  // If user is in the Android App, kick them to Home immediately
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
   useEffect(() => {
     if (isAppMode) {
       navigate("/");
     }
   }, [isAppMode, navigate]);
 
+<<<<<<< HEAD
   if (isAppMode) return null;
+=======
+  // Stop rendering if we are in the app (prevents flash of content)
+  if (isAppMode) return null;
+  // ----------------------------------
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
 
   const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +94,10 @@ const PricingPage: React.FC = () => {
   }, []);
 
   const handlePurchase = async (pack: CreditPack) => {
+<<<<<<< HEAD
     // ... (Keep logic exactly the same as before)
+=======
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
     setLoadingPackId(pack.priceId);
     setError(null);
 
@@ -105,6 +123,10 @@ const PricingPage: React.FC = () => {
         return;
       }
 
+<<<<<<< HEAD
+=======
+      // 1. Create Order
+>>>>>>> d6b5b78483052f659fad9632ab550873cc70e6f9
       const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {

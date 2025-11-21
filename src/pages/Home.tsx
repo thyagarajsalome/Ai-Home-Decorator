@@ -15,10 +15,9 @@ import { STYLE_GENERATION_COST, CUSTOM_GENERATION_COST } from "../constants";
 import { designTips } from "../designTips";
 
 const Home: React.FC = () => {
-  const { currentUser, getIdToken, currentUserRole } = useAuth();
+  const { currentUser, getIdToken, currentUserRole, isAppMode } = useAuth(); // <--- GET isAppMode
   const isAdmin = currentUserRole === "admin";
 
-  // State declarations
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [roomDescription, setRoomDescription] = useState<string>("");
@@ -32,7 +31,6 @@ const Home: React.FC = () => {
   const [designMode, setDesignMode] = useState<"style" | "custom">("style");
   const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
   const [customPrompt, setCustomPrompt] = useState<string>("");
-
   const [loadingTip, setLoadingTip] = useState<string>("");
 
   const fetchGenerationCredits = useCallback(async () => {
@@ -50,12 +48,8 @@ const Home: React.FC = () => {
         .select("generation_credits")
         .eq("id", currentUser.id)
         .single();
-      if (error) {
-        throw error;
-      }
-      if (data) {
-        setGenerationCredits(data.generation_credits);
-      }
+      if (error) throw error;
+      if (data) setGenerationCredits(data.generation_credits);
     } catch (dbError: any) {
       console.error("Error fetching generation credits:", dbError);
     }
@@ -133,9 +127,8 @@ const Home: React.FC = () => {
     setGeneratedImageUrl(null);
 
     try {
-      if (!uploadedImageFile) {
-        throw new Error("Missing image.");
-      }
+      if (!uploadedImageFile) throw new Error("Missing image.");
+
       const fullImageUrl = await generateDecoratedImage(
         uploadedImageFile,
         designInput,
@@ -143,7 +136,8 @@ const Home: React.FC = () => {
         idToken,
         designMode
       );
-      setGeneratedImageUrl(fullImageUrl);
+      setGeneratedImageUrl(fullImageUrl); // <--- Backend now provides the full URL
+
       await fetchGenerationCredits();
     } catch (err) {
       let message = "An unknown error occurred.";
@@ -152,21 +146,14 @@ const Home: React.FC = () => {
         message = "The AI is busy, please try again in a moment.";
       } else if (
         message.includes("Invalid token") ||
-        message.includes("No token provided") ||
         message.includes("401") ||
         message.includes("403")
       ) {
         if (message.includes("You do not have enough credits")) {
-          message = message;
-        } else if (message.includes("out of credits")) {
-          message =
-            "You are out of credits. Please purchase a pack to continue.";
+          message = message; // Show the credit error directly
         } else {
           message = "Authentication failed. Please log in again.";
         }
-      } else if (message.includes("Failed to generate the decorated image")) {
-        message =
-          "The decoration service failed to process your request. This may be a temporary server issue or an incompatible input image. Please try again.";
       }
       setError(message);
       fetchGenerationCredits();
@@ -188,6 +175,13 @@ const Home: React.FC = () => {
     isActive
       ? "bg-purple-600 text-white font-bold"
       : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600";
+
+  // --- HELPER FOR EXTERNAL LINK ---
+  const handleExternalPurchase = () => {
+    // Opens the pricing page in the system browser (Chrome/Safari)
+    // This effectively "leaves" the app context.
+    window.open("https://aihomedecorator.com/pricing", "_blank");
+  };
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -343,17 +337,27 @@ const Home: React.FC = () => {
             </p>
           )}
 
+          {/* --- CREDIT LIMIT MESSAGE: CONDITIONAL --- */}
           {currentUser && isVerified && isLimitReached && (
-            // UPDATED: Info box styling
+            // UPDATED: Info box styling with merged App Mode logic
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 dark:bg-blue-900/50 dark:border-blue-700 dark:text-blue-300 rounded-lg text-center max-w-md mx-auto">
               <p>
                 You're out of credits!{" "}
-                <Link
-                  to="/pricing"
-                  className="font-bold text-purple-500 dark:text-purple-400 hover:underline"
-                >
-                  Buy more credits
-                </Link>{" "}
+                {isAppMode ? (
+                  <button
+                    onClick={handleExternalPurchase}
+                    className="font-bold text-purple-500 dark:text-purple-400 hover:underline bg-transparent border-none cursor-pointer"
+                  >
+                    Visit website to buy more
+                  </button>
+                ) : (
+                  <Link
+                    to="/pricing"
+                    className="font-bold text-purple-500 dark:text-purple-400 hover:underline"
+                  >
+                    Buy more credits
+                  </Link>
+                )}{" "}
                 to continue decorating.
               </p>
             </div>
