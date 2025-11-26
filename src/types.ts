@@ -1,11 +1,10 @@
 // src/types.ts
 export interface DesignStyle {
-  id: string; //
-  name: string; //
+  id: string;
+  name: string;
   // Optional: Keep icon properties if needed elsewhere, otherwise remove them
   iconName?: string;
   iconLibrary?: "fa" | "md" | "io5" | "etc" | "gi" | "tb";
-  // REMOVED previewImage property
 }
 
 // --- ADDED ---
@@ -17,12 +16,11 @@ export interface StyleRegion {
 }
 // --- END ADDED ---
 
-export type RoomType = //
-
-    | "Living Room" //
-    | "Bedroom" //
-    | "Bathroom" //
-    | "Dining Room" //
-    | "Laundry Room" //
-    | "Kitchen" //
-    | "Other"; //
+export type RoomType =
+  | "Living Room"
+  | "Bedroom"
+  | "Bathroom"
+  | "Dining Room"
+  | "Laundry Room"
+  | "Kitchen"
+  | "Other";
