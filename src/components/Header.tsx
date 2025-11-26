@@ -79,6 +79,7 @@ const Header: React.FC = () => {
           >
             Home
           </Link>
+          {/* RESTORED ABOUT LINK */}
           <Link
             to="/about"
             className="text-gray-300 hover:text-purple-400 transition-colors"
@@ -149,6 +150,7 @@ const Header: React.FC = () => {
           >
             Home
           </Link>
+          {/* RESTORED ABOUT LINK IN MOBILE */}
           <Link
             to="/about"
             onClick={closeMenu}
