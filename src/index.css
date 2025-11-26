@@ -3,72 +3,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/* You can add your own global base styles here if needed */
-body {
-  /* min-height: 100vh; */
-}
-
-/* --- STYLES FOR PWA INSTALL PROMPT --- */
-
-/* Keyframes for animation */
-@keyframes slideUpFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
+/* ... existing styles ... */
 
 /* Main toast container */
 .pwa-install-toast {
+  display: none; /* HIDDEN BY DEFAULT (Mobile & Tablet) */
   position: fixed;
-  /* Bottom-center on mobile, bottom-right on desktop */
-  bottom: 1rem;
-  left: 1rem;
-  right: 1rem;
-
-  max-width: 450px; /* Max width for the toast */
+  bottom: 1.5rem;
+  right: 1.5rem;
+  max-width: 28rem;
   width: auto;
   margin-left: auto;
-  margin-right: auto;
+  margin-right: 1.5rem;
 
   background: linear-gradient(135deg, #1f2937, #374151);
   color: white;
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(139, 92, 246, 0.4); /* Subtle purple border */
+  border: 1px solid rgba(139, 92, 246, 0.4);
   z-index: 50;
   cursor: pointer;
-
-  /* Animation */
   animation: slideUpFadeIn 0.5s ease-out;
 }
 
-/* Desktop positioning */
-@media (min-width: 768px) {
+/* Desktop positioning - Only show on large screens */
+@media (min-width: 1024px) {
   .pwa-install-toast {
-    left: auto;
-    right: 1.5rem;
-    max-width: 28rem;
-    margin-right: 1.5rem;
-    margin-left: auto;
-    bottom: 1.5rem;
+    display: block;
   }
 }
+
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ... rest of the file remains the same ... */
 
 .pwa-install-content {
   display: flex;
