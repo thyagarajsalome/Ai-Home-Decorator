@@ -105,9 +105,9 @@ const PolicyPage: React.FC = () => {
             href="mailto:contactaihomedecorator@gmail.com"
             className="text-purple-400 hover:underline"
           >
-            contactaihomedecorator@gmail.com
+            contact@toolwebsite.in
           </a>
-          .
+          <p> or contact: contactaihomedecorator@gmail.com</p>
         </p>
 
         {/* --- ADDED THIS SECTION --- */}
