@@ -1,4 +1,3 @@
-// src/pages/PricingPage.tsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -14,61 +13,62 @@ interface CreditPack {
   name: string;
   credits: number;
   price: number;
-  priceId: string; // This is our internal ID, e.g., "pack_starter"
+  priceId: string;
 }
 
-// Credit packs (matches the map in your server.js)
 const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
-    price: 199, // Price in INR
+    price: 398, // CHANGED FROM 199
     priceId: "pack_starter",
   },
   {
     name: "Best Value",
     credits: 50,
-    price: 499, // Price in INR
+    price: 998, // CHANGED FROM 499
     priceId: "pack_value",
   },
   {
     name: "Pro Pack",
     credits: 120,
-    price: 999, // Price in INR
+    price: 1998, // CHANGED FROM 999
     priceId: "pack_pro",
   },
 ];
 
-// Helper function to load the Razorpay script
 const loadScript = (src: string) => {
   return new Promise((resolve) => {
     const script = document.createElement("script");
     script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
 };
 
 const PricingPage: React.FC = () => {
-  const { currentUser, getIdToken } = useAuth();
-
-  // --- 1. CHANGED: Make loading state specific to the pack ID ---
-  const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // @ts-ignore - Ignore TS error if AuthContext isn't fully updated yet
+  const { currentUser, getIdToken, isAppMode } = useAuth();
   const navigate = useNavigate();
 
-  // State to track if script is loaded
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+  // --- SECURITY: HIDE PAGE IN APP ---
+  // If user is in the Android App, kick them to Home immediately
+  useEffect(() => {
+    if (isAppMode) {
+      navigate("/");
+    }
+  }, [isAppMode, navigate]);
 
-  // --- 2. CHANGED: Add state for styled success message ---
+  // Stop rendering if we are in the app (prevents flash of content)
+  if (isAppMode) return null;
+  // ----------------------------------
+
+  const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
 
-  // Load the Razorpay script when the component mounts
   useEffect(() => {
     loadScript("https://checkout.razorpay.com/v1/checkout.js").then(
       (loaded) => {
@@ -82,13 +82,12 @@ const PricingPage: React.FC = () => {
   }, []);
 
   const handlePurchase = async (pack: CreditPack) => {
-    // --- 3. CHANGED: Use setLoadingPackId ---
     setLoadingPackId(pack.priceId);
     setError(null);
 
     if (!currentUser) {
       setError("You must be logged in to make a purchase.");
-      setLoadingPackId(null); // Reset loading
+      setLoadingPackId(null);
       return;
     }
 
@@ -96,7 +95,7 @@ const PricingPage: React.FC = () => {
       setError(
         "Payment gateway is not ready. Please wait a moment or refresh."
       );
-      setLoadingPackId(null); // Reset loading
+      setLoadingPackId(null);
       return;
     }
 
@@ -104,11 +103,11 @@ const PricingPage: React.FC = () => {
       const idToken = await getIdToken();
       if (!idToken) {
         setError("Could not authenticate. Please log in again.");
-        setLoadingPackId(null); // Reset loading
+        setLoadingPackId(null);
         return;
       }
 
-      // 1. Create Order: Call your backend
+      // 1. Create Order
       const orderResponse = await fetch(`/api/create-order`, {
         method: "POST",
         headers: {
@@ -135,10 +134,8 @@ const PricingPage: React.FC = () => {
         image: "/icons/icon-512x512.png",
         order_id: order.id,
 
-        // 3. Define the payment handler
         handler: async (response: any) => {
           try {
-            // 4. Verify Payment
             const verifyResponse = await fetch(`/api/payment-verification`, {
               method: "POST",
               headers: {
@@ -157,17 +154,14 @@ const PricingPage: React.FC = () => {
               throw new Error(errData.error || "Payment verification failed.");
             }
 
-            // --- 4. CHANGED: Set success message instead of alert/navigate ---
-            setLoadingPackId(null); // Stop loading
+            setLoadingPackId(null);
             setPurchaseSuccess(
               `Payment successful! ${pack.credits} credits have been added to your account.`
             );
           } catch (verifyError: any) {
             console.error("Verification Error:", verifyError);
-            setError(
-              `Payment verification failed. Please contact support. ${verifyError.message}`
-            );
-            setLoadingPackId(null); // Stop loading
+            setError(`Payment verification failed: ${verifyError.message}`);
+            setLoadingPackId(null);
           }
         },
 
@@ -176,17 +170,16 @@ const PricingPage: React.FC = () => {
           email: currentUser.email,
         },
         theme: {
-          color: "#8b5cf6", // Purple
+          color: "#8b5cf6",
         },
         modal: {
           ondismiss: () => {
-            setLoadingPackId(null); // Stop loading if user closes modal
+            setLoadingPackId(null);
             console.log("Payment dismissed");
           },
         },
       };
 
-      // 6. Open the Razorpay Checkout Modal
       const rzp = new window.Razorpay(options);
       rzp.open();
 
@@ -197,16 +190,15 @@ const PricingPage: React.FC = () => {
             response.error.description || response.error.reason
           }`
         );
-        setLoadingPackId(null); // Stop loading
+        setLoadingPackId(null);
       });
     } catch (err: any) {
       console.error("Purchase Error:", err);
       setError(err.message || "An error occurred during purchase.");
-      setLoadingPackId(null); // Stop loading
+      setLoadingPackId(null);
     }
   };
 
-  // --- 2. (CONTINUED) RENDER STYLED SUCCESS MESSAGE ---
   if (purchaseSuccess) {
     return (
       <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
@@ -226,7 +218,6 @@ const PricingPage: React.FC = () => {
     );
   }
 
-  // --- 1. (CONTINUED) Check if *any* pack is processing ---
   const isProcessing = loadingPackId !== null;
 
   return (
@@ -247,9 +238,7 @@ const PricingPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {creditPacks.map((pack) => {
-          // --- 1. (CONTINUED) Check if *this* pack is the one processing ---
           const isThisPackLoading = loadingPackId === pack.priceId;
-
           return (
             <div
               key={pack.name}
@@ -334,7 +323,6 @@ const PricingPage: React.FC = () => {
 
               <button
                 onClick={() => handlePurchase(pack)}
-                // Disable all buttons if any purchase is processing
                 disabled={isProcessing || !currentUser || !scriptLoaded}
                 className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
                   pack.name === "Best Value"
@@ -342,7 +330,6 @@ const PricingPage: React.FC = () => {
                     : "bg-gray-700 hover:bg-gray-600"
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {/* Only show "Processing..." on the clicked button */}
                 {isThisPackLoading ? "Processing..." : "Buy Now"}
               </button>
             </div>
