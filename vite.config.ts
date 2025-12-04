@@ -22,29 +22,29 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "."),
       },
     },
-    // --- FIX: CHUNK SPLITTING ---
+    // --- FIX: CHUNK SPLITTING (Performance) ---
     build: {
-      chunkSizeWarningLimit: 1000, // Increase limit to 1MB to silence minor warnings
+      chunkSizeWarningLimit: 1000, // Increase limit to 1MB
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            // Split vendor modules (node_modules) into separate chunks
+            // Split vendor modules into separate files
             if (id.includes("node_modules")) {
               if (id.includes("firebase")) {
-                return "firebase"; // Separate Firebase chunk
+                return "firebase";
               }
               if (id.includes("react")) {
-                return "vendor-react"; // Separate React chunk
+                return "vendor-react";
               }
               if (id.includes("@google/genai")) {
-                return "genai"; // Separate AI SDK chunk
+                return "genai";
               }
-              return "vendor"; // All other dependencies
+              return "vendor";
             }
           },
         },
       },
     },
-    // ----------------------------
+    // ------------------------------------------
   };
 });
