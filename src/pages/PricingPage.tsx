@@ -22,19 +22,19 @@ const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
-    price: 199, // Price in INR
+    price: 398, // CHANGED FROM 199
     priceId: "pack_starter",
   },
   {
     name: "Best Value",
     credits: 50,
-    price: 499, // Price in INR
+    price: 998, // CHANGED FROM 499
     priceId: "pack_value",
   },
   {
     name: "Pro Pack",
     credits: 120,
-    price: 999, // Price in INR
+    price: 1998, // CHANGED FROM 999
     priceId: "pack_pro",
   },
 ];

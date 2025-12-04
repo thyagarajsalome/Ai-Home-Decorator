@@ -58,10 +58,10 @@ const razorpay = new Razorpay({
 // ------------------------------
 
 // --- 5. CREATE A SECURE MAP FOR PRICES (in paise/cents) ---
-const creditPacks = {
-  pack_starter: { amount: 19900, credits: 15, name: "Starter Pack" }, // 199.00 INR
-  pack_value: { amount: 49900, credits: 50, name: "Best Value" }, // 499.00 INR
-  pack_pro: { amount: 99900, credits: 120, name: "Pro Pack" }, // 999.00 INR
+const CREDIT_PACKS = {
+  pack_starter: { credits: 15, amount: 398 }, // CHANGED FROM 199
+  pack_value: { credits: 50, amount: 998 }, // CHANGED FROM 499
+  pack_pro: { credits: 120, amount: 1998 }, // CHANGED FROM 999
 };
 // ----------------------------------------------------
 
