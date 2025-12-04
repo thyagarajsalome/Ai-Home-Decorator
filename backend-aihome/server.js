@@ -1,4 +1,3 @@
-// backend-aihome/server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -36,18 +35,14 @@ const razorpay =
     ? new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret })
     : null;
 
-<<<<<<< HEAD
-// --- 5. CREATE A SECURE MAP FOR PRICES (in paise/cents) ---
+// --- CREDIT PACKS CONFIGURATION (UPDATED PRICES) ---
+// These must match the prices in your frontend PricingPage.tsx
 const CREDIT_PACKS = {
-  pack_starter: { credits: 15, amount: 398 }, // CHANGED FROM 199
-  pack_value: { credits: 50, amount: 998 }, // CHANGED FROM 499
-  pack_pro: { credits: 120, amount: 1998 }, // CHANGED FROM 999
+  pack_starter: { credits: 15, amount: 398 },
+  pack_value: { credits: 50, amount: 998 },
+  pack_pro: { credits: 120, amount: 1998 },
 };
-// ----------------------------------------------------
 
-// --- 6. DEFINE GENERATION COSTS ---
-=======
->>>>>>> f577b7bc57339a920fcc566f30d88edf1ca75ea1
 const STYLE_GENERATION_COST = 1;
 const CUSTOM_GENERATION_COST = 3;
 
@@ -90,15 +85,8 @@ function bufferToGenerativePart(buffer, mimeType) {
 }
 
 // ==================================================
-//  PAYMENT ENDPOINTS (Restored)
+//  PAYMENT ENDPOINTS
 // ==================================================
-
-// Pack Definitions (Must match frontend)
-const CREDIT_PACKS = {
-  pack_starter: { credits: 15, amount: 199 },
-  pack_value: { credits: 50, amount: 499 },
-  pack_pro: { credits: 120, amount: 999 },
-};
 
 // 1. Create Order
 app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
@@ -154,7 +142,6 @@ app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
     }
 
     // Fetch order details to know how many credits to add
-    // (Fetching from Razorpay ensures we trust the source, not the client)
     const order = await razorpay.orders.fetch(razorpay_order_id);
 
     if (!order || !order.notes || !order.notes.credits) {
@@ -164,7 +151,6 @@ app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
     const creditsToAdd = parseInt(order.notes.credits);
 
     // Add credits to user profile
-    // First get current credits
     const { data: profile, error: fetchError } = await supabase
       .from("user_profiles")
       .select("generation_credits")
@@ -190,7 +176,7 @@ app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
 });
 
 // ==================================================
-//  IMAGE GENERATION ENDPOINT (Fixed)
+//  IMAGE GENERATION ENDPOINT
 // ==================================================
 app.post(
   "/api/decorate",
