@@ -36,6 +36,18 @@ const razorpay =
     ? new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret })
     : null;
 
+<<<<<<< HEAD
+// --- 5. CREATE A SECURE MAP FOR PRICES (in paise/cents) ---
+const CREDIT_PACKS = {
+  pack_starter: { credits: 15, amount: 398 }, // CHANGED FROM 199
+  pack_value: { credits: 50, amount: 998 }, // CHANGED FROM 499
+  pack_pro: { credits: 120, amount: 1998 }, // CHANGED FROM 999
+};
+// ----------------------------------------------------
+
+// --- 6. DEFINE GENERATION COSTS ---
+=======
+>>>>>>> f577b7bc57339a920fcc566f30d88edf1ca75ea1
 const STYLE_GENERATION_COST = 1;
 const CUSTOM_GENERATION_COST = 3;
 
