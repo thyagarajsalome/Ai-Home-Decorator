@@ -1,8 +1,9 @@
 // src/App.tsx
-import React, { useEffect } from "react"; // <-- Imported useEffect
-import { Routes, Route, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
+import Footer from "./components/Footer"; // <-- Import the new Footer
 import Home from "./pages/Home";
 import About from "./pages/About";
 import TermsPage from "./pages/TermsPage";
@@ -14,14 +15,11 @@ import PricingPage from "./pages/PricingPage";
 import InstallPWAButton from "./components/InstallPWAButton";
 
 const App: React.FC = () => {
-  // --- FIX: Handle App Resume/Multitasking ---
-  // This detects when the user switches back to the app.
-  // If the screen is blank (body empty), it forces a reload.
+  // Handle App Resume/Multitasking
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         console.log("App resumed");
-
         // Safety check: If the app woke up blank, force a reload
         if (document.body.childNodes.length === 0) {
           window.location.reload();
@@ -34,36 +32,29 @@ const App: React.FC = () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
-  // -------------------------------------------
 
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-gray-900 text-white antialiased">
+      {/* Added flex & flex-col to parent div to handle sticky footer */}
+      <div className="min-h-screen bg-gray-900 text-white antialiased flex flex-col">
         <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/policy" element={<PolicyPage />} />
-          <Route path="/disclaimer" element={<DisclaimerPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-        </Routes>
-        <footer className="text-center py-6 text-gray-500 text-sm">
-          <p>Powered by Google Gemini</p>
-          <div className="flex justify-center gap-4 mt-2">
-            <Link to="/terms" className="hover:text-purple-400">
-              Terms
-            </Link>
-            <Link to="/policy" className="hover:text-purple-400">
-              Privacy
-            </Link>
-            <Link to="/disclaimer" className="hover:text-purple-400">
-              Disclaimer
-            </Link>
-          </div>
-        </footer>
+
+        {/* flex-grow pushes the footer to the bottom if page content is short */}
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/policy" element={<PolicyPage />} />
+            <Route path="/disclaimer" element={<DisclaimerPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+          </Routes>
+        </div>
+
+        {/* New Footer Component */}
+        <Footer />
 
         <InstallPWAButton />
       </div>
