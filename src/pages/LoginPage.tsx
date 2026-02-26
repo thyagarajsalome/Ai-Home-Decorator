@@ -1,5 +1,5 @@
 // src/pages/LoginPage.tsx
-import React, { useState, useEffect } from "react"; // <-- IMPORTED useEffect
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useAuth } from "../context/AuthContext";
@@ -12,14 +12,11 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  // --- ADDED THIS useEffect BLOCK ---
   useEffect(() => {
-    // If user is already logged in, redirect to home
     if (currentUser) {
       navigate("/");
     }
-  }, [currentUser, navigate]); // Run this effect when currentUser changes
-  // ----------------------------------
+  }, [currentUser, navigate]); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +32,6 @@ const LoginPage: React.FC = () => {
       if (error) {
         throw error;
       }
-
-      // Redirect is now handled by the useEffect
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(
@@ -47,20 +42,24 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // --- OLD if(currentUser) BLOCK WAS REMOVED ---
-
-  // Only render the login form if there is no user
   if (currentUser) {
-    return null; // Render nothing while redirecting
+    return null; 
   }
 
-  // --- THIS IS THE FULL, CORRECTED RETURN BLOCK ---
   return (
     <div className="max-w-md mx-auto mt-10 px-4">
       <div className="bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm">
         <h1 className="text-3xl font-bold text-white mb-6 text-center">
           Login
         </h1>
+
+        {/* --- ADDED ALERT BANNER HERE --- */}
+        <div className="mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-200 rounded-lg text-sm text-center shadow-md">
+          <p className="font-semibold text-base mb-1">⚠️ Network Notice</p>
+          <p>Login issue due to network provider problem. Please try switching network or using mobile data.</p>
+        </div>
+        {/* ------------------------------- */}
+
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label
