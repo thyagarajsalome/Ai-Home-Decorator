@@ -52,13 +52,6 @@ const SignupPage: React.FC = () => {
           Sign Up
         </h1>
 
-        {/* --- ADDED ALERT BANNER HERE --- */}
-        <div className="mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-200 rounded-lg text-sm text-center shadow-md">
-          <p className="font-semibold text-base mb-1">⚠️ Network Notice</p>
-          <p>Login issue due to network provider problem. Please try switching network or using mobile data.</p>
-        </div>
-        {/* ------------------------------- */}
-
         {verificationSent && (
           <div className="mb-4 p-3 bg-green-900/50 border border-green-700 text-green-300 rounded-lg text-center">
             <p>
@@ -68,7 +61,6 @@ const SignupPage: React.FC = () => {
           </div>
         )}
 
-        {/* Rest of the form remains identical */}
         {!verificationSent && (
           <form onSubmit={handleSignup} className="space-y-4">
             <div>
