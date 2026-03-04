@@ -4,6 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useAuth } from "../context/AuthContext";
 
+// AUTHENTICATION FLOW:
+// 1. User enters email and password on the login form.
+// 2. On form submission, the app calls supabase.auth.signInWithPassword() with the provided credentials.
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
