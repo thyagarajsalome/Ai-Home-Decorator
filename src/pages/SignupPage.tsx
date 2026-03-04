@@ -3,6 +3,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
+// authentication flow:
+// 1. User enters email, password, and confirm password on the signup form.
+// 2. On form submission, the app calls supabase.auth.signUp() with the provided credentials.
+// 3. If the signup is successful, the user receives a verification email (if email confirmation is enabled).
+// 4. The user must verify their email before they can log in.
+
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
