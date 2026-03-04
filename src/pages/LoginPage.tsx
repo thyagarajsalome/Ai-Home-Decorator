@@ -53,13 +53,6 @@ const LoginPage: React.FC = () => {
           Login
         </h1>
 
-        {/* --- ADDED ALERT BANNER HERE --- */}
-        <div className="mb-6 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-200 rounded-lg text-sm text-center shadow-md">
-          <p className="font-semibold text-base mb-1">⚠️ Network Notice</p>
-          <p>Login issue due to network provider problem. Please try switching network or using mobile data.</p>
-        </div>
-        {/* ------------------------------- */}
-
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label
