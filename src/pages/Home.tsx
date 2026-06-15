@@ -11,12 +11,11 @@ import Hero from "../components/Hero";
 import { generateDecoratedImage } from "../services/geminiService";
 import type { DesignStyle } from "../types";
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../supabaseClient";
 import { STYLE_GENERATION_COST, CUSTOM_GENERATION_COST } from "../constants";
 import { designTips } from "../designTips";
 
 const Home: React.FC = () => {
-  const { currentUser, getIdToken, currentUserRole, isAppMode } = useAuth();
+  const { currentUser, getIdToken, currentUserRole, isAppMode, credits, refreshCredits } = useAuth();
   const isAdmin = currentUserRole === "admin";
 
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
@@ -24,11 +23,8 @@ const Home: React.FC = () => {
   const [roomDescription, setRoomDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [generationCredits, setGenerationCredits] = useState<number>(0);
   const [isVerified, setIsVerified] = useState(false);
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
-    null
-  );
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [designMode, setDesignMode] = useState<"style" | "custom">("style");
   const [selectedStyle, setSelectedStyle] = useState<DesignStyle | null>(null);
   const [customPrompt, setCustomPrompt] = useState<string>("");
@@ -40,35 +36,12 @@ const Home: React.FC = () => {
     appSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const fetchGenerationCredits = useCallback(async () => {
-    if (!currentUser) {
-      setGenerationCredits(0);
-      return;
-    }
-    if (isAdmin) {
-      setGenerationCredits(9999);
-      return;
-    }
-    try {
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("generation_credits")
-        .eq("id", currentUser.id)
-        .single();
-      if (error) throw error;
-      if (data) setGenerationCredits(data.generation_credits);
-    } catch (dbError: any) {
-      console.error("Error fetching generation credits:", dbError);
-    }
-  }, [currentUser, isAdmin]);
-
   useEffect(() => {
     setIsVerified(!!currentUser?.email_confirmed_at);
     if (currentUser && !currentUser.email_confirmed_at) {
       setError(null);
     }
-    fetchGenerationCredits();
-  }, [currentUser, fetchGenerationCredits]);
+  }, [currentUser]);
 
   const handleImageChange = useCallback(
     (file: File | null) => {
@@ -142,7 +115,8 @@ const Home: React.FC = () => {
       );
       setGeneratedImageUrl(fullImageUrl);
 
-      await fetchGenerationCredits();
+      // Sync credits globally inside AuthContext
+      await refreshCredits();
     } catch (err) {
       let message = "An unknown error occurred.";
       if (err instanceof Error) message = err.message;
@@ -160,7 +134,7 @@ const Home: React.FC = () => {
         }
       }
       setError(message);
-      fetchGenerationCredits();
+      await refreshCredits();
     } finally {
       setIsLoading(false);
     }
@@ -168,7 +142,7 @@ const Home: React.FC = () => {
 
   const costForCurrentMode =
     designMode === "style" ? STYLE_GENERATION_COST : CUSTOM_GENERATION_COST;
-  const isLimitReached = generationCredits < costForCurrentMode && !isAdmin;
+  const isLimitReached = credits < costForCurrentMode && !isAdmin;
   const isStep1Complete = !!uploadedImageFile;
   const isDisabled = isLoading || !currentUser || !isVerified;
   const isDesignMissing =
@@ -176,39 +150,40 @@ const Home: React.FC = () => {
 
   const getButtonActiveStyle = (isActive: boolean) =>
     isActive
-      ? "bg-purple-600 text-white font-bold ring-2 ring-purple-400"
-      : "bg-gray-700 text-gray-300 hover:bg-gray-600";
+      ? "bg-purple-600/90 text-white font-bold ring-1 ring-purple-400/50 shadow-md shadow-purple-500/10"
+      : "bg-obsidian-800 text-gray-400 hover:text-white hover:bg-obsidian-750 border border-gray-750";
 
   const handleExternalPurchase = () => {
     window.open("https://aihomedecorator.com/pricing", "_blank");
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-obsidian-950">
       {/* 1. Hero Section */}
       <Hero onStartClick={scrollToApp} />
 
       {/* 2. Main App Content */}
       <main
         ref={appSectionRef}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 scroll-mt-24 w-full"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 scroll-mt-24 w-full flex-grow"
       >
         {currentUser && !isVerified && !isLoading && (
-          <div className="max-w-7xl mx-auto mb-8 p-4 bg-yellow-900/50 border border-yellow-700 text-yellow-300 rounded-xl text-center shadow-lg">
-            <p>
-              Please check your email ({currentUser.email}) to verify your
+          <div className="max-w-4xl mx-auto mb-10 p-5 bg-yellow-950/20 border border-yellow-800/40 text-yellow-300 rounded-2xl text-center shadow-lg text-sm md:text-base animate-fade">
+            <p className="font-semibold">
+              Please check your email (<strong className="text-white">{currentUser.email}</strong>) to verify your
               account before you can decorate.
             </p>
           </div>
         )}
 
         {/* --- MAIN WORKSPACE CONTAINER --- */}
-        {/* max-w-7xl matches the Hero width */}
-        <div className="w-full max-w-7xl mx-auto bg-gray-800 rounded-3xl shadow-2xl p-6 md:p-10 border-2 border-purple-500/30 flex flex-col space-y-10 relative overflow-hidden">
-          {/* Highlight Glow Effect */}
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-70"></div>
+        <div className="w-full max-w-6xl mx-auto glass-card rounded-3xl p-6 md:p-10 border border-gray-800 flex flex-col space-y-10 relative overflow-hidden animate-slideUp">
+          
+          {/* Highlight Glow Effect Line */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-60"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+            
             {/* Left Column: Image Upload */}
             <div className="flex flex-col space-y-4">
               <ImageUploader
@@ -222,38 +197,56 @@ const Home: React.FC = () => {
 
             {/* Right Column: Style Selection */}
             <div
-              className={`transition-opacity duration-300 flex flex-col space-y-4 ${
+              className={`transition-all duration-300 flex flex-col space-y-6 ${
                 !isStep1Complete
-                  ? "opacity-50 pointer-events-none grayscale"
+                  ? "opacity-45 pointer-events-none grayscale"
                   : ""
               }`}
             >
-              <div className="flex w-full rounded-xl bg-gray-900/60 p-1.5 gap-2 border border-gray-700">
-                <button
-                  onClick={() => setDesignMode("style")}
-                  disabled={!isStep1Complete || isDisabled}
-                  className={`w-1/2 p-3 rounded-lg text-sm font-bold transition-all transform ${getButtonActiveStyle(
-                    designMode === "style"
-                  )} disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  Choose a Style
-                </button>
-                <button
-                  onClick={() => setDesignMode("custom")}
-                  disabled={!isStep1Complete || isDisabled}
-                  className={`w-1/2 p-3 rounded-lg text-sm font-bold transition-all transform ${getButtonActiveStyle(
-                    designMode === "custom"
-                  )} disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  Custom Design
-                </button>
+              <div className="flex flex-col space-y-2">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Select Redesign Mode
+                </span>
+                <div className="flex w-full rounded-xl bg-obsidian-850 p-1.5 gap-2 border border-gray-800/60 shadow-inner">
+                  <button
+                    onClick={() => setDesignMode("style")}
+                    disabled={!isStep1Complete || isDisabled}
+                    className={`w-1/2 p-3 rounded-lg text-xs md:text-sm font-bold transition-all ${getButtonActiveStyle(
+                      designMode === "style"
+                    )} disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    Preset Design Styles
+                  </button>
+                  <button
+                    onClick={() => setDesignMode("custom")}
+                    disabled={!isStep1Complete || isDisabled}
+                    className={`w-1/2 p-3 rounded-lg text-xs md:text-sm font-bold transition-all ${getButtonActiveStyle(
+                      designMode === "custom"
+                    )} disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    Custom Prompt Mode
+                  </button>
+                </div>
               </div>
 
               {designMode === "custom" && !isDisabled && (
-                <div className="flex items-center justify-center gap-2 text-sm text-purple-300 bg-purple-900/30 border border-purple-500/30 p-3 rounded-lg">
-                  <span className="font-medium">
-                    ✨ Custom designs cost{" "}
-                    <strong>{CUSTOM_GENERATION_COST} credits</strong>
+                <div className="flex items-center gap-2 text-xs text-purple-300 bg-purple-900/10 border border-purple-500/20 p-3.5 rounded-xl animate-fade">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-purple-400 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="font-semibold">
+                    Custom designs require <strong>{CUSTOM_GENERATION_COST} credits</strong> per generation.
                   </span>
                 </div>
               )}
@@ -274,25 +267,25 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-center pt-4 border-t border-gray-700/50">
+          <div className="text-center pt-8 border-t border-gray-800/60">
             {!currentUser && !isLoading && (
-              <div className="max-w-lg mx-auto mb-8 p-6 bg-gray-900/80 border border-gray-700 rounded-xl text-center shadow-lg">
-                <p className="text-xl text-white font-semibold mb-2">
+              <div className="max-w-md mx-auto mb-8 p-6 bg-obsidian-850/50 border border-gray-800/60 rounded-2xl text-center shadow-lg animate-fade">
+                <p className="text-lg font-bold text-white mb-1">
                   Ready to redesign?
                 </p>
-                <p className="text-gray-400 mb-4">
-                  Create an account to save your designs and get free credits.
+                <p className="text-xs text-gray-400 mb-5">
+                  Create a secure account to save your generated designs and get 119 free credits.
                 </p>
-                <div className="flex justify-center gap-4">
+                <div className="flex justify-center gap-4 text-xs font-bold">
                   <Link
                     to="/login"
-                    className="px-6 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium transition-colors"
+                    className="px-6 py-2.5 rounded-lg border border-gray-750 bg-obsidian-800 text-gray-300 hover:text-white transition-colors"
                   >
                     Login
                   </Link>
                   <Link
                     to="/signup"
-                    className="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors"
+                    className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white transition-colors shadow-md shadow-purple-500/10"
                   >
                     Sign Up
                   </Link>
@@ -311,56 +304,79 @@ const Home: React.FC = () => {
                 !isVerified ||
                 isLimitReached
               }
-              className={`w-full md:w-auto px-10 py-5 text-xl font-bold text-white rounded-xl shadow-xl transition-all duration-300 transform ${
+              className={`w-full md:w-auto px-12 py-4.5 text-base md:text-lg font-extrabold text-white rounded-xl shadow-xl transition-all duration-300 transform ${
                 !currentUser
-                  ? "bg-gray-600 cursor-not-allowed opacity-50"
+                  ? "bg-gray-750 cursor-not-allowed opacity-50 text-gray-450"
                   : !isVerified
-                  ? "bg-yellow-700 cursor-not-allowed"
+                  ? "bg-yellow-750 text-yellow-100 cursor-not-allowed border border-yellow-700/30"
                   : isLimitReached
-                  ? "bg-red-700 cursor-not-allowed"
+                  ? "bg-red-900/40 text-red-400 cursor-not-allowed border border-red-900/30"
                   : isLoading
-                  ? "bg-gray-700 cursor-wait scale-95"
-                  : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-105 hover:shadow-purple-500/25 ring-4 ring-transparent hover:ring-purple-500/30"
-              } disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100`}
+                  ? "bg-gray-850 cursor-wait scale-[0.98] opacity-90 border border-gray-800"
+                  : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.03] hover:shadow-purple-500/20 active:scale-[0.97]"
+              } disabled:opacity-50 disabled:scale-100 disabled:shadow-none`}
             >
-              {isLoading
-                ? " ✨ Designing Your Room..."
-                : !currentUser
-                ? "Login to Start Designing"
-                : !isVerified
-                ? "Verify Email to Continue"
-                : isLimitReached
-                ? "Not Enough Credits"
-                : `🚀 Generate Redesign (${costForCurrentMode} Credit${
-                    costForCurrentMode > 1 ? "s" : ""
-                  })`}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Redecorating Space...
+                </span>
+              ) : !currentUser ? (
+                "Login to Start Redesigning"
+              ) : !isVerified ? (
+                "Verify Email to Continue"
+              ) : isLimitReached ? (
+                "Not Enough Credits"
+              ) : (
+                `Generate Redesign (${costForCurrentMode} Credit${costForCurrentMode > 1 ? "s" : ""})`
+              )}
             </button>
 
             {currentUser && isVerified && (
-              <div className="mt-4 flex flex-col items-center">
-                <p className="text-sm font-medium text-gray-400">
-                  Credits remaining:{" "}
-                  <span className="text-white">
-                    {isAdmin ? "∞ (Admin)" : generationCredits}
+              <div className="mt-5 flex flex-col items-center animate-fade">
+                <p className="text-xs font-semibold text-gray-400">
+                  Credits Remaining:{" "}
+                  <span className="text-white font-bold bg-obsidian-850 border border-gray-800/60 px-2.5 py-1 rounded-md ml-1 shadow-sm">
+                    {isAdmin ? "Admin (∞)" : credits}
                   </span>
                 </p>
 
                 {isLimitReached && (
-                  <div className="mt-4 p-4 bg-blue-900/30 border border-blue-500/50 text-blue-200 rounded-xl text-center max-w-md animate-pulse">
-                    <p className="font-semibold mb-2">Run out of credits?</p>
+                  <div className="mt-5 p-5 bg-purple-900/10 border border-purple-500/20 text-purple-300 rounded-2xl text-center max-w-md shadow-md animate-pulse">
+                    <p className="font-bold text-sm mb-1 text-white">Out of Credits?</p>
+                    <p className="text-xs text-gray-450 mb-4">You need more credits to process this design.</p>
                     {isAppMode ? (
                       <button
                         onClick={handleExternalPurchase}
-                        className="text-white underline hover:text-blue-100 font-bold"
+                        className="text-white underline hover:text-purple-300 font-bold text-xs"
                       >
-                        Tap here to top up
+                        Tap here to buy more credits
                       </button>
                     ) : (
                       <Link
                         to="/pricing"
-                        className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors font-medium"
+                        className="inline-block px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg transition-colors font-bold text-xs shadow-md shadow-purple-500/15"
                       >
-                        Get More Credits
+                        Buy Credit Packs
                       </Link>
                     )}
                   </div>
@@ -371,16 +387,29 @@ const Home: React.FC = () => {
         </div>
 
         {error && (
-          <div className="max-w-4xl mx-auto mt-10 p-6 bg-red-900/80 border-2 border-red-500/50 text-white rounded-2xl text-center shadow-lg backdrop-blur-sm">
-            <h3 className="text-lg font-bold mb-2">Something went wrong</h3>
-            <p>{error}</p>
+          <div className="max-w-4xl mx-auto mt-10 p-5 bg-red-950/20 border border-red-900/40 text-red-400 rounded-2xl text-center shadow-lg text-sm animate-fade flex items-center justify-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>{error}</span>
           </div>
         )}
 
         {isLoading && (
-          <div className="max-w-4xl mx-auto mt-10">
+          <div className="max-w-4xl mx-auto mt-10 animate-fade">
             <Loader
-              message="Our AI is redecorating your room... this might take a moment!"
+              message="Our AI vision model is redecorating your space... this might take a moment!"
               tip={loadingTip}
             />
           </div>

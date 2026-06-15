@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-// Define Razorpay on the window object
 declare global {
   interface Window {
     Razorpay: any;
@@ -14,26 +13,32 @@ interface CreditPack {
   credits: number;
   price: number;
   priceId: string;
+  description: string;
+  popular?: boolean;
 }
 
 const creditPacks: CreditPack[] = [
   {
     name: "Starter Pack",
     credits: 15,
-    price: 398, // CHANGED FROM 199
+    price: 398,
     priceId: "pack_starter",
+    description: "Perfect for a single room redesign project."
   },
   {
     name: "Best Value",
     credits: 50,
-    price: 998, // CHANGED FROM 499
+    price: 998,
     priceId: "pack_value",
+    description: "Ideal for a full home makeover or experimentations.",
+    popular: true
   },
   {
     name: "Pro Pack",
     credits: 120,
-    price: 1998, // CHANGED FROM 999
+    price: 1998,
     priceId: "pack_pro",
+    description: "Best for professional decorators and power users."
   },
 ];
 
@@ -48,21 +53,17 @@ const loadScript = (src: string) => {
 };
 
 const PricingPage: React.FC = () => {
-  // @ts-ignore - Ignore TS error if AuthContext isn't fully updated yet
-  const { currentUser, getIdToken, isAppMode } = useAuth();
+  const { currentUser, getIdToken, isAppMode, refreshCredits } = useAuth();
   const navigate = useNavigate();
 
-  // --- SECURITY: HIDE PAGE IN APP ---
-  // If user is in the Android App, kick them to Home immediately
+  // Hide pricing in TWA/PWA app mode to comply with Play Store policies
   useEffect(() => {
     if (isAppMode) {
       navigate("/");
     }
   }, [isAppMode, navigate]);
 
-  // Stop rendering if we are in the app (prevents flash of content)
   if (isAppMode) return null;
-  // ----------------------------------
 
   const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -92,9 +93,7 @@ const PricingPage: React.FC = () => {
     }
 
     if (!scriptLoaded) {
-      setError(
-        "Payment gateway is not ready. Please wait a moment or refresh."
-      );
+      setError("Payment gateway is not ready. Please wait a moment or refresh.");
       setLoadingPackId(null);
       return;
     }
@@ -154,6 +153,9 @@ const PricingPage: React.FC = () => {
               throw new Error(errData.error || "Payment verification failed.");
             }
 
+            // Sync credits immediately on success
+            await refreshCredits();
+
             setLoadingPackId(null);
             setPurchaseSuccess(
               `Payment successful! ${pack.credits} credits have been added to your account.`
@@ -201,17 +203,35 @@ const PricingPage: React.FC = () => {
 
   if (purchaseSuccess) {
     return (
-      <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="bg-gray-800 rounded-2xl shadow-xl p-8 border border-green-700">
-          <h2 className="text-3xl font-bold text-white mb-4">
+      <div className="relative min-h-[70vh] flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-lg glass-card rounded-2xl p-8 md:p-10 border border-green-500/20 text-center animate-fade">
+          <div className="w-16 h-16 bg-green-950/30 border border-green-800/60 rounded-full flex items-center justify-center text-green-400 mx-auto mb-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2 font-heading">
             Payment Successful!
           </h2>
-          <p className="text-lg text-green-300 mb-8">{purchaseSuccess}</p>
+          <p className="text-sm text-green-700 dark:text-green-300 opacity-90 mb-8 max-w-sm mx-auto">
+            {purchaseSuccess}
+          </p>
           <button
             onClick={() => navigate("/")}
-            className="w-full max-w-xs mx-auto px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+            className="w-full max-w-xs mx-auto py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all duration-200 shadow-lg"
           >
-            Go to Home
+            Go to Studio
           </button>
         </div>
       </div>
@@ -221,116 +241,158 @@ const PricingPage: React.FC = () => {
   const isProcessing = loadingPackId !== null;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-extrabold text-center text-white mb-4">
-        Get More Credits
-      </h1>
-      <p className="text-lg text-gray-300 text-center mb-10">
-        Your free trial credits are just the beginning. Purchase a credit pack
-        to continue creating.
-      </p>
+    <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="text-center mb-16 animate-fade relative z-10">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight font-heading mb-4 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 dark:from-purple-400 dark:to-pink-500 bg-clip-text text-transparent">
+          Purchase Design Credits
+        </h1>
+        <p className="text-base text-gray-550 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed font-semibold">
+          Your initial credits are just the beginning. Select a package below to keep redecorating and testing gorgeous new styles.
+        </p>
+      </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg text-center">
+        <div className="mb-8 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-red-650 dark:text-red-350 rounded-xl text-center text-sm animate-fade max-w-xl mx-auto">
           <p>{error}</p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Grid of packs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch relative z-10 animate-slideUp">
         {creditPacks.map((pack) => {
           const isThisPackLoading = loadingPackId === pack.priceId;
           return (
             <div
               key={pack.name}
-              className={`bg-gray-800 rounded-2xl shadow-xl p-8 border ${
-                pack.name === "Best Value"
-                  ? "border-purple-500"
-                  : "border-gray-700"
-              } flex flex-col`}
+              className={`relative bg-white dark:bg-obsidian-900/95 border rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 shadow-md ${
+                pack.popular
+                  ? "border-purple-500 shadow-xl shadow-purple-500/10 scale-105 md:-translate-y-2 z-10"
+                  : "border-gray-200 dark:border-gray-800/80 hover:border-gray-300 dark:hover:border-gray-700 hover:scale-[1.02]"
+              }`}
             >
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {pack.name}
-              </h2>
-              <p
-                className={`text-sm font-semibold mb-4 ${
-                  pack.name === "Best Value"
-                    ? "text-purple-400"
-                    : "text-gray-400"
-                }`}
-              >
-                {pack.name === "Best Value"
-                  ? "Most Popular"
-                  : "One-time purchase"}
-              </p>
-
-              <div className="mb-6">
-                <span className="text-5xl font-extrabold text-white">
-                  ₹{pack.price}
+              {/* Popular Badge */}
+              {pack.popular && (
+                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md">
+                  Most Popular
                 </span>
-                <span className="text-gray-400">/one-time</span>
-              </div>
+              )}
 
-              <ul className="space-y-2 text-gray-300 mb-8 flex-grow">
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-400 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <strong>{pack.credits}</strong>&nbsp;Generations
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-400 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  All Styles Included
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 text-green-400 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  No Expiry
-                </li>
-              </ul>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{pack.name}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-normal mb-6 font-semibold">
+                  {pack.description}
+                </p>
+
+                {/* Price Display */}
+                <div className="flex items-baseline gap-1 mb-8">
+                  <span className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
+                    ₹{pack.price}
+                  </span>
+                  <span className="text-xs text-gray-550 font-semibold uppercase tracking-wider">
+                    One-Time
+                  </span>
+                </div>
+
+                <div className="border-t border-gray-200 dark:border-gray-800/60 my-6"></div>
+
+                {/* Features List */}
+                <ul className="space-y-3.5 text-sm text-gray-600 dark:text-gray-300 mb-8 font-semibold">
+                  <li className="flex items-center gap-2.5">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-50 dark:bg-purple-950/40 border border-purple-150 dark:border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </span>
+                    <span><strong>{pack.credits}</strong> Generations</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-50 dark:bg-purple-950/40 border border-purple-150 dark:border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </span>
+                    <span>All Style Themes Included</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-50 dark:bg-purple-950/40 border border-purple-150 dark:border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </span>
+                    <span>No Expiration Date</span>
+                  </li>
+                </ul>
+              </div>
 
               <button
                 onClick={() => handlePurchase(pack)}
                 disabled={isProcessing || !currentUser || !scriptLoaded}
-                className={`w-full px-6 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
-                  pack.name === "Best Value"
-                    ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                    : "bg-gray-700 hover:bg-gray-600"
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`w-full py-3 text-sm font-bold text-white rounded-xl shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
+                  pack.popular
+                    ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-purple-500/10 hover:shadow-purple-500/25"
+                    : "bg-white dark:bg-obsidian-800 hover:bg-gray-50 dark:hover:bg-obsidian-750 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-transparent hover:border-gray-400"
+                } disabled:opacity-50 disabled:scale-100 disabled:shadow-none disabled:cursor-not-allowed`}
               >
-                {isThisPackLoading ? "Processing..." : "Buy Now"}
+                {isThisPackLoading ? (
+                  <span className="flex items-center justify-center gap-1.5">
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  "Buy Now"
+                )}
               </button>
             </div>
           );
@@ -338,19 +400,19 @@ const PricingPage: React.FC = () => {
       </div>
 
       {!currentUser && (
-        <div className="mt-8 text-center bg-gray-700/50 border border-purple-800/60 p-4 rounded-lg shadow-lg max-w-lg mx-auto">
-          <p className="text-lg text-gray-200">
+        <div className="mt-12 text-center bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-500/20 p-5 rounded-2xl shadow-lg max-w-lg mx-auto animate-fade relative z-10 text-purple-700 dark:text-purple-300">
+          <p className="text-sm font-semibold">
             Please{" "}
             <Link
               to="/login"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-colors"
             >
               Login
             </Link>{" "}
             or{" "}
             <Link
               to="/signup"
-              className="font-bold text-purple-400 hover:text-purple-300 transition-colors duration-200"
+              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-colors"
             >
               Sign Up
             </Link>{" "}
@@ -358,6 +420,16 @@ const PricingPage: React.FC = () => {
           </p>
         </div>
       )}
+
+      {/* Trust badges footer */}
+      <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800/40 flex flex-col sm:flex-row justify-between items-center gap-4 text-center text-xs text-gray-500 dark:text-gray-550 relative z-10 font-semibold">
+        <span>Payment Gateway Secured by Razorpay</span>
+        <div className="flex gap-4 opacity-70">
+          <span>SSL 256-bit Encryption</span>
+          <span>&bull;</span>
+          <span>Instant Credit Top-up</span>
+        </div>
+      </div>
     </div>
   );
 };
