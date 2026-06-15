@@ -1,6 +1,6 @@
 // src/components/CustomDesignInput.tsx
 import React from "react";
-import { MAX_CUSTOM_PROMPT_LENGTH } from "../constants"; // We will add this constant
+import { MAX_CUSTOM_PROMPT_LENGTH } from "../constants";
 
 interface CustomDesignInputProps {
   onPromptChange: (prompt: string) => void;
@@ -17,35 +17,38 @@ const CustomDesignInput: React.FC<CustomDesignInputProps> = ({
 
   return (
     <div
-      className={`w-full transition-opacity duration-300 ${
+      className={`w-full transition-all duration-300 ${
         disabled ? "opacity-50 pointer-events-none" : ""
       }`}
     >
-      <h2 className="text-2xl font-bold text-gray-200 mb-4">
-        2. Describe Your Custom Design
+      <h2 className="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center gap-2">
+        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-purple-900/30 border border-purple-500/20 text-purple-400 text-sm font-bold">2</span>
+        Describe Your Custom Design
       </h2>
-      <p className="text-sm text-gray-400 mb-3">
-        Be descriptive! Try things like "A modern, white kitchen with marble
-        countertops and gold fixtures" or "A cozy bedroom with dark blue walls
-        and a large bookshelf."
+      <p className="text-xs text-gray-400 mb-4 leading-normal font-medium">
+        Be descriptive! Try suggestions like: <em className="text-gray-300 font-semibold">"A modern, white kitchen with white oak cabinets and gold fixtures"</em> or <em className="text-gray-300 font-semibold">"A warm mid-century office with a teak desk and high-quality leather chairs."</em>
       </p>
-      <textarea
-        value={currentPrompt}
-        onChange={(e) => onPromptChange(e.target.value)}
-        disabled={disabled}
-        maxLength={MAX_CUSTOM_PROMPT_LENGTH}
-        placeholder="e.g., Add a red velvet sofa, hardwood floors, and a large leafy plant in the corner..."
-        rows={4}
-        className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-          isTooLong ? "border-red-500" : "border-gray-600"
-        } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400 disabled:opacity-70 disabled:cursor-not-allowed`}
-      />
+      
+      <div className="relative">
+        <textarea
+          value={currentPrompt}
+          onChange={(e) => onPromptChange(e.target.value)}
+          disabled={disabled}
+          maxLength={MAX_CUSTOM_PROMPT_LENGTH}
+          placeholder="Describe your design vision in detail here..."
+          rows={4}
+          className={`w-full p-4 rounded-xl bg-obsidian-850 border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all leading-relaxed shadow-sm ${
+            isTooLong ? "border-red-500 focus:ring-red-500" : "border-gray-750"
+          }`}
+        />
+      </div>
+
       <p
-        className={`text-right text-xs mt-1 ${
-          isTooLong ? "text-red-500" : "text-gray-400"
+        className={`text-right text-[10px] mt-1.5 font-semibold ${
+          isTooLong ? "text-red-500 dark:text-red-400" : "text-gray-500"
         }`}
       >
-        {currentPrompt.length}/{MAX_CUSTOM_PROMPT_LENGTH}
+        {currentPrompt.length} / {MAX_CUSTOM_PROMPT_LENGTH} characters
       </p>
     </div>
   );

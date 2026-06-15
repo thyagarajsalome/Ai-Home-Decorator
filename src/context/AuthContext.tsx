@@ -12,10 +12,12 @@ import { supabase } from "../supabaseClient";
 interface AuthContextType {
   currentUser: User | null;
   currentUserRole: string;
+  credits: number;
   loading: boolean;
   isAppMode: boolean; // <--- IMPORTANT: Tells the app if it's in TWA/PWA mode
   getIdToken: () => Promise<string | null>;
   signOut: () => Promise<void>;
+  refreshCredits: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,26 +37,47 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentUserRole, setCurrentUserRole] = useState<string>("user");
+  const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [isAppMode, setIsAppMode] = useState(false); // <--- STATE
 
-  const fetchUserRole = async (user: User | null) => {
+  const fetchUserData = async (user: User | null) => {
     if (!user) {
       setCurrentUserRole("user");
+      setCredits(0);
       return;
     }
     try {
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("role")
+        .select("role, generation_credits")
         .eq("id", user.id)
         .single();
 
       if (error) throw error;
       setCurrentUserRole(data?.role || "user");
+      setCredits(data?.generation_credits || 0);
     } catch (error) {
-      console.error("Error fetching user role:", error);
+      console.error("Error fetching user data:", error);
       setCurrentUserRole("user");
+      setCredits(0);
+    }
+  };
+
+  const refreshCredits = async () => {
+    if (!currentUser) return;
+    try {
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("generation_credits")
+        .eq("id", currentUser.id)
+        .single();
+      if (error) throw error;
+      if (data) {
+        setCredits(data.generation_credits);
+      }
+    } catch (error) {
+      console.error("Error refreshing credits:", error);
     }
   };
 
@@ -74,7 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       const user = session?.user ?? null;
       setCurrentUser(user);
-      await fetchUserRole(user);
+      await fetchUserData(user);
       setLoading(false);
     });
 
@@ -83,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const user = session?.user ?? null;
       setCurrentUser(user);
-      await fetchUserRole(user);
+      await fetchUserData(user);
     });
 
     return () => {
@@ -107,10 +130,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     currentUser,
     currentUserRole,
+    credits,
     loading,
     isAppMode, // <--- EXPOSED
     getIdToken,
     signOut,
+    refreshCredits,
   };
 
   return (

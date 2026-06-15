@@ -17,6 +17,10 @@ import InstallPWAButton from "./components/InstallPWAButton";
 const App: React.FC = () => {
   // Handle App Resume/Multitasking
   useEffect(() => {
+    // Force Dark Mode class on html element
+    document.documentElement.classList.add("dark");
+    document.documentElement.style.colorScheme = "dark";
+
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         console.log("App resumed");
@@ -36,29 +40,29 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       {/* Added flex & flex-col to parent div to handle sticky footer */}
-      <div className="min-h-screen bg-gray-900 text-white antialiased flex flex-col">
+      <div className="min-h-screen bg-obsidian-950 text-gray-100 antialiased flex flex-col">
         <Header />
 
-        {/* flex-grow pushes the footer to the bottom if page content is short */}
-        <div className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/policy" element={<PolicyPage />} />
-            <Route path="/disclaimer" element={<DisclaimerPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-          </Routes>
+          {/* flex-grow pushes the footer to the bottom if page content is short */}
+          <div className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/policy" element={<PolicyPage />} />
+              <Route path="/disclaimer" element={<DisclaimerPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+            </Routes>
+          </div>
+
+          {/* New Footer Component */}
+          <Footer />
+
+          <InstallPWAButton />
         </div>
-
-        {/* New Footer Component */}
-        <Footer />
-
-        <InstallPWAButton />
-      </div>
-    </AuthProvider>
+      </AuthProvider>
   );
 };
 
