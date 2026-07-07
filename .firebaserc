@@ -1,13 +1,12 @@
-
 {
   "projects": {
-    "default": "hde-frontend"
+    "default": "aihomedecorator"
   },
   "targets": {
-    "hde-frontend": {
+    "aihomedecorator": {
       "hosting": {
         "app": [
-          "hde-frontend"
+          "aihomedecorator"
         ]
       }
     }
