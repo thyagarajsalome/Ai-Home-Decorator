@@ -11,6 +11,21 @@ const SignupPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
 
+  React.useEffect(() => {
+    // Check for error in hash or query parameters (from OAuth redirect callback)
+    const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
+    const queryParams = new URLSearchParams(window.location.search);
+    const errorDesc =
+      hashParams.get("error_description") ||
+      queryParams.get("error_description") ||
+      hashParams.get("error") ||
+      queryParams.get("error");
+
+    if (errorDesc) {
+      setError(decodeURIComponent(errorDesc.replace(/\+/g, " ")));
+    }
+  }, []);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -44,10 +59,14 @@ const SignupPage: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
+    setError(null);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/signup`,
+        queryParams: {
+          prompt: "select_account",
+        },
       },
     });
 
@@ -56,6 +75,7 @@ const SignupPage: React.FC = () => {
       setError(error.message || "Failed to sign up with Google.");
     }
   };
+
 
   return (
     <div className="relative min-h-[85vh] flex items-center justify-center px-4 py-16 overflow-hidden">

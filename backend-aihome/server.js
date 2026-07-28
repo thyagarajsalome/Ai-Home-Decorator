@@ -175,6 +175,61 @@ app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
   }
 });
 
+// 3. Razorpay Server-to-Server Webhook
+app.post("/api/razorpay-webhook", async (req, res) => {
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_KEY_SECRET;
+
+  if (!webhookSecret) {
+    console.warn("Razorpay webhook received but secret is not configured.");
+    return res.status(200).json({ status: "ignored" });
+  }
+
+  try {
+    const signature = req.headers["x-razorpay-signature"];
+    const shasum = crypto.createHmac("sha256", webhookSecret);
+    shasum.update(JSON.stringify(req.body));
+    const expectedSignature = shasum.digest("hex");
+
+    if (signature !== expectedSignature) {
+      console.error("Invalid Razorpay webhook signature");
+      return res.status(400).json({ error: "Invalid signature" });
+    }
+
+    const { event, payload } = req.body;
+
+    if (event === "payment.captured" || event === "order.paid") {
+      const paymentEntity = payload.payment?.entity;
+      const notes = paymentEntity?.notes;
+
+      if (notes && notes.userId && notes.credits) {
+        const userId = notes.userId;
+        const creditsToAdd = parseInt(notes.credits, 10);
+
+        const { data: profile, error: fetchError } = await supabase
+          .from("user_profiles")
+          .select("generation_credits")
+          .eq("id", userId)
+          .single();
+
+        if (!fetchError && profile) {
+          const newCreditTotal = (profile.generation_credits || 0) + creditsToAdd;
+          await supabase
+            .from("user_profiles")
+            .update({ generation_credits: newCreditTotal })
+            .eq("id", userId);
+
+          console.log(`✅ Webhook: Added ${creditsToAdd} credits to user ${userId}. New total: ${newCreditTotal}`);
+        }
+      }
+    }
+
+    res.json({ status: "ok" });
+  } catch (error) {
+    console.error("Razorpay Webhook Error:", error);
+    res.status(500).json({ error: "Webhook processing failed" });
+  }
+});
+
 // ==================================================
 //  IMAGE GENERATION ENDPOINT
 // ==================================================

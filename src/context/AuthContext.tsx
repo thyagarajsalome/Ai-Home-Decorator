@@ -48,19 +48,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("user_profiles")
         .select("role, generation_credits")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (!data) {
+        // Safe starter profile creation for first-time Google sign-ins
+        const { data: newProfile } = await supabase
+          .from("user_profiles")
+          .upsert([{ id: user.id, role: "user", generation_credits: 15 }], {
+            onConflict: "id",
+          })
+          .select("role, generation_credits")
+          .maybeSingle();
+
+        data = newProfile;
+      }
+
       setCurrentUserRole(data?.role || "user");
-      setCredits(data?.generation_credits || 0);
+      setCredits(data?.generation_credits ?? 15);
     } catch (error) {
       console.error("Error fetching user data:", error);
       setCurrentUserRole("user");
-      setCredits(0);
+      setCredits(15);
     }
   };
 
@@ -71,7 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .from("user_profiles")
         .select("generation_credits")
         .eq("id", currentUser.id)
-        .single();
+        .maybeSingle();
       if (error) throw error;
       if (data) {
         setCredits(data.generation_credits);
@@ -99,20 +111,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setCurrentUser(user);
       await fetchUserData(user);
       setLoading(false);
+
+      // Clean up URL hash after parsing access token
+      if (window.location.hash.includes("access_token")) {
+        window.history.replaceState(null, "", window.location.pathname);
+      }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       const user = session?.user ?? null;
       setCurrentUser(user);
       await fetchUserData(user);
+
+      // Clean up URL hash after OAuth redirect
+      if (event === "SIGNED_IN" && window.location.hash.includes("access_token")) {
+        window.history.replaceState(null, "", window.location.pathname);
+      }
     });
 
     return () => {
       subscription?.unsubscribe();
     };
   }, []);
+
 
   const getIdToken = async (): Promise<string | null> => {
     const {
