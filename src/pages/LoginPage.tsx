@@ -16,6 +16,19 @@ const LoginPage: React.FC = () => {
     if (currentUser) {
       navigate("/");
     }
+
+    // Check for error in hash or query parameters (from OAuth redirect callback)
+    const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
+    const queryParams = new URLSearchParams(window.location.search);
+    const errorDesc =
+      hashParams.get("error_description") ||
+      queryParams.get("error_description") ||
+      hashParams.get("error") ||
+      queryParams.get("error");
+
+    if (errorDesc) {
+      setError(decodeURIComponent(errorDesc.replace(/\+/g, " ")));
+    }
   }, [currentUser, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -43,10 +56,14 @@ const LoginPage: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
+    setError(null);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/login`,
+        queryParams: {
+          prompt: "select_account",
+        },
       },
     });
 
@@ -55,6 +72,7 @@ const LoginPage: React.FC = () => {
       setError(error.message || "Failed to log in with Google.");
     }
   };
+
 
   if (currentUser) {
     return null;

@@ -9,6 +9,13 @@
           "aihomedecorator"
         ]
       }
+    },
+    "hde-frontend": {
+      "hosting": {
+        "app": [
+          "aihomedecorator"
+        ]
+      }
     }
   },
   "etags": {}
