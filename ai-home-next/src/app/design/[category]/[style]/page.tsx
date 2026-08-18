@@ -26,12 +26,12 @@ export function generateStaticParams() {
 }
 
 // Generate SEO metadata dynamically based on the current slug
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
-  params: { category: string; style: string };
-}): Metadata {
-  const { category, style } = params;
+  params: Promise<{ category: string; style: string }>;
+}): Promise<Metadata> {
+  const { category, style } = await params;
 
   const catObj = ELEMENT_CATEGORIES.find((c) => c.id === category);
   if (!catObj) return {};
@@ -67,12 +67,12 @@ export function generateMetadata({
   };
 }
 
-export default function ProgrammaticSEODesignPage({
+export default async function ProgrammaticSEODesignPage({
   params,
 }: {
-  params: { category: string; style: string };
+  params: Promise<{ category: string; style: string }>;
 }) {
-  const { category, style } = params;
+  const { category, style } = await params;
 
   const catObj = ELEMENT_CATEGORIES.find((c) => c.id === category);
   if (!catObj) return notFound();
