@@ -36,8 +36,8 @@ const Footer: React.FC = () => {
               <Link href="/design/full_redesign/contemporary" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
                 Contemporary Rooms
               </Link>
-              <Link href="/design/lighting_mood/cyberpunk-accent" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
-                Cyberpunk Lighting
+              <Link href="/design/outdoor_patio/coastal" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Coastal Patios
               </Link>
               <Link href="/design/wall_paint/pastel-accents" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
                 Pastel Wall Paints
