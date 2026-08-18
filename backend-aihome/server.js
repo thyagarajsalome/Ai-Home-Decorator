@@ -1,0 +1,397 @@
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const multer = require("multer");
+const { createClient } = require("@supabase/supabase-js");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
+const verifySupabaseToken = require("./authMiddleware");
+
+// --- VALIDATE ENVIRONMENT VARIABLES ---
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error("FATAL: Missing Supabase URL or Service Key.");
+  process.exit(1);
+}
+
+if (!apiKey) {
+  console.error("FATAL: GEMINI_API_KEY not found.");
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
+
+// --- RAZORPAY SETUP ---
+const razorpay =
+  razorpayKeyId && razorpayKeySecret
+    ? new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret })
+    : null;
+
+// --- CREDIT PACKS CONFIGURATION (UPDATED PRICES) ---
+// These must match the prices in your frontend PricingPage.tsx
+const CREDIT_PACKS = {
+  pack_starter: { credits: 15, amount: 398 },
+  pack_value: { credits: 50, amount: 998 },
+  pack_pro: { credits: 120, amount: 1998 },
+};
+
+const STYLE_GENERATION_COST = 1;
+const CUSTOM_GENERATION_COST = 3;
+
+const app = express();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
+
+const PORT = process.env.PORT || 8080;
+const HOST = "0.0.0.0";
+
+app.use(cors({ origin: true }));
+app.use(express.json());
+
+app.get("/", (req, res) => res.status(200).json({ status: "ok" }));
+app.get("/health", (req, res) => res.status(200).json({ status: "healthy" }));
+
+// --- INITIALIZE AI ---
+let ai = null;
+async function initializeAI() {
+  try {
+    const module = await import("@google/genai");
+    if (!module.GoogleGenAI) throw new Error("Could not import GoogleGenAI");
+    ai = new module.GoogleGenAI({ apiKey });
+    console.log("Google Gen AI initialized successfully");
+  } catch (err) {
+    console.error("FATAL: Failed to initialize @google/genai:", err);
+  }
+}
+initializeAI();
+
+function bufferToGenerativePart(buffer, mimeType) {
+  return {
+    inlineData: {
+      data: buffer.toString("base64"),
+      mimeType,
+    },
+  };
+}
+
+// ==================================================
+//  PAYMENT ENDPOINTS
+// ==================================================
+
+// 1. Create Order
+app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
+  if (!razorpay) {
+    return res.status(503).json({ error: "Payment gateway not configured." });
+  }
+
+  try {
+    const { packId } = req.body;
+    const pack = CREDIT_PACKS[packId];
+
+    if (!pack) {
+      return res.status(400).json({ error: "Invalid pack ID." });
+    }
+
+    const options = {
+      amount: pack.amount * 100, // amount in the smallest currency unit (paisa)
+      currency: "INR",
+      receipt: `rcpt_${Date.now()}_${req.user.id.substring(0, 5)}`,
+      notes: {
+        userId: req.user.id,
+        packId: packId,
+        credits: pack.credits,
+      },
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (error) {
+    console.error("Create Order Error:", error);
+    res.status(500).json({ error: "Failed to create payment order." });
+  }
+});
+
+// 2. Verify Payment & Add Credits
+app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+  const userId = req.user.id;
+
+  try {
+    // Verify Signature
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac("sha256", razorpayKeySecret)
+      .update(body.toString())
+      .digest("hex");
+
+    const isAuthentic = expectedSignature === razorpay_signature;
+
+    if (!isAuthentic) {
+      return res.status(400).json({ error: "Invalid payment signature." });
+    }
+
+    // Fetch order details to know how many credits to add
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+
+    if (!order || !order.notes || !order.notes.credits) {
+      return res.status(400).json({ error: "Could not verify order details." });
+    }
+
+    const creditsToAdd = parseInt(order.notes.credits);
+
+    // Add credits to user profile
+    const { data: profile, error: fetchError } = await supabase
+      .from("user_profiles")
+      .select("generation_credits")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const newCreditTotal = (profile.generation_credits || 0) + creditsToAdd;
+
+    const { error: updateError } = await supabase
+      .from("user_profiles")
+      .update({ generation_credits: newCreditTotal })
+      .eq("id", userId);
+
+    if (updateError) throw updateError;
+
+    res.json({ success: true, newCredits: newCreditTotal });
+  } catch (error) {
+    console.error("Payment Verification Error:", error);
+    res.status(500).json({ error: "Payment verification failed." });
+  }
+});
+
+// 3. Razorpay Server-to-Server Webhook
+app.post("/api/razorpay-webhook", async (req, res) => {
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_KEY_SECRET;
+
+  if (!webhookSecret) {
+    console.warn("Razorpay webhook received but secret is not configured.");
+    return res.status(200).json({ status: "ignored" });
+  }
+
+  try {
+    const signature = req.headers["x-razorpay-signature"];
+    const shasum = crypto.createHmac("sha256", webhookSecret);
+    shasum.update(JSON.stringify(req.body));
+    const expectedSignature = shasum.digest("hex");
+
+    if (signature !== expectedSignature) {
+      console.error("Invalid Razorpay webhook signature");
+      return res.status(400).json({ error: "Invalid signature" });
+    }
+
+    const { event, payload } = req.body;
+
+    if (event === "payment.captured" || event === "order.paid") {
+      const paymentEntity = payload.payment?.entity;
+      const notes = paymentEntity?.notes;
+
+      if (notes && notes.userId && notes.credits) {
+        const userId = notes.userId;
+        const creditsToAdd = parseInt(notes.credits, 10);
+
+        const { data: profile, error: fetchError } = await supabase
+          .from("user_profiles")
+          .select("generation_credits")
+          .eq("id", userId)
+          .single();
+
+        if (!fetchError && profile) {
+          const newCreditTotal = (profile.generation_credits || 0) + creditsToAdd;
+          await supabase
+            .from("user_profiles")
+            .update({ generation_credits: newCreditTotal })
+            .eq("id", userId);
+
+          console.log(`✅ Webhook: Added ${creditsToAdd} credits to user ${userId}. New total: ${newCreditTotal}`);
+        }
+      }
+    }
+
+    res.json({ status: "ok" });
+  } catch (error) {
+    console.error("Razorpay Webhook Error:", error);
+    res.status(500).json({ error: "Webhook processing failed" });
+  }
+});
+
+// ==================================================
+//  IMAGE GENERATION ENDPOINT
+// ==================================================
+app.post(
+  "/api/decorate",
+  verifySupabaseToken,
+  upload.single("image"),
+  async (req, res) => {
+    if (!ai)
+      return res.status(503).json({ error: "AI service is initializing." });
+
+    let originalCredits = 0;
+    let profile;
+    const userId = req.user.id;
+
+    try {
+      const {
+        designPrompt = "",
+        roomDescription = "",
+        designMode = "style",
+        roomType,
+      } = req.body;
+      const file = req.file;
+
+      if (!file)
+        return res.status(400).json({ error: "No image file provided." });
+
+      const costToDebit =
+        designMode === "custom"
+          ? CUSTOM_GENERATION_COST
+          : STYLE_GENERATION_COST;
+
+      // Check Credits
+      const { data: fetchedProfile, error: fetchError } = await supabase
+        .from("user_profiles")
+        .select("generation_credits")
+        .eq("id", userId)
+        .single();
+
+      profile = fetchedProfile;
+
+      if (fetchError || !profile) {
+        // Create profile if missing
+        await supabase
+          .from("user_profiles")
+          .insert([{ id: userId, generation_credits: 119 }]);
+        profile = { generation_credits: 119 };
+      }
+
+      originalCredits = profile.generation_credits;
+
+      if (originalCredits < costToDebit) {
+        return res.status(403).json({ error: "Not enough credits." });
+      }
+
+      // Deduct Credits
+      const { error: debitError } = await supabase.rpc("decrement_credits", {
+        user_id: userId,
+        amount: costToDebit,
+      });
+
+      if (debitError)
+        return res.status(500).json({ error: "Failed to debit credit." });
+
+      const newCredits = originalCredits - costToDebit;
+
+      // Generate Image
+      const userContext = roomDescription
+        ? `This is a photo of a ${roomDescription}.`
+        : `This is a photo of a ${roomType || "room"}.`;
+
+      const fullPrompt = `${userContext} Redecorate this room in ${designPrompt}. Maintain the original room structure and layout but change the furniture, wall color, and decorations to match the new style. The result should be photorealistic.`;
+      const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
+
+      const candidateModels = ["gemini-2.5-flash-image", "gemini-2.0-flash"];
+      let response = null;
+      let lastAiError = null;
+
+      for (const modelName of candidateModels) {
+        try {
+          response = await ai.models.generateContent({
+            model: modelName,
+            contents: { parts: [imagePart, { text: fullPrompt }] },
+          });
+          if (response) break;
+        } catch (err) {
+          lastAiError = err;
+          console.warn(`Model ${modelName} call failed:`, err.message || err);
+          const errStr = JSON.stringify(err);
+          // If error is billing or quota depletion (429/RESOURCE_EXHAUSTED), do not retry other models as they will also fail
+          if (
+            errStr.includes("RESOURCE_EXHAUSTED") ||
+            errStr.includes("prepayment credits") ||
+            (err.status && err.status === 429)
+          ) {
+            break;
+          }
+        }
+      }
+
+      if (!response && lastAiError) {
+        throw lastAiError;
+      }
+
+      // Check Safety Block
+      if (response?.candidates?.[0]?.finishReason === "SAFETY") {
+        await supabase
+          .from("user_profiles")
+          .update({ generation_credits: originalCredits })
+          .eq("id", userId);
+        return res
+          .status(400)
+          .json({ error: "Request blocked for safety. Credits refunded." });
+      }
+
+      let base64Image = null;
+      const parts = response?.candidates?.[0]?.content?.parts;
+      if (parts) {
+        for (const part of parts) {
+          if (part.inlineData) {
+            base64Image = part.inlineData.data;
+            break;
+          }
+        }
+      }
+
+      if (!base64Image) throw new Error("AI did not return a valid image.");
+
+      // SUCCESS
+      res.status(200).json({
+        generatedImage: `data:image/jpeg;base64,${base64Image}`,
+        remainingCredits: newCredits,
+      });
+    } catch (error) {
+      // Rollback credits on error
+      if (profile && originalCredits > 0) {
+        await supabase
+          .from("user_profiles")
+          .update({ generation_credits: originalCredits })
+          .eq("id", userId);
+      }
+      console.error("Error processing image:", error);
+
+      const errString = typeof error === "object" ? JSON.stringify(error) : String(error);
+      let userFriendlyError = "Failed to generate image. Credits refunded.";
+
+      if (
+        errString.includes("prepayment credits are depleted") ||
+        errString.includes("RESOURCE_EXHAUSTED") ||
+        error?.status === 429
+      ) {
+        userFriendlyError =
+          "Google AI Studio billing or prepayment credits are depleted. Please check billing settings in AI Studio. Credits refunded.";
+      } else if (error?.message) {
+        userFriendlyError = `${error.message}. Credits refunded.`;
+      }
+
+      res.status(500).json({ error: userFriendlyError });
+    }
+  }
+);
+
+app.listen(PORT, HOST, () => {
+  console.log(`✅ Server running on http://${HOST}:${PORT}`);
+});
