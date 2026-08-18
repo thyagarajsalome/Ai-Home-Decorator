@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-slate-100 dark:bg-obsidian-950 border-t border-gray-200/80 dark:border-gray-800/40 py-12 mt-auto transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center md:items-start text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-center md:items-start text-center md:text-left">
           {/* Brand Column */}
           <div className="flex flex-col space-y-2">
             <h3 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-500 bg-clip-text text-transparent">
@@ -19,6 +19,30 @@ const Footer: React.FC = () => {
             <p className="text-gray-500 dark:text-gray-500 text-[10px] pt-1">
               &copy; {new Date().getFullYear()} All rights reserved.
             </p>
+          </div>
+
+          {/* Explore Styles Column (SEO) */}
+          <div className="flex flex-col space-y-3">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
+              Explore Styles
+            </h4>
+            <div className="flex flex-col space-y-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
+              <Link href="/design/kitchen/modern-farmhouse" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Farmhouse Kitchens
+              </Link>
+              <Link href="/design/bathroom/scandinavian" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Scandinavian Bathrooms
+              </Link>
+              <Link href="/design/full_redesign/contemporary" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Contemporary Rooms
+              </Link>
+              <Link href="/design/lighting_mood/cyberpunk-accent" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Cyberpunk Lighting
+              </Link>
+              <Link href="/design/wall_paint/pastel-accents" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Pastel Wall Paints
+              </Link>
+            </div>
           </div>
 
           {/* Legal Links Column */}
