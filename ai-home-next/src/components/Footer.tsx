@@ -27,20 +27,20 @@ const Footer: React.FC = () => {
               Explore Styles
             </h4>
             <div className="flex flex-col space-y-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
-              <Link href="/design/kitchen/modern-farmhouse" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/design/kitchen/farmhouse-kitchen" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
                 Farmhouse Kitchens
               </Link>
-              <Link href="/design/bathroom/scandinavian" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
-                Scandinavian Bathrooms
+              <Link href="/design/bathroom/luxury-spa" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Luxury Spa Bathrooms
               </Link>
               <Link href="/design/full_redesign/contemporary" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
                 Contemporary Rooms
               </Link>
-              <Link href="/design/outdoor_patio/coastal" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
-                Coastal Patios
+              <Link href="/design/outdoor_patio/teak-timber-decking" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Teak Outdoor Decks
               </Link>
-              <Link href="/design/wall_paint/pastel-accents" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
-                Pastel Wall Paints
+              <Link href="/design/full_redesign/scandinavian" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Scandinavian Rooms
               </Link>
             </div>
           </div>
