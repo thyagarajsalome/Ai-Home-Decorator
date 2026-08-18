@@ -4,7 +4,13 @@ import { Providers } from "./providers";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import InstallPWAButton from "@/components/InstallPWAButton";
-export const metadata: Metadata = { title: "Ai Home Decorator", description: "Design your home with AI" };
+export const metadata: Metadata = { 
+  title: "Ai Home Decorator", 
+  description: "Design your home with AI",
+  verification: {
+    google: "h75skBgU64mJnx8bnF_UW_o8SHEi9-DO8RM5yjXTo60",
+  },
+};
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark" style={{colorScheme: "dark"}}>
