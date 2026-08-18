@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.aihomedecorator.twa",
+      "sha256_cert_fingerprints": [
+        "C4:9B:91:9C:1C:B4:CC:19:A1:0F:96:8D:50:72:E1:20:C4:EF:0B:66:B5:40:2F:8E:D0:0D:8D:5F:F2:87:90:11"
+      ]
+    }
+  }
+]

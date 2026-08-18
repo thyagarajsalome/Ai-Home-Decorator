@@ -1,0 +1,171 @@
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+/* src/index.css */
+
+
+
+
+@layer base {
+  body {
+    @apply font-sans bg-obsidian-950 text-gray-100 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight text-white;
+  }
+}
+
+/* Premium Card and Panel helpers - optimized for text clarity and sharpness */
+.glass-panel {
+  @apply bg-obsidian-900/95 border border-gray-800/60 shadow-lg shadow-black/10;
+}
+
+.glass-card {
+  @apply bg-obsidian-900 border border-gray-800/80 shadow-2xl shadow-black/40;
+}
+
+.glass-input {
+  @apply w-full p-3 rounded-lg bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200;
+}
+
+/* Premium gradient backgrounds */
+.glow-bg {
+  background: radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.05) 50%, transparent 100%);
+}
+
+.glow-bg-light {
+  background: radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.05) 0%, rgba(236, 72, 153, 0.02) 50%, transparent 100%);
+}
+
+/* Custom animations helper */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Before/After range slider styling overrides */
+input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+/* PWA Installation Toast */
+.pwa-install-toast {
+  display: none; /* HIDDEN BY DEFAULT (Mobile & Tablet) */
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  max-width: 28rem;
+  width: auto;
+  margin-left: auto;
+  margin-right: 1.5rem;
+
+  background: linear-gradient(135deg, #192532, #293d54);
+  color: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  z-index: 50;
+  cursor: pointer;
+  animation: slideUpFadeIn 0.5s ease-out;
+}
+
+/* Desktop positioning - Only show on large screens */
+@media (min-width: 1024px) {
+  .pwa-install-toast {
+    display: block;
+  }
+}
+
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pwa-install-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.pwa-install-text {
+  flex-grow: 1;
+}
+
+.pwa-install-text strong {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.pwa-install-text p {
+  font-size: 0.9rem;
+  color: #d1d5db;
+  margin: 0;
+}
+
+/* Install button style */
+.pwa-install-button {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    #8b5cf6,
+    #ec4899
+  ); /* purple-500 to pink-500 */
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+}
+
+.pwa-install-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+}
+
+/* Close (dismiss) button */
+.pwa-install-close {
+  position: absolute;
+  top: -8px; /* Position it slightly outside for a modern look */
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  background: #192532;
+  color: #d1d5db;
+  border: 1px solid #293d54;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwa-install-close:hover {
+  background: #293d54;
+  color: white;
+  transform: scale(1.1);
+}
