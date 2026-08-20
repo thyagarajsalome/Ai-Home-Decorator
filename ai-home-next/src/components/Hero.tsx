@@ -45,6 +45,22 @@ const Hero: React.FC<HeroProps> = ({ onStartClick }) => {
               Explore Examples
             </a>
           </div>
+          
+          <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-3 text-gray-500 dark:text-gray-400 animate-fade" style={{ animationDelay: '300ms' }}>
+             <span className="text-sm font-semibold">Also available on Android:</span>
+             <a 
+               href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               className="transition-transform duration-200 hover:scale-[1.05]"
+             >
+                <img 
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+                  alt="Get it on Google Play" 
+                  className="h-10 md:h-12 w-auto" 
+                />
+             </a>
+          </div>
         </div>
 
         {/* Visual Content - Full Width Image Below */}
