@@ -2,11 +2,7 @@
 // src/components/Hero.tsx
 import React from "react";
 
-interface HeroProps {
-  onStartClick: () => void;
-}
-
-const Hero: React.FC<HeroProps> = ({ onStartClick }) => {
+const Hero: React.FC = () => {
   return (
     <div className="relative bg-slate-50 dark:bg-obsidian-950 pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden transition-colors duration-300">
       {/* Background Gradient & Animated Blobs */}
@@ -30,12 +26,12 @@ const Hero: React.FC<HeroProps> = ({ onStartClick }) => {
             Stop imagining and start seeing. Upload a photo of your room, choose from 15+ stunning design styles like Japandi or Cyberpunk, and watch your dream home come to life instantly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
-              onClick={onStartClick}
-              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+            <a
+              href="#workspace"
+              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 text-center"
             >
               Start Decorating Free
-            </button>
+            </a>
             <a
               href="https://ai-homedecorator-landing-01.vercel.app"
               target="_blank"
