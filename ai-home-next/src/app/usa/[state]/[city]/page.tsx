@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ state: string; city: string }> }) {
   const { state, city } = await params;
-  const { data: cityData } = await supabase.from("seo_cities").select("*").eq("state", state).eq("city", city).single();
+  const { data: cityData } = await supabase.from("seo_cities").select("*, image_url, id").eq("state", state).eq("city", city).single();
   if (!cityData) return { title: "Not Found" };
 
   return {
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
 
 export default async function CityDesignPage({ params }: { params: Promise<{ state: string; city: string }> }) {
   const { state, city } = await params;
-  const { data: cityData } = await supabase.from("seo_cities").select("*").eq("state", state).eq("city", city).single();
+  const { data: cityData } = await supabase.from("seo_cities").select("*, image_url, id").eq("state", state).eq("city", city).single();
   if (!cityData) notFound();
 
   return (
