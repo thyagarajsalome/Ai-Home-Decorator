@@ -5,16 +5,16 @@ const supabaseServiceKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const images = {
-  "New York": "https://loremflickr.com/1024/500/interior,design?lock=101",
-  "Los Angeles": "https://loremflickr.com/1024/500/interior,design?lock=102",
-  "Chicago": "https://loremflickr.com/1024/500/interior,design?lock=103",
-  "Houston": "https://loremflickr.com/1024/500/interior,design?lock=104",
-  "Phoenix": "https://loremflickr.com/1024/500/interior,design?lock=105",
-  "Miami": "https://loremflickr.com/1024/500/interior,design?lock=106",
-  "Seattle": "https://loremflickr.com/1024/500/interior,design?lock=107",
-  "Austin": "https://loremflickr.com/1024/500/interior,design?lock=108",
-  "Denver": "https://loremflickr.com/1024/500/interior,design?lock=109",
-  "Boston": "https://loremflickr.com/1024/500/interior,design?lock=110"
+  "New York": "/images/seo/new-york.jpg",
+  "Los Angeles": "/images/seo/los-angeles.jpg",
+  "Chicago": "/images/seo/chicago.jpg",
+  "Houston": "/images/seo/houston.jpg",
+  "Phoenix": "/images/seo/phoenix.jpg",
+  "Miami": "/images/seo/miami.jpg",
+  "Seattle": "/images/seo/seattle.jpg",
+  "Austin": "/images/seo/austin.jpg",
+  "Denver": "/images/seo/denver.jpg",
+  "Boston": "/images/seo/boston.jpg"
 };
 
 async function addImages() {
@@ -27,7 +27,7 @@ async function addImages() {
     if (error) {
       console.error(`Error updating ${cityName}:`, error.message);
     } else {
-      console.log(`Updated ${cityName} with valid image`);
+      console.log(`Updated ${cityName} with local image`);
     }
   }
 }
