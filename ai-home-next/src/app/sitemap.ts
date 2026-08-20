@@ -1,10 +1,11 @@
 import { MetadataRoute } from "next";
 import { ELEMENT_CATEGORIES } from "@/constants";
+import { supabase } from "@/supabaseClient";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aihomedecorator.com";
 
-  const staticRoutes = ["", "/about", "/pricing", "/terms", "/policy", "/disclaimer"].map(
+  const staticRoutes = ["", "/about", "/pricing", "/terms", "/policy", "/disclaimer", "/usa"].map(
     (route) => ({
       url: `${baseUrl}${route}`,
       lastModified: new Date(),
@@ -13,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  const dynamicRoutes = ELEMENT_CATEGORIES.flatMap((category) =>
+  const designRoutes = ELEMENT_CATEGORIES.flatMap((category) =>
     category.choices.map((choice) => {
       const styleSlug = choice.name
         .toLowerCase()
@@ -28,5 +29,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  return [...staticRoutes, ...dynamicRoutes];
+  // Fetch all Programmatic SEO cities from Supabase
+  const { data: citiesData } = await supabase.from("seo_cities").select("state, city");
+  
+  const cityRoutes = (citiesData || []).map((city) => ({
+    url: `${baseUrl}/usa/${city.state}/${city.city}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.9,
+  }));
+
+  return [...staticRoutes, ...designRoutes, ...cityRoutes];
 }
