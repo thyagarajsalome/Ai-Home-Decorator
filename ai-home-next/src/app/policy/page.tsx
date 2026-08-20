@@ -122,10 +122,24 @@ const PolicyPage: React.FC = () => {
 
           <div>
             <h2
+              id="ccpa"
+              className="text-xl font-bold text-white mb-3"
+            >
+              6. California Privacy Rights (CCPA)
+            </h2>
+            <p className="mb-3">
+              If you are a resident of California, USA, the California Consumer Privacy Act (CCPA) provides you with specific rights regarding your personal information, including the right to request access to and deletion of your data, and the right to opt-out of the sale of your data. We do not sell your personal data.
+            </p>
+          </div>
+
+          <div className="border-t border-gray-800/40"></div>
+
+          <div>
+            <h2
               id="contact"
               className="text-xl font-bold text-white mb-3"
             >
-              6. Contact Us
+              7. Contact Us
             </h2>
             <p>
               If you have any questions about this privacy policy, please contact us at{" "}

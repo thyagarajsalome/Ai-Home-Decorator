@@ -100,8 +100,19 @@ const TermsPage: React.FC = () => {
           <div className="border-t border-gray-800/40"></div>
 
           <div>
+            <h2 id="governing-law" className="text-xl font-bold text-white mb-3">
+              6. Governing Law & Jurisdiction (United States)
+            </h2>
+            <p>
+              These Terms shall be governed by and construed in accordance with the laws of the United States, without regard to its conflict of law provisions. Any legal action or proceeding arising under these Terms will be brought exclusively in the federal or state courts located within the United States.
+            </p>
+          </div>
+
+          <div className="border-t border-gray-800/40"></div>
+
+          <div>
             <h2 id="links" className="text-xl font-bold text-white mb-3">
-              6. Other Legal Policies
+              7. Other Legal Policies
             </h2>
             <p>
               By agreeing to these Terms, you also agree to our{" "}
