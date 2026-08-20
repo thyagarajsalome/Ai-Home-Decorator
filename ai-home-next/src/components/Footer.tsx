@@ -75,47 +75,18 @@ const Footer: React.FC = () => {
           {/* Action Column */}
           <div className="flex flex-col items-center md:items-end space-y-4">
             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
-              Discover
+              Contact
             </h4>
-            <div className="flex flex-col items-center md:items-end gap-3.5">
-              {/* How to use Button */}
-              <a
-                href="https://ai-homedecorator-landing-01.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-obsidian-900 border border-gray-200 dark:border-gray-800/80 hover:bg-gray-50 dark:hover:bg-obsidian-850 hover:border-gray-300 dark:hover:border-gray-700 rounded-lg text-sm font-bold text-gray-700 dark:text-white transition-all duration-200 group shadow-sm"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-purple-600 dark:text-purple-450 group-hover:text-purple-500 dark:group-hover:text-purple-300 transition-colors"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Learn How to Use
-              </a>
-
-              {/* Google Play Store Badge */}
-              <a
-                href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-36 hover:opacity-90 active:scale-98 transition-all"
-              >
-                <img
-                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                  alt="Get it on Google Play"
-                  className="w-full h-auto"
-                />
-              </a>
-            </div>
+            <ul className="space-y-4">
+              <li>
+                <a href="mailto:contactaihomedecorator@gmail.com" className="text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center gap-2 text-sm">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  contactaihomedecorator@gmail.com
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
