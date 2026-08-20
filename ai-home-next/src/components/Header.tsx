@@ -88,7 +88,10 @@ const Header: React.FC = () => {
             {currentUser ? (
               <div className="flex items-center gap-4">
                 {/* Credit balance display */}
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-500/30 text-purple-750 dark:text-purple-300 text-xs font-bold shadow-inner">
+                <Link 
+                  href="/pricing"
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-500/30 text-purple-750 dark:text-purple-300 text-xs font-bold shadow-inner cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 text-purple-600 dark:text-purple-400"
@@ -104,11 +107,11 @@ const Header: React.FC = () => {
                   <span>
                     {isAdmin ? "Admin (∞)" : `${credits} Credit${credits !== 1 ? "s" : ""}`}
                   </span>
-                </div>
+                </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="bg-red-50 dark:bg-red-600/10 hover:bg-red-650 text-red-650 dark:text-red-500 hover:text-white border border-red-200 dark:border-red-500/20 text-xs font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-md"
+                  className="cursor-pointer bg-red-50 dark:bg-red-600/10 hover:bg-red-650 text-red-650 dark:text-red-500 hover:text-white border border-red-200 dark:border-red-500/20 text-xs font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-md"
                 >
                   Logout
                 </button>
@@ -170,7 +173,11 @@ const Header: React.FC = () => {
         <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-obsidian-900 border-b border-gray-200 dark:border-gray-800/60 shadow-xl z-20 animate-fade transition-colors duration-300">
           <nav className="flex flex-col gap-2.5 px-4 pt-3 pb-6 text-base font-semibold text-gray-600 dark:text-gray-300">
             {currentUser && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-500/20 text-purple-700 dark:text-purple-300 text-sm font-semibold mb-2">
+              <Link
+                href="/pricing"
+                onClick={closeMenu} 
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-500/20 text-purple-700 dark:text-purple-300 text-sm font-semibold mb-2 cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 text-purple-650 dark:text-purple-400"
@@ -186,7 +193,7 @@ const Header: React.FC = () => {
                 <span>
                   {isAdmin ? "Admin Mode (∞)" : `Balance: ${credits} Credits`}
                 </span>
-              </div>
+              </Link>
             )}
 
             <Link
@@ -234,7 +241,7 @@ const Header: React.FC = () => {
             {currentUser ? (
               <button
                 onClick={handleLogout}
-                className="bg-red-50 dark:bg-red-600/10 hover:bg-red-600 text-red-650 dark:text-red-500 hover:text-white border border-red-200 dark:border-red-500/20 font-bold py-3 px-4 rounded-lg transition-all w-full text-center"
+                className="cursor-pointer bg-red-50 dark:bg-red-600/10 hover:bg-red-600 text-red-650 dark:text-red-500 hover:text-white border border-red-200 dark:border-red-500/20 font-bold py-3 px-4 rounded-lg transition-all w-full text-center"
               >
                 Logout
               </button>
