@@ -1,0 +1,35 @@
+[
+  {
+    "city": "new-york",
+    "state": "ny",
+    "name": "New York",
+    "stateName": "New York",
+    "h1": "AI Interior Design for New York City Apartments",
+    "intro": "In a city where space is at a premium, New York interior design is all about maximizing every square inch. From historic brownstones to sleek high-rise condos, our AI helps you create functional and stylish urban living spaces.",
+    "popularStyle": "Industrial Chic",
+    "styleDesc": "Exposed brick, metal accents, and open floor plans pay homage to the city's rich manufacturing history while providing a modern, airy feel.",
+    "challenge": "Maximizing vertical storage in small, narrow rooms with limited natural light."
+  },
+  {
+    "city": "los-angeles",
+    "state": "ca",
+    "name": "Los Angeles",
+    "stateName": "California",
+    "h1": "AI Interior Design for Los Angeles Homes",
+    "intro": "Embrace the indoor-outdoor California lifestyle with designs tailored for Los Angeles. Whether you live in a mid-century modern home in the hills or a breezy beach house, our AI brings your vision to life.",
+    "popularStyle": "Mid-Century Modern",
+    "styleDesc": "Clean lines, organic curves, and large glass windows perfectly frame the LA sunshine and natural landscapes.",
+    "challenge": "Balancing natural cooling and light optimization during intense summer heat."
+  },
+  {
+    "city": "austin",
+    "state": "tx",
+    "name": "Austin",
+    "stateName": "Texas",
+    "h1": "AI Interior Design Tailored for Austin",
+    "intro": "Austin's booming real estate market demands a blend of modern innovation and classic Texas charm. Design your perfect space to reflect the city's vibrant, eclectic energy.",
+    "popularStyle": "Modern Farmhouse",
+    "styleDesc": "A perfect blend of rustic comfort and sleek contemporary lines, ideal for spacious Texas homes.",
+    "challenge": "Designing open-concept spaces that remain cozy and cohesive."
+  }
+]
