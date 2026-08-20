@@ -57,7 +57,9 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
 
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Redesign Your {cityData.name} Home Instantly</h2>
-          <p className="text-gray-600 dark:text-gray-400">Upload a photo below and let our AI handle the rest.</p>
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed text-lg">
+            {cityData.solution || "Upload a photo below and let our AI instantly generate stunning new designs tailored to your local architecture."}
+          </p>
         </div>
       </section>
 
