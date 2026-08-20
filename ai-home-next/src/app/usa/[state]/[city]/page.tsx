@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { supabase } from "@/supabaseClient";
 import DesignWorkspace from "@/components/DesignWorkspace";
 import Link from "next/link";
+import Image from "next/image";
 
 export const revalidate = 3600;
 
@@ -46,6 +47,21 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
           </p>
         </div>
       </header>
+
+      {cityData.image_url && (
+        <div className="max-w-5xl mx-auto px-4 mt-8">
+          <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-xl">
+            <Image 
+              src={cityData.image_url} 
+              alt={`${cityData.popular_style} interior design in ${cityData.name}, ${cityData.state_name}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 1024px"
+              priority
+            />
+          </div>
+        </div>
+      )}
 
       <section className="max-w-4xl mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8 mb-16">
