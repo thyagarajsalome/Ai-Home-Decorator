@@ -69,10 +69,10 @@ const About: React.FC = () => {
           <div className="p-5 rounded-xl bg-purple-900/10 border border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
             <span className="text-sm font-semibold text-purple-300">Email our support desk:</span>
             <a
-              href="mailto:contact@aihomedecorator.com"
+              href="mailto:contactaihomedecorator@gmail.com"
               className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold shadow-md transition-colors"
             >
-              contact@toolwebsite.in
+              contactaihomedecorator@gmail.com
             </a>
           </div>
         </div>

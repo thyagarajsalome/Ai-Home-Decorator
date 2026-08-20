@@ -130,10 +130,10 @@ const PolicyPage: React.FC = () => {
             <p>
               If you have any questions about this privacy policy, please contact us at{" "}
               <a
-                href="mailto:contact@toolwebsite.in"
+                href="mailto:contactaihomedecorator@gmail.com"
                 className="text-purple-400 hover:text-purple-300 font-semibold transition-colors hover:underline"
               >
-                contact@toolwebsite.in
+                contactaihomedecorator@gmail.com
               </a>{" "}
               or contact:{" "}
               <a
