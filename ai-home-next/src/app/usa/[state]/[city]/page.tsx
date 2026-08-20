@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
-import citiesData from "@/data/cities.json";
+import { supabase } from "@/supabaseClient";
 import DesignWorkspace from "@/components/DesignWorkspace";
 import Link from "next/link";
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
+  const { data: citiesData } = await supabase.from("seo_cities").select("state, city");
+  if (!citiesData) return [];
   return citiesData.map((city) => ({
     state: city.state,
     city: city.city,
@@ -12,7 +16,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ state: string; city: string }> }) {
   const { state, city } = await params;
-  const cityData = citiesData.find((c) => c.state === state && c.city === city);
+  const { data: cityData } = await supabase.from("seo_cities").select("*").eq("state", state).eq("city", city).single();
   if (!cityData) return { title: "Not Found" };
 
   return {
@@ -27,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
 
 export default async function CityDesignPage({ params }: { params: Promise<{ state: string; city: string }> }) {
   const { state, city } = await params;
-  const cityData = citiesData.find((c) => c.state === state && c.city === city);
+  const { data: cityData } = await supabase.from("seo_cities").select("*").eq("state", state).eq("city", city).single();
   if (!cityData) notFound();
 
   return (
@@ -46,8 +50,8 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
       <section className="max-w-4xl mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           <div className="bg-white dark:bg-obsidian-800 p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Local Style: {cityData.popularStyle}</h3>
-            <p className="text-gray-600 dark:text-gray-300">{cityData.styleDesc}</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Local Style: {cityData.popular_style}</h3>
+            <p className="text-gray-600 dark:text-gray-300">{cityData.style_desc}</p>
           </div>
           <div className="bg-white dark:bg-obsidian-800 p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Local Challenge</h3>
@@ -58,7 +62,7 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Redesign Your {cityData.name} Home Instantly</h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed text-lg">
-            {cityData.solution || "Upload a photo below and let our AI instantly generate stunning new designs tailored to your local architecture."}
+            Upload a photo below and let our AI instantly generate stunning new designs tailored to your local architecture.
           </p>
         </div>
       </section>
