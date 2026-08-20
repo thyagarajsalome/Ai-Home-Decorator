@@ -23,7 +23,7 @@ const Hero: React.FC = () => {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-gray-650 dark:text-gray-400 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
-            Stop imagining and start seeing. Upload a photo of your room, choose from 15+ stunning design styles like Japandi or Cyberpunk, and watch your dream home come to life instantly.
+            Stop imagining and start seeing. Upload a photo of your room, choose from 15+ stunning design styles, and watch your dream home come to life instantly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
