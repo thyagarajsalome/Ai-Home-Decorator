@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { supabase } from "@/supabaseClient";
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export default async function USADashboard() {
   const { data: citiesData, error } = await supabase.from("seo_cities").select("city, state").order("state");
