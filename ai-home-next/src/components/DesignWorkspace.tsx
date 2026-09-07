@@ -9,6 +9,7 @@ import ResultDisplay from "@/components/ResultDisplay";
 import Loader from "@/components/Loader";
 import AuthModal from "@/components/AuthModal";
 import USAHomeShowcase from "@/components/USAHomeShowcase";
+import AppDownloadSection from "@/components/AppDownloadSection";
 import { generateDecoratedImage } from "@/services/geminiService";
 import type { SelectionChoice } from "@/types";
 import { useAuth } from "@/context/AuthContext";
@@ -558,6 +559,9 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
 
       {/* Interactive Before & After USA Homes Showcase Gallery */}
       <USAHomeShowcase onSelectShowcaseStyle={handleSelectShowcaseStyle} />
+
+      {/* Official Android Mobile App Download Section */}
+      <AppDownloadSection />
 
       {/* Zero-friction Auth Modal for guests */}
       <AuthModal

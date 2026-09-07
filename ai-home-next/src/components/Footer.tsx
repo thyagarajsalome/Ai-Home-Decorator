@@ -19,6 +19,20 @@ const Footer: React.FC = () => {
             <p className="text-gray-500 dark:text-gray-500 text-[10px] pt-1">
               &copy; {new Date().getFullYear()} All rights reserved.
             </p>
+            <div className="pt-2">
+              <a 
+                href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-block transition-transform duration-200 hover:scale-105"
+              >
+                <img 
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+                  alt="Get it on Google Play" 
+                  className="h-10 w-auto" 
+                />
+              </a>
+            </div>
           </div>
 
           {/* Explore Styles Column (SEO) */}
