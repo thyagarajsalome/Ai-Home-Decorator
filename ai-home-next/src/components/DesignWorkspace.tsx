@@ -8,6 +8,7 @@ import CustomDesignInput from "@/components/CustomDesignInput";
 import ResultDisplay from "@/components/ResultDisplay";
 import Loader from "@/components/Loader";
 import AuthModal from "@/components/AuthModal";
+import USAHomeShowcase from "@/components/USAHomeShowcase";
 import { generateDecoratedImage } from "@/services/geminiService";
 import type { SelectionChoice } from "@/types";
 import { useAuth } from "@/context/AuthContext";
@@ -49,6 +50,18 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
   const [selectedStyle, setSelectedStyle] = useState<SelectionChoice | null>(getInitialStyle());
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [loadingTip, setLoadingTip] = useState<string>("");
+
+  // Quick 1-tap style applicator from Before/After showcase gallery
+  const handleSelectShowcaseStyle = (styleName: string, categoryId: string) => {
+    setDesignMode("style");
+    const cat = ELEMENT_CATEGORIES.find((c) => c.id === categoryId) || ELEMENT_CATEGORIES[0];
+    const match = cat.choices.find(
+      (s) => s.name.toLowerCase() === styleName.toLowerCase()
+    );
+    if (match) {
+      setSelectedStyle(match);
+    }
+  };
 
   useEffect(() => {
     setIsVerified(!!currentUser?.email_confirmed_at);
@@ -542,6 +555,9 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           />
         </div>
       )}
+
+      {/* Interactive Before & After USA Homes Showcase Gallery */}
+      <USAHomeShowcase onSelectShowcaseStyle={handleSelectShowcaseStyle} />
 
       {/* Zero-friction Auth Modal for guests */}
       <AuthModal
