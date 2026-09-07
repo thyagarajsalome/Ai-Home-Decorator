@@ -1,397 +1,356 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const multer = require("multer");
-const { createClient } = require("@supabase/supabase-js");
-const Razorpay = require("razorpay");
-const crypto = require("crypto");
+const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+const dotenv = require('dotenv');
+const Replicate = require('replicate');
+const { createClient } = require('@supabase/supabase-js');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
+const sharp = require('sharp'); 
 
-const verifySupabaseToken = require("./authMiddleware");
+// Native Node modules for FFmpeg video processing
+const { exec } = require('child_process');
+const util = require('util');
+const fs = require('fs').promises;
+const path = require('path');
+const os = require('os');
+const crypto = require('crypto');
+const execPromise = util.promisify(exec);
 
-// --- VALIDATE ENVIRONMENT VARIABLES ---
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
-const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
-const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
-const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+dotenv.config();
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error("FATAL: Missing Supabase URL or Service Key.");
-  process.exit(1);
-}
+// ============================================
+// CONFIGURATION
+// ============================================
+const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
+const IMAGE_MODEL = process.env.IMAGE_MODEL || 'black-forest-labs/flux-schnell';
+const USE_GEMINI_ENHANCEMENT = process.env.USE_GEMINI_ENHANCEMENT !== 'false'; 
 
-if (!apiKey) {
-  console.error("FATAL: GEMINI_API_KEY not found.");
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
-
-// --- RAZORPAY SETUP ---
-const razorpay =
-  razorpayKeyId && razorpayKeySecret
-    ? new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret })
-    : null;
-
-// --- CREDIT PACKS CONFIGURATION (UPDATED PRICES) ---
-// These must match the prices in your frontend PricingPage.tsx
-const CREDIT_PACKS = {
-  pack_starter: { credits: 15, amount: 398 },
-  pack_value: { credits: 50, amount: 998 },
-  pack_pro: { credits: 120, amount: 1998 },
-};
-
-const STYLE_GENERATION_COST = 1;
-const CUSTOM_GENERATION_COST = 3;
+const NEGATIVE_PROMPT = 'blurry, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, ' +
+  'missing limbs, fused fingers, watermark, text, signature, low quality, duplicate, mutated, ' +
+  'disfigured, poorly drawn, poorly rendered, noisy, grainy, oversaturated, cluttered, messy, ' +
+  'unrealistic furniture, floating objects, broken walls, collapsing ceiling';
 
 const app = express();
+const port = process.env.PORT || 8080;
+
+app.use(cors());
+app.use(express.json({ limit: '15mb' })); // Slightly increased limit for buffer handling
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const geminiApiKey = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(geminiApiKey);
+const googleGenAIClient = new GoogleGenAI({ apiKey: geminiApiKey });
+
+const storage = multer.memoryStorage();
 const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 },
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, 
 });
 
-const PORT = process.env.PORT || 8080;
-const HOST = "0.0.0.0";
+const verifySupabaseToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid authorization header' });
+  }
 
-app.use(cors({ origin: true }));
-app.use(express.json());
+  const token = authHeader.split(' ')[1];
 
-app.get("/", (req, res) => res.status(200).json({ status: "ok" }));
-app.get("/health", (req, res) => res.status(200).json({ status: "healthy" }));
-
-// --- INITIALIZE AI ---
-let ai = null;
-async function initializeAI() {
   try {
-    const module = await import("@google/genai");
-    if (!module.GoogleGenAI) throw new Error("Could not import GoogleGenAI");
-    ai = new module.GoogleGenAI({ apiKey });
-    console.log("Google Gen AI initialized successfully");
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      return res.status(401).json({ error: 'Invalid or expired token' });
+    }
+    req.user = user; 
+    next();
   } catch (err) {
-    console.error("FATAL: Failed to initialize @google/genai:", err);
+    console.error('Token verification structural exception:', err);
+    return res.status(401).json({ error: 'Authentication processing failed' });
   }
-}
-initializeAI();
+};
 
-function bufferToGenerativePart(buffer, mimeType) {
-  return {
-    inlineData: {
-      data: buffer.toString("base64"),
-      mimeType,
-    },
-  };
-}
-
-// ==================================================
-//  PAYMENT ENDPOINTS
-// ==================================================
-
-// 1. Create Order
-app.post("/api/create-order", verifySupabaseToken, async (req, res) => {
-  if (!razorpay) {
-    return res.status(503).json({ error: "Payment gateway not configured." });
-  }
-
-  try {
-    const { packId } = req.body;
-    const pack = CREDIT_PACKS[packId];
-
-    if (!pack) {
-      return res.status(400).json({ error: "Invalid pack ID." });
-    }
-
-    const options = {
-      amount: pack.amount * 100, // amount in the smallest currency unit (paisa)
-      currency: "INR",
-      receipt: `rcpt_${Date.now()}_${req.user.id.substring(0, 5)}`,
-      notes: {
-        userId: req.user.id,
-        packId: packId,
-        credits: pack.credits,
-      },
-    };
-
-    const order = await razorpay.orders.create(options);
-    res.json(order);
-  } catch (error) {
-    console.error("Create Order Error:", error);
-    res.status(500).json({ error: "Failed to create payment order." });
-  }
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date() });
 });
 
-// 2. Verify Payment & Add Credits
-app.post("/api/payment-verification", verifySupabaseToken, async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    req.body;
-  const userId = req.user.id;
+function getFallbackImage(message) {
+  const svg = `
+    <svg width="600" height="800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="#1E293B"/>
+      <text x="50%" y="50%" font-family="Arial" font-size="20" fill="#94A3B8" text-anchor="middle" dominant-baseline="middle">
+        ${message}
+      </text>
+    </svg>
+  `;
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+}
+
+// ============================================
+// FFMPEG MORPHING ENGINE
+// ============================================
+async function createMorphVideo(sourceBuffer, generatedBuffer) {
+  const sessionId = crypto.randomBytes(16).toString('hex');
+  const tempDir = os.tmpdir();
+  
+  const sourcePath = path.join(tempDir, `source_${sessionId}.jpg`);
+  const genPath = path.join(tempDir, `gen_${sessionId}.jpg`);
+  const outputPath = path.join(tempDir, `output_${sessionId}.mp4`);
 
   try {
-    // Verify Signature
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSignature = crypto
-      .createHmac("sha256", razorpayKeySecret)
-      .update(body.toString())
-      .digest("hex");
+    await fs.writeFile(sourcePath, sourceBuffer);
+    await fs.writeFile(genPath, generatedBuffer);
 
-    const isAuthentic = expectedSignature === razorpay_signature;
+    // Xfade Wipe Right Transition (3 Seconds Total)
+    const ffmpegCommand = `ffmpeg -loop 1 -t 2 -i "${sourcePath}" -loop 1 -t 2 -i "${genPath}" -filter_complex "[0][1]xfade=transition=wiperight:duration=1:offset=1,format=yuv420p" -c:v libx264 -preset veryfast -crf 28 -y "${outputPath}"`;
 
-    if (!isAuthentic) {
-      return res.status(400).json({ error: "Invalid payment signature." });
-    }
+    console.log(`Starting FFmpeg render for session: ${sessionId}`);
+    await execPromise(ffmpegCommand);
 
-    // Fetch order details to know how many credits to add
-    const order = await razorpay.orders.fetch(razorpay_order_id);
+    const videoBuffer = await fs.readFile(outputPath);
+    return `data:video/mp4;base64,${videoBuffer.toString('base64')}`;
+  } catch (err) {
+    console.error("FFmpeg rendering failed:", err);
+    return null; 
+  } finally {
+    // Strict Cleanup to prevent container memory exhaustion
+    await fs.unlink(sourcePath).catch(() => {});
+    await fs.unlink(genPath).catch(() => {});
+    await fs.unlink(outputPath).catch(() => {});
+  }
+}
 
-    if (!order || !order.notes || !order.notes.credits) {
-      return res.status(400).json({ error: "Could not verify order details." });
-    }
+// ============================================
+// MAIN GENERATION CONTROLLER ROUTE
+// ============================================
+app.post('/api/decorate', verifySupabaseToken, upload.single('image'), async (req, res) => {
+  try {
+    const { designPrompt, roomType, designMode, roomDescription } = req.body;
+    const file = req.file;
 
-    const creditsToAdd = parseInt(order.notes.credits);
+    if (!designPrompt) return res.status(400).json({ error: 'Missing designPrompt parameter' });
+    if (!file) return res.status(400).json({ error: 'Missing uploaded room image snapshot file' });
 
-    // Add credits to user profile
-    const { data: profile, error: fetchError } = await supabase
-      .from("user_profiles")
-      .select("generation_credits")
-      .eq("id", userId)
+    console.log(`Processing design: [${roomType}] -> [${designPrompt}] for User ID: ${req.user.id}`);
+
+    // Create user-scoped Supabase client to perform credit validation under user context
+    const authHeader = req.headers.authorization;
+    const userToken = authHeader.split(' ')[1];
+    const userSupabase = createClient(supabaseUrl, supabaseKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      },
+      auth: {
+        persistSession: false
+      }
+    });
+
+    const cost = 1;
+
+    // 1. Secure Credit Check
+    const { data: profile, error: profileError } = await userSupabase
+      .from('user_profiles')
+      .select('generation_credits')
+      .eq('id', req.user.id)
       .single();
 
-    if (fetchError) throw fetchError;
-
-    const newCreditTotal = (profile.generation_credits || 0) + creditsToAdd;
-
-    const { error: updateError } = await supabase
-      .from("user_profiles")
-      .update({ generation_credits: newCreditTotal })
-      .eq("id", userId);
-
-    if (updateError) throw updateError;
-
-    res.json({ success: true, newCredits: newCreditTotal });
-  } catch (error) {
-    console.error("Payment Verification Error:", error);
-    res.status(500).json({ error: "Payment verification failed." });
-  }
-});
-
-// 3. Razorpay Server-to-Server Webhook
-app.post("/api/razorpay-webhook", async (req, res) => {
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_KEY_SECRET;
-
-  if (!webhookSecret) {
-    console.warn("Razorpay webhook received but secret is not configured.");
-    return res.status(200).json({ status: "ignored" });
-  }
-
-  try {
-    const signature = req.headers["x-razorpay-signature"];
-    const shasum = crypto.createHmac("sha256", webhookSecret);
-    shasum.update(JSON.stringify(req.body));
-    const expectedSignature = shasum.digest("hex");
-
-    if (signature !== expectedSignature) {
-      console.error("Invalid Razorpay webhook signature");
-      return res.status(400).json({ error: "Invalid signature" });
+    if (profileError || !profile) {
+      console.error('Failed to retrieve user profile for credit check:', profileError);
+      return res.status(500).json({ error: 'Failed to verify user profile' });
     }
 
-    const { event, payload } = req.body;
+    if (profile.generation_credits < cost) {
+      return res.status(403).json({ error: `Insufficient credits. Need ${cost} credits, you have ${profile.generation_credits}.` });
+    }
 
-    if (event === "payment.captured" || event === "order.paid") {
-      const paymentEntity = payload.payment?.entity;
-      const notes = paymentEntity?.notes;
+    const base64Image = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
 
-      if (notes && notes.userId && notes.credits) {
-        const userId = notes.userId;
-        const creditsToAdd = parseInt(notes.credits, 10);
+    // STEP 1: GEMINI PROMPT ENHANCEMENT
+    let finalPrompt = `A professionally designed ${roomType || 'room'} matching a ${designPrompt} style, interior architecture visualization, highly detailed, 8k resolution, photorealistic interior design photography`;
 
-        const { data: profile, error: fetchError } = await supabase
-          .from("user_profiles")
-          .select("generation_credits")
-          .eq("id", userId)
-          .single();
+    if (USE_GEMINI_ENHANCEMENT && geminiApiKey) {
+      try {
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const enhancementSystemInstruction = 
+          `You are an elite interior designer. Expand the user's design request into a detailed, descriptive prompt for an image generator. ` +
+          `Incorporate complementary color schemes, high-end furniture items, realistic illumination rendering techniques, and spatial material rules. ` +
+          `Keep your output description crisp and precise under 150 words. Do not include introductory remarks or meta commentary.`;
 
-        if (!fetchError && profile) {
-          const newCreditTotal = (profile.generation_credits || 0) + creditsToAdd;
-          await supabase
-            .from("user_profiles")
-            .update({ generation_credits: newCreditTotal })
-            .eq("id", userId);
+        const analyticalPrompt = `Room Type: ${roomType || 'Room'}. Target Structural Style: ${designPrompt}. Context Details: ${roomDescription || 'None'}.`;
 
-          console.log(`✅ Webhook: Added ${creditsToAdd} credits to user ${userId}. New total: ${newCreditTotal}`);
-        }
+        const geminiResult = await model.generateContent([
+          { text: enhancementSystemInstruction },
+          { text: analyticalPrompt }
+        ]);
+
+        const enhancedText = geminiResult.response.text().trim();
+        if (enhancedText) finalPrompt = enhancedText;
+      } catch (geminiErr) {
+        console.error('Gemini enhancement failed, bypassing to default:', geminiErr.message);
       }
     }
 
-    res.json({ status: "ok" });
-  } catch (error) {
-    console.error("Razorpay Webhook Error:", error);
-    res.status(500).json({ error: "Webhook processing failed" });
-  }
-});
+    // STEP 2: IMAGE GENERATION (PRIMARY: GOOGLE AI IMAGEN 3 FREE TIER -> SECONDARY: REPLICATE FLUX)
+    let generatedImageBase64 = null;
+    let engineUsed = "none";
 
-// ==================================================
-//  IMAGE GENERATION ENDPOINT
-// ==================================================
-app.post(
-  "/api/decorate",
-  verifySupabaseToken,
-  upload.single("image"),
-  async (req, res) => {
-    if (!ai)
-      return res.status(503).json({ error: "AI service is initializing." });
+    // 1. PRIMARY: Try Google AI Studio Free Tier (Imagen 3) first
+    if (geminiApiKey) {
+      try {
+        console.log('⚡ Attempting PRIMARY: Google AI (Imagen 3 Free Tier)...');
+        const response = await googleGenAIClient.models.generateImages({
+          model: 'imagen-3.0-generate-002',
+          prompt: finalPrompt,
+          config: {
+            numberOfImages: 1,
+            outputMimeType: 'image/jpeg',
+            aspectRatio: '1:1',
+          },
+        });
 
-    let originalCredits = 0;
-    let profile;
-    const userId = req.user.id;
+        if (response && response.generatedImages && response.generatedImages[0]?.image?.imageBytes) {
+          const base64Data = response.generatedImages[0].image.imageBytes;
+          generatedImageBase64 = `data:image/jpeg;base64,${base64Data}`;
+          engineUsed = "google-imagen-3-free";
+          console.log('✅ Google AI Studio (Free Tier) successfully generated image!');
+        }
+      } catch (geminiGenErr) {
+        console.warn('⚠️ Google AI Studio Free Tier unavailable or limit reached:', geminiGenErr.message || geminiGenErr);
+        console.log('🔄 Seamlessly switching to SECONDARY: Replicate (FLUX)...');
+      }
+    }
+
+    // 2. SECONDARY / FALLBACK: Replicate (FLUX) only if Google Free Tier is exhausted or fails
+    if (!generatedImageBase64 && REPLICATE_API_TOKEN) {
+      try {
+        console.log('🚀 Using SECONDARY: Replicate (FLUX)...');
+        const replicate = new Replicate({ auth: REPLICATE_API_TOKEN });
+        const inputOptions = {
+          image: base64Image,
+          prompt: finalPrompt,
+          a_prompt: 'best quality, extremely detailed, photo from pinterest, interior design magazine, photorealistic, 8k',
+          n_prompt: NEGATIVE_PROMPT,
+          scale: 9, // strict adherence to prompt
+          ddim_steps: 30,
+          image_resolution: "512",
+          detect_resolution: 512
+        };
+
+        const output = await replicate.run(IMAGE_MODEL, { input: inputOptions });
+
+        if (output && Array.isArray(output) && output.length > 0) {
+          const finalOutput = output[output.length - 1]; // Get the last image
+          const imageUrl = typeof finalOutput.url === 'function' ? finalOutput.url().toString() : finalOutput.toString();
+          const imageResponse = await fetch(imageUrl);
+          const arrayBuffer = await imageResponse.arrayBuffer();
+          generatedImageBase64 = `data:image/webp;base64,${Buffer.from(arrayBuffer).toString('base64')}`;
+          engineUsed = "replicate-flux";
+          console.log('✅ Replicate FLUX generated fallback image successfully!');
+        } else if (output && typeof output === 'string') {
+          const imageResponse = await fetch(output);
+          const arrayBuffer = await imageResponse.arrayBuffer();
+          generatedImageBase64 = `data:image/webp;base64,${Buffer.from(arrayBuffer).toString('base64')}`;
+          engineUsed = "replicate-flux";
+          console.log('✅ Replicate FLUX generated fallback image successfully!');
+        }
+      } catch (replicateErr) {
+        console.error('❌ Replicate generation also failed:', replicateErr.message || replicateErr);
+      }
+    }
+
+    if (generatedImageBase64) {
+      console.log(`Deducting ${cost} credits for User ID: ${req.user.id}`);
+      const { data: deductResult, error: deductError } = await userSupabase.rpc('secure_deduct_credits', {
+        cost_amount: cost
+      });
+
+      if (deductError) {
+        console.error('Database credit deduction failed:', deductError);
+        return res.status(402).json({ error: 'Failed to deduct credits. Generation cancelled.' });
+      }
+    } else {
+      return res.status(500).json({ error: 'Generation failed. No credits were deducted.' });
+    }
+
+    // STEP 3: CLOUD-SIDE COMPOSITE & WATERMARK
+    let outputWatermarkedString = generatedImageBase64;
+    let outputCleanString = generatedImageBase64;
+    let cloudProcessedWatermarkedBuffer = null;
 
     try {
-      const {
-        designPrompt = "",
-        roomDescription = "",
-        designMode = "style",
-        roomType,
-      } = req.body;
-      const file = req.file;
+      const cleanRawBuffer = Buffer.from(generatedImageBase64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+      const imageMetadata = await sharp(cleanRawBuffer).metadata();
+      const canvasWidth = imageMetadata.width || 1024;
+      const canvasHeight = imageMetadata.height || 1024;
+      
+      const footerStripHeight = Math.round(canvasWidth * 0.08); 
+      const fontPixelSize = Math.round(footerStripHeight * 0.35);
 
-      if (!file)
-        return res.status(400).json({ error: "No image file provided." });
+      const brandBannerSvg = `
+        <svg width="${canvasWidth}" height="${footerStripHeight}" viewBox="0 0 ${canvasWidth} ${footerStripHeight}" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#0F172A"/>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="600" font-size="${fontPixelSize}px" fill="#94A3B8">
+            Transform your room at aihomedecorator.com (Get the app!)
+          </text>
+        </svg>
+      `;
 
-      const costToDebit =
-        designMode === "custom"
-          ? CUSTOM_GENERATION_COST
-          : STYLE_GENERATION_COST;
-
-      // Check Credits
-      const { data: fetchedProfile, error: fetchError } = await supabase
-        .from("user_profiles")
-        .select("generation_credits")
-        .eq("id", userId)
-        .single();
-
-      profile = fetchedProfile;
-
-      if (fetchError || !profile) {
-        // Create profile if missing
-        await supabase
-          .from("user_profiles")
-          .insert([{ id: userId, generation_credits: 119 }]);
-        profile = { generation_credits: 119 };
-      }
-
-      originalCredits = profile.generation_credits;
-
-      if (originalCredits < costToDebit) {
-        return res.status(403).json({ error: "Not enough credits." });
-      }
-
-      // Deduct Credits
-      const { error: debitError } = await supabase.rpc("decrement_credits", {
-        user_id: userId,
-        amount: costToDebit,
-      });
-
-      if (debitError)
-        return res.status(500).json({ error: "Failed to debit credit." });
-
-      const newCredits = originalCredits - costToDebit;
-
-      // Generate Image
-      const userContext = roomDescription
-        ? `This is a photo of a ${roomDescription}.`
-        : `This is a photo of a ${roomType || "room"}.`;
-
-      const fullPrompt = `${userContext} Redecorate this room in ${designPrompt}. Maintain the original room structure and layout but change the furniture, wall color, and decorations to match the new style. The result should be photorealistic.`;
-      const imagePart = bufferToGenerativePart(file.buffer, file.mimetype);
-
-      const candidateModels = ["gemini-2.5-flash-image", "gemini-2.0-flash"];
-      let response = null;
-      let lastAiError = null;
-
-      for (const modelName of candidateModels) {
-        try {
-          response = await ai.models.generateContent({
-            model: modelName,
-            contents: { parts: [imagePart, { text: fullPrompt }] },
-          });
-          if (response) break;
-        } catch (err) {
-          lastAiError = err;
-          console.warn(`Model ${modelName} call failed:`, err.message || err);
-          const errStr = JSON.stringify(err);
-          // If error is billing or quota depletion (429/RESOURCE_EXHAUSTED), do not retry other models as they will also fail
-          if (
-            errStr.includes("RESOURCE_EXHAUSTED") ||
-            errStr.includes("prepayment credits") ||
-            (err.status && err.status === 429)
-          ) {
-            break;
-          }
+      cloudProcessedWatermarkedBuffer = await sharp({
+        create: {
+          width: canvasWidth,
+          height: canvasHeight + footerStripHeight,
+          channels: 4,
+          background: { r: 15, g: 23, b: 42, alpha: 1 }
         }
-      }
+      })
+      .composite([
+        { input: cleanRawBuffer, top: 0, left: 0 },
+        { input: Buffer.from(brandBannerSvg), top: canvasHeight, left: 0 }
+      ])
+      .jpeg({ quality: 90 })
+      .toBuffer();
 
-      if (!response && lastAiError) {
-        throw lastAiError;
-      }
+      outputWatermarkedString = `data:image/jpeg;base64,${cloudProcessedWatermarkedBuffer.toString('base64')}`;
+      outputCleanString = `data:image/jpeg;base64,${cleanRawBuffer.toString('base64')}`;
 
-      // Check Safety Block
-      if (response?.candidates?.[0]?.finishReason === "SAFETY") {
-        await supabase
-          .from("user_profiles")
-          .update({ generation_credits: originalCredits })
-          .eq("id", userId);
-        return res
-          .status(400)
-          .json({ error: "Request blocked for safety. Credits refunded." });
-      }
-
-      let base64Image = null;
-      const parts = response?.candidates?.[0]?.content?.parts;
-      if (parts) {
-        for (const part of parts) {
-          if (part.inlineData) {
-            base64Image = part.inlineData.data;
-            break;
-          }
-        }
-      }
-
-      if (!base64Image) throw new Error("AI did not return a valid image.");
-
-      // SUCCESS
-      res.status(200).json({
-        generatedImage: `data:image/jpeg;base64,${base64Image}`,
-        remainingCredits: newCredits,
-      });
-    } catch (error) {
-      // Rollback credits on error
-      if (profile && originalCredits > 0) {
-        await supabase
-          .from("user_profiles")
-          .update({ generation_credits: originalCredits })
-          .eq("id", userId);
-      }
-      console.error("Error processing image:", error);
-
-      const errString = typeof error === "object" ? JSON.stringify(error) : String(error);
-      let userFriendlyError = "Failed to generate image. Credits refunded.";
-
-      if (
-        errString.includes("prepayment credits are depleted") ||
-        errString.includes("RESOURCE_EXHAUSTED") ||
-        error?.status === 429
-      ) {
-        userFriendlyError =
-          "Google AI Studio billing or prepayment credits are depleted. Please check billing settings in AI Studio. Credits refunded.";
-      } else if (error?.message) {
-        userFriendlyError = `${error.message}. Credits refunded.`;
-      }
-
-      res.status(500).json({ error: userFriendlyError });
+    } catch (sharpError) {
+      console.error('Sharp composition failed:', sharpError.message);
     }
-  }
-);
 
-app.listen(PORT, HOST, () => {
-  console.log(`✅ Server running on http://${HOST}:${PORT}`);
+    // STEP 4: GENERATE VIRAL VIDEO & DELIVER PAYLOADS
+    console.log('Generating viral transition video...');
+    
+    // We use the watermarked buffer for the video so the brand travels with it
+    const videoBufferTarget = cloudProcessedWatermarkedBuffer || Buffer.from(generatedImageBase64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+
+    // Get target dimensions for matching resolutions in the transition video
+    const targetMetadata = await sharp(videoBufferTarget).metadata();
+
+    // Convert source upload to standard jpeg buffer and resize to target dimensions for FFmpeg compatibility
+    const sourceJpegBuffer = await sharp(file.buffer)
+      .resize(targetMetadata.width, targetMetadata.height, { fit: 'fill' })
+      .jpeg()
+      .toBuffer();
+
+    const viralVideoBase64 = await createMorphVideo(sourceJpegBuffer, videoBufferTarget);
+
+    console.log('Dispensing complete asset payload.');
+    return res.status(200).json({
+      generatedImage: outputWatermarkedString,
+      hdCleanImage: outputCleanString,         
+      viralVideo: viralVideoBase64             
+    });
+
+  } catch (error) {
+    console.error('Critical backend error:', error);
+    res.status(500).json({ error: 'Failed to process image requests', details: error.message });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Backend production server running on port ${port}`);
 });
