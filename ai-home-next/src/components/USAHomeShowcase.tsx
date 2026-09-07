@@ -4,113 +4,75 @@ import SafeImage from "@/components/SafeImage";
 
 export interface ShowcaseRoom {
   id: string;
-  category: "living" | "bedroom" | "kitchen" | "bath" | "outdoor" | "walls" | "flooring" | "lighting";
+  category: "living" | "bedroom" | "kitchen" | "bath" | "outdoor" | "walls";
   roomBadge: string;
-  location: string;
   styleName: string;
   styleCategory: string;
   title: string;
-  description: string;
   image: string;
   fallbackImage: string;
 }
 
 export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
   {
-    id: "living-room-modern",
+    id: "living-room",
     category: "living",
     roomBadge: "Living Hall",
-    location: "Los Angeles, CA",
     styleName: "Modern",
     styleCategory: "full_redesign",
-    title: "Modern Luxury Living",
-    description: "Sleek geometric sectional, modern architectural floor lighting, statement art, and refined marble coffee tables.",
-    image: "/images/showcase/living-room-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+    title: "Modern Living Hall",
+    image: "/images/showcase/living-room.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    id: "bedroom-japandi",
+    id: "bedroom",
     category: "bedroom",
     roomBadge: "Bedroom",
-    location: "Seattle, WA",
-    styleName: "Japandi",
+    styleName: "Bohemian",
     styleCategory: "full_redesign",
-    title: "Organic Japandi Sanctuary",
-    description: "Tranquil retreat with low-profile oak platform bed, shoji screens, warm wood paneling, and soft linen layers.",
-    image: "/images/showcase/bedroom-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80",
+    title: "Bohemian Bedroom",
+    image: "/images/showcase/bedroom.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    id: "kitchen-farmhouse",
+    id: "kitchen",
     category: "kitchen",
     roomBadge: "Kitchen",
-    location: "Austin, TX",
     styleName: "Farmhouse Kitchen",
     styleCategory: "kitchen",
-    title: "Luxury Quartz Farmhouse Kitchen",
-    description: "Architectural kitchen redesign with custom white shaker cabinets, solid waterfall quartz island, and warm brass fixtures.",
-    image: "/images/showcase/kitchen-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
+    title: "Modern Kitchen",
+    image: "/images/showcase/kitchen.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    id: "bathroom-spa",
+    id: "bathroom",
     category: "bath",
     roomBadge: "Bathroom",
-    location: "Miami, FL",
     styleName: "Luxury Spa",
     styleCategory: "bathroom",
-    title: "Luxury Spa Sanctuary",
-    description: "High-end wellness bathroom sanctuary featuring a deep oval soaking tub, black fixtures, and stone wall slabs.",
-    image: "/images/showcase/bathroom-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80",
+    title: "Luxury Spa Bathroom",
+    image: "/images/showcase/bathroom.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    id: "patio-mediterranean",
+    id: "patio",
     category: "outdoor",
     roomBadge: "Patio",
-    location: "Phoenix, AZ",
-    styleName: "Mediterranean Terrace",
+    styleName: "Teak Timber Decking",
     styleCategory: "outdoor_patio",
-    title: "Mediterranean Resort Terrace",
-    description: "Terracotta stone pavers, wrought iron lounge seating, ambient string lighting, and lush potted olive trees.",
-    image: "/images/showcase/patio-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+    title: "Outdoor Patio & Deck",
+    image: "/images/showcase/patio.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    id: "walls-brick",
+    id: "wall-paints",
     category: "walls",
     roomBadge: "Wall Paints",
-    location: "New York, NY",
-    styleName: "Exposed Brick",
+    styleName: "Navy Blue Accent",
     styleCategory: "wall_paint",
-    title: "Brooklyn Exposed Brick & Paint",
-    description: "Authentic loft aesthetic with rich red masonry brick textures, warm directional lighting, and designer matte paint.",
-    image: "/images/showcase/wall-paint-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "flooring-marble",
-    category: "flooring",
-    roomBadge: "Flooring",
-    location: "Chicago, IL",
-    styleName: "Marble Flooring",
-    styleCategory: "flooring",
-    title: "Calacatta Gold Marble Flooring",
-    description: "High-gloss polished white Calacatta marble flooring with subtle golden veining that brightens the entire space.",
-    image: "/images/showcase/flooring-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "lighting-golden-hour",
-    category: "lighting",
-    roomBadge: "Lighting",
-    location: "Denver, CO",
-    styleName: "Golden Hour",
-    styleCategory: "lighting_mood",
-    title: "Cinematic Golden Hour Mood",
-    description: "Warm directional lighting with golden sun rays, deep architectural shadows, and cozy evening warmth.",
-    image: "/images/showcase/lighting-after.jpg",
-    fallbackImage: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80",
+    title: "Navy Blue Accent Wall",
+    image: "/images/showcase/wall-paint.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1200&q=80",
   },
 ];
 
@@ -122,8 +84,8 @@ interface ShowcaseCardProps {
 const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ room, onApplyStyle }) => {
   return (
     <div className="bg-obsidian-900/90 border border-gray-800/80 rounded-2xl overflow-hidden shadow-xl hover:border-purple-500/40 transition-all duration-300 flex flex-col group">
-      {/* Single Clean Image Frame */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-obsidian-950">
+      {/* Clean Image Frame */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-obsidian-950">
         <SafeImage
           src={room.image}
           fallbackSrc={room.fallbackImage}
@@ -132,31 +94,23 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ room, onApplyStyle }) => {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
 
-        {/* Floating Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
-          <span className="bg-black/75 backdrop-blur-md text-purple-300 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-purple-500/30">
+        {/* Floating Category Badge */}
+        <div className="absolute top-3 left-3 pointer-events-none z-10">
+          <span className="bg-black/80 backdrop-blur-md text-purple-300 text-xs font-bold px-3 py-1 rounded-lg border border-purple-500/30 shadow-sm">
             {room.roomBadge}
           </span>
-          <span className="bg-black/75 backdrop-blur-md text-gray-300 text-[11px] font-medium px-2.5 py-1 rounded-lg border border-gray-700/50">
-            📍 {room.location}
-          </span>
         </div>
 
-        {/* Soft bottom vignette */}
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-obsidian-900 via-obsidian-900/40 to-transparent pointer-events-none"></div>
-      </div>
-
-      {/* Info & Action */}
-      <div className="p-5 flex-grow flex flex-col justify-between">
-        <div>
-          <h3 className="text-base font-extrabold text-white mb-1.5 font-heading group-hover:text-purple-300 transition-colors">
+        {/* Bottom Title Overlay */}
+        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none">
+          <h3 className="text-base sm:text-lg font-bold text-white font-heading drop-shadow-sm">
             {room.title}
           </h3>
-          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed mb-5">
-            {room.description}
-          </p>
         </div>
+      </div>
 
+      {/* Action Button */}
+      <div className="p-3 bg-obsidian-900">
         <button
           type="button"
           onClick={() => {
