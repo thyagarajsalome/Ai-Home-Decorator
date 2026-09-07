@@ -444,69 +444,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
         </div>
       </div>
 
-      {/* --- STICKY FLOATING QUICK ACTION BAR (Instant access anywhere on page) --- */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-xl animate-slideUp">
-        <div className="glass-card bg-obsidian-900/95 backdrop-blur-xl border border-purple-500/30 shadow-2xl shadow-purple-950/50 rounded-2xl p-2.5 md:p-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0 pl-1.5">
-            <div className="w-8 h-8 rounded-lg bg-purple-950/60 border border-purple-500/30 flex items-center justify-center flex-shrink-0">
-              {uploadedImageFile ? (
-                <span className="text-sm">📸</span>
-              ) : (
-                <span className="text-sm">✨</span>
-              )}
-            </div>
-            <div className="min-w-0 text-left">
-              <p className="text-xs font-bold text-white truncate">
-                {designMode === "style"
-                  ? selectedStyle?.name || "Choose a style"
-                  : customPrompt ? "Custom Prompt" : "Enter prompt"}
-              </p>
-              <p className="text-[10px] text-gray-400 truncate">
-                {uploadedImageFile ? "Photo Ready" : "Photo needed"} •{" "}
-                {costForCurrentMode} Credit{costForCurrentMode > 1 ? "s" : ""}
-              </p>
-            </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={handleDecorateClick}
-            disabled={isLoading || (currentUser && !isVerified) || isLimitReached}
-            className={`flex-shrink-0 px-5 py-2.5 text-xs md:text-sm font-bold text-white rounded-xl shadow-lg transition-all duration-200 ${
-              !currentUser
-                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-purple-500/30"
-                : !isVerified
-                ? "bg-yellow-750 text-yellow-100"
-                : isLimitReached
-                ? "bg-red-900/50 text-red-300"
-                : isLoading
-                ? "bg-gray-800 cursor-wait opacity-80"
-                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-purple-500/30"
-            } disabled:opacity-50`}
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-1.5">
-                <svg
-                  className="animate-spin h-3.5 w-3.5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </span>
-            ) : !currentUser ? (
-              "Sign In & Redesign"
-            ) : !uploadedImageFile ? (
-              "Upload & Generate"
-            ) : (
-              "Generate Now ⚡"
-            )}
-          </button>
-        </div>
-      </div>
 
       {error && (
         <div className="max-w-4xl mx-auto mt-10 p-5 w-full bg-red-950/20 border border-red-900/40 text-red-400 rounded-2xl text-center shadow-lg text-sm animate-fade flex items-center justify-center gap-2">
