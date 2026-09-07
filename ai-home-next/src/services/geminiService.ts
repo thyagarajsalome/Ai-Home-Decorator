@@ -71,17 +71,22 @@ export const generateDecoratedImage = async (
   // Compress image on client side to speed up upload and reduce Cloud Run memory load
   const processedFile = await compressImage(imageFile);
 
-  // Use a relative URL to work with both Vite proxy and Firebase rewrites
-  const BACKEND_URL = "/api/decorate";
+  // Primary URL connects directly to Cloud Run for fast streaming without Vercel proxy buffer limits
+  const PRIMARY_BACKEND_URL =
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    "https://ai-decorator-backend-358218923651.us-central1.run.app/api/decorate";
+  const FALLBACK_BACKEND_URL = "/api/decorate";
 
   const formData = new FormData();
   formData.append("image", processedFile);
   formData.append("designPrompt", designPrompt);
   formData.append("roomDescription", roomDescription);
   formData.append("designMode", designMode);
+  // Tell backend to skip FFmpeg video rendering for web to keep payload lightweight and fast
+  formData.append("generateVideo", "false");
 
-  try {
-    const response = await fetch(BACKEND_URL, {
+  const sendRequest = async (targetUrl: string) => {
+    const response = await fetch(targetUrl, {
       method: "POST",
       body: formData,
       headers: {
@@ -103,16 +108,22 @@ export const generateDecoratedImage = async (
     }
 
     const result = await response.json();
-
-    // --- FIX: Changed 'base64Image' to 'generatedImage' ---
     if (!result.generatedImage) {
       throw new Error("Invalid response from server: no image data found.");
     }
+    return result.generatedImage as string;
+  };
 
-    return result.generatedImage;
-  } catch (error) {
-    console.error("Error communicating with backend:", error);
-    throw error;
+  try {
+    return await sendRequest(PRIMARY_BACKEND_URL);
+  } catch (primaryErr) {
+    console.warn("Primary backend call failed, attempting fallback rewrite...", primaryErr);
+    try {
+      return await sendRequest(FALLBACK_BACKEND_URL);
+    } catch (fallbackErr) {
+      console.error("All backend communication attempts failed:", fallbackErr);
+      throw primaryErr || fallbackErr;
+    }
   }
 };
 

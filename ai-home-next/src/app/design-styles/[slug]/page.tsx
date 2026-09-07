@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { designStyles } from '@/data/designStyles';
+import SafeImage from '@/components/SafeImage';
 
 export default async function StyleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -13,10 +14,13 @@ export default async function StyleDetailPage({ params }: { params: Promise<{ sl
   return (
     <div className="bg-obsidian-950 min-h-screen text-gray-100">
       {/* Hero Banner */}
-      <div 
-        className="w-full h-80 md:h-96 bg-cover bg-center relative"
-        style={{ backgroundImage: `url(${style.image})` }}
-      >
+      <div className="w-full h-80 md:h-96 relative overflow-hidden">
+        <SafeImage
+          src={style.image}
+          fallbackSrc={style.fallbackImage}
+          alt={style.name}
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center">
           <div className="text-center px-4 max-w-3xl animate-fade">
             <span className="inline-block px-3 py-1 rounded-full bg-purple-900/60 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-wider mb-3">

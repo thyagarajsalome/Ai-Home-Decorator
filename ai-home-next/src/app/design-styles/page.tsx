@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { designStyles } from '@/data/designStyles';
+import SafeImage from '@/components/SafeImage';
 
 export default function DesignStylesPage() {
   return (
@@ -24,11 +25,14 @@ export default function DesignStylesPage() {
               className="bg-obsidian-900 border border-gray-800/80 rounded-2xl shadow-xl overflow-hidden flex flex-col group hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.02]"
             >
               <div className="h-52 bg-obsidian-850 relative overflow-hidden">
-                <div 
-                  className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
-                  style={{ backgroundImage: `url(${style.image})` }}
-                ></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent to-transparent"></div>
+                <SafeImage 
+                  src={style.image}
+                  fallbackSrc={style.fallbackImage}
+                  alt={style.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent to-transparent pointer-events-none"></div>
               </div>
               <div className="p-6 flex-grow flex flex-col justify-between">
                 <div>
