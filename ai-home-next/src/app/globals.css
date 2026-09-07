@@ -69,30 +69,31 @@ input[type="range"]::-moz-range-thumb {
 
 /* PWA Installation Toast */
 .pwa-install-toast {
-  display: none; /* HIDDEN BY DEFAULT (Mobile & Tablet) */
+  display: block;
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  max-width: 28rem;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
   width: auto;
-  margin-left: auto;
-  margin-right: 1.5rem;
+  max-width: calc(100% - 2rem);
 
-  background: linear-gradient(135deg, #192532, #293d54);
+  background: linear-gradient(135deg, #101622, #1b2333);
   color: white;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  padding: 0.875rem 1rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(139, 92, 246, 0.4);
   z-index: 50;
   cursor: pointer;
-  animation: slideUpFadeIn 0.5s ease-out;
+  animation: slideUpFadeIn 0.4s ease-out;
 }
 
-/* Desktop positioning - Only show on large screens */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .pwa-install-toast {
-    display: block;
+    left: auto;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    max-width: 24rem;
   }
 }
 

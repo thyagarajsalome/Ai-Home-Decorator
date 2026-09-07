@@ -438,6 +438,17 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           <ResultDisplay
             originalImage={originalImageUrl}
             generatedImage={generatedImageUrl}
+            onTryAnotherStyle={() => {
+              const el = document.getElementById("workspace");
+              el?.scrollIntoView({ behavior: "smooth" });
+            }}
+            onNewPhoto={() => {
+              setUploadedImageFile(null);
+              setOriginalImageUrl(null);
+              setGeneratedImageUrl(null);
+              const el = document.getElementById("workspace");
+              el?.scrollIntoView({ behavior: "smooth" });
+            }}
           />
         </div>
       )}

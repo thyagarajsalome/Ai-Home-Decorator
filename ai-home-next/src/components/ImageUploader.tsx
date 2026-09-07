@@ -258,38 +258,45 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       {previewUrl && !isCompressing && (
         <div className="mt-5 animate-fade">
-          <label
-            htmlFor="room-type-select"
-            className="block text-gray-300 text-sm font-bold mb-2 uppercase tracking-wide"
-          >
-            Describe room context
+          <label className="block text-gray-300 text-xs font-bold mb-2.5 uppercase tracking-wide flex items-center justify-between">
+            <span>Select Room Type</span>
+            <span className="text-[10px] text-purple-400 font-semibold normal-case">1-Tap Selection</span>
           </label>
-          <div className="relative mb-2">
-            <select
-              id="room-type-select"
-              value={selectedRoomType}
-              onChange={handleRoomTypeChange}
-              disabled={disabled}
-              className="block w-full appearance-none bg-obsidian-850 hover:bg-obsidian-800 border border-gray-750 text-white py-3.5 px-4 pr-10 rounded-xl leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 text-sm transition-all"
-            >
-              <option value="" disabled>
-                -- Select Room Category --
-              </option>
-              {ROOM_TYPES.map((type) => (
-                <option key={type} value={type}>
+          
+          <div className="flex flex-wrap gap-2 mb-3">
+            {ROOM_TYPES.map((type) => {
+              const isSelected = selectedRoomType === type;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => {
+                    setSelectedRoomType(type as RoomType);
+                    setCustomDescription("");
+                  }}
+                  disabled={disabled}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border ${
+                    isSelected
+                      ? "bg-purple-600/40 border-purple-500 text-white shadow-sm shadow-purple-500/20 ring-1 ring-purple-500/50"
+                      : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-300 hover:text-white"
+                  }`}
+                >
                   {type}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-              <svg
-                className="fill-current h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-              </svg>
-            </div>
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => setSelectedRoomType("Other")}
+              disabled={disabled}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border ${
+                selectedRoomType === "Other"
+                  ? "bg-purple-600/40 border-purple-500 text-white shadow-sm shadow-purple-500/20 ring-1 ring-purple-500/50"
+                  : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-300 hover:text-white"
+              }`}
+            >
+              Other / Custom...
+            </button>
           </div>
 
           {selectedRoomType === "Other" && (
@@ -300,7 +307,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 onChange={handleCustomDescriptionChange}
                 maxLength={MAX_ROOM_DESCRIPTION_LENGTH}
                 disabled={disabled}
-                placeholder="Describe your room here (e.g. empty library)..."
+                placeholder="Describe your room here (e.g. empty library, sunroom)..."
                 className={`w-full p-3.5 rounded-xl bg-obsidian-850 border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all ${
                   isTooLong ? "border-red-500 focus:ring-red-500" : "border-gray-750"
                 }`}

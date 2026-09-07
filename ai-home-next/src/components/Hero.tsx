@@ -2,6 +2,8 @@
 // src/components/Hero.tsx
 import React from "react";
 
+import Link from "next/link";
+
 const Hero: React.FC = () => {
   return (
     <div className="relative bg-slate-50 dark:bg-obsidian-950 pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden transition-colors duration-300">
@@ -23,7 +25,7 @@ const Hero: React.FC = () => {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-gray-650 dark:text-gray-400 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
-            Stop imagining and start seeing. Upload a photo of your room, choose from 15+ stunning design styles, and watch your dream home come to life instantly.
+            Stop imagining and start seeing. Upload a photo of your room, choose from 70+ curated design styles, and watch your dream home come to life instantly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
@@ -32,14 +34,12 @@ const Hero: React.FC = () => {
             >
               Start Decorating Free
             </a>
-            <a
-              href="https://ai-homedecorator-landing-01.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-obsidian-800/60 hover:bg-gray-50 dark:hover:bg-obsidian-800 border border-gray-250 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+            <Link
+              href="/design-styles"
+              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-obsidian-800/60 hover:bg-gray-50 dark:hover:bg-obsidian-800 border border-gray-250 dark:border-gray-750/60 hover:border-gray-300 dark:hover:border-gray-600 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md text-center"
             >
               Explore Examples
-            </a>
+            </Link>
           </div>
           
           <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-3 text-gray-500 dark:text-gray-400 animate-fade" style={{ animationDelay: '300ms' }}>

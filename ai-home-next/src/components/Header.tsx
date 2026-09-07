@@ -59,6 +59,12 @@ const Header: React.FC = () => {
             >
               About
             </Link>
+            <Link
+              href="/design-styles"
+              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200"
+            >
+              Design Styles
+            </Link>
 
             {!isAppMode && (
               <Link
@@ -68,19 +74,6 @@ const Header: React.FC = () => {
                 Pricing
               </Link>
             )}
-
-            <Link
-              href="/terms"
-              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200"
-            >
-              Terms
-            </Link>
-            <Link
-              href="/policy"
-              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200"
-            >
-              Privacy
-            </Link>
           </nav>
 
           {/* Action buttons and components */}
@@ -210,6 +203,13 @@ const Header: React.FC = () => {
             >
               About
             </Link>
+            <Link
+              href="/design-styles"
+              onClick={closeMenu}
+              className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
+            >
+              Design Styles
+            </Link>
 
             {!isAppMode && (
               <Link
@@ -235,6 +235,19 @@ const Header: React.FC = () => {
             >
               Privacy
             </Link>
+
+            <a
+              href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMenu}
+              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-purple-900/20 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-900/40 transition-colors mt-1"
+            >
+              <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3.609 1.814L13.792 12 3.61 22.186a2.41 2.41 0 01-.61-.92L3 21.13V2.87l.001-.136a2.41 2.41 0 01.608-.92zM15.207 13.414l2.573 2.574-12.06 6.892 9.487-9.466zM15.207 10.586L5.72 1.12l12.06 6.892-2.573 2.574zm1.414 1.414l3.164-1.808a1.5 1.5 0 010 2.616l-3.164 1.808-1.414-1.414 1.414-1.202z"/>
+              </svg>
+              <span>Get Android App (Google Play)</span>
+            </a>
 
             <hr className="border-gray-200 dark:border-gray-800 my-2" />
 
