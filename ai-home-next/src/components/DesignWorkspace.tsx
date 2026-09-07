@@ -7,6 +7,7 @@ import StyleSelector from "@/components/StyleSelector";
 import CustomDesignInput from "@/components/CustomDesignInput";
 import ResultDisplay from "@/components/ResultDisplay";
 import Loader from "@/components/Loader";
+import AuthModal from "@/components/AuthModal";
 import { generateDecoratedImage } from "@/services/geminiService";
 import type { SelectionChoice } from "@/types";
 import { useAuth } from "@/context/AuthContext";
@@ -30,6 +31,8 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
   const [isVerified, setIsVerified] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [designMode, setDesignMode] = useState<"style" | "custom">("style");
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<"login" | "signup">("signup");
   
   // Find initial style object if provided
   const getInitialStyle = (): SelectionChoice | null => {
@@ -61,12 +64,8 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
       setOriginalImageUrl(file ? URL.createObjectURL(file) : null);
       setGeneratedImageUrl(null);
       setError(null);
-      setRoomDescription("");
-      setSelectedStyle(getInitialStyle());
-      setCustomPrompt("");
-      setDesignMode("style");
     },
-    [originalImageUrl, initialCategory, initialStyle]
+    [originalImageUrl]
   );
 
   const getLoadingTip = (prompt: string, room: string): string => {
@@ -85,10 +84,36 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
   };
 
   const handleDecorateClick = async () => {
-    if (!currentUser) {
-      setError("Please log in or sign up to decorate.");
+    if (!uploadedImageFile) {
+      setError("Please upload a photo of your room first.");
       return;
     }
+    if (!roomDescription) {
+      setError("Please describe or select your room category.");
+      return;
+    }
+    const designInput =
+      designMode === "style"
+        ? selectedStyle
+          ? `${selectedStyle.name}: ${selectedStyle.promptSuffix}`
+          : undefined
+        : customPrompt;
+
+    if (!designInput) {
+      setError(
+        designMode === "style"
+          ? "Please select a design style from the list."
+          : "Please enter your custom design prompt."
+      );
+      return;
+    }
+
+    if (!currentUser) {
+      setAuthModalMode("signup");
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     if (!isVerified) {
       setError(
         "Please verify your email address to start decorating. Check your inbox!"
@@ -98,14 +123,6 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
     const idToken = await getIdToken();
     if (!idToken) {
       setError("Could not authenticate. Please try logging in again.");
-      return;
-    }
-    const designInput =
-      designMode === "style" ? (selectedStyle ? `${selectedStyle.name}: ${selectedStyle.promptSuffix}` : undefined) : customPrompt;
-    if (!uploadedImageFile || !designInput || !roomDescription) {
-      setError(
-        "Please upload an image, describe the room, and select a style or provide a custom prompt."
-      );
       return;
     }
 
@@ -199,13 +216,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           </div>
 
           {/* Right Column: Style Selection */}
-          <div
-            className={`transition-all duration-300 flex flex-col space-y-6 ${
-              !isStep1Complete
-                ? "opacity-45 pointer-events-none grayscale"
-                : ""
-            }`}
-          >
+          <div className="transition-all duration-300 flex flex-col space-y-6">
             <div className="flex flex-col space-y-2">
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                 Select Redesign Mode
@@ -213,7 +224,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               <div className="flex w-full rounded-xl bg-obsidian-850 p-1.5 gap-2 border border-gray-800/60 shadow-inner">
                 <button
                   onClick={() => setDesignMode("style")}
-                  disabled={!isStep1Complete || isDisabled}
+                  disabled={isLoading}
                   className={`w-1/2 p-3 rounded-lg text-xs md:text-sm font-bold transition-all ${getButtonActiveStyle(
                     designMode === "style"
                   )} disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -222,7 +233,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
                 </button>
                 <button
                   onClick={() => setDesignMode("custom")}
-                  disabled={!isStep1Complete || isDisabled}
+                  disabled={isLoading}
                   className={`w-1/2 p-3 rounded-lg text-xs md:text-sm font-bold transition-all ${getButtonActiveStyle(
                     designMode === "custom"
                   )} disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -258,13 +269,13 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               <StyleSelector
                 onStyleSelect={setSelectedStyle}
                 selectedStyle={selectedStyle}
-                disabled={!isStep1Complete || isDisabled}
+                disabled={isLoading}
               />
             ) : (
               <CustomDesignInput
                 onPromptChange={setCustomPrompt}
                 currentPrompt={customPrompt}
-                disabled={!isStep1Complete || isDisabled}
+                disabled={isLoading}
               />
             )}
           </div>
@@ -277,21 +288,29 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
                 Ready to redesign?
               </p>
               <p className="text-xs text-gray-400 mb-5">
-                Create a secure account to save your generated designs and get 119 free credits.
+                Create a free account to save your generated designs and get free starter credits.
               </p>
               <div className="flex justify-center gap-4 text-xs font-bold">
-                <Link
-                  href="/login"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthModalMode("login");
+                    setIsAuthModalOpen(true);
+                  }}
                   className="px-6 py-2.5 rounded-lg border border-gray-750 bg-obsidian-800 text-gray-300 hover:text-white transition-colors"
                 >
                   Login
-                </Link>
-                <Link
-                  href="/signup"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthModalMode("signup");
+                    setIsAuthModalOpen(true);
+                  }}
                   className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white transition-colors shadow-md shadow-purple-500/10"
                 >
                   Sign Up
-                </Link>
+                </button>
               </div>
             </div>
           )}
@@ -299,17 +318,13 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           <button
             onClick={handleDecorateClick}
             disabled={
-              !isStep1Complete ||
-              !roomDescription ||
-              isDesignMissing ||
               isLoading ||
-              !currentUser ||
-              !isVerified ||
+              (currentUser && !isVerified) ||
               isLimitReached
             }
             className={`w-full md:w-auto px-12 py-4.5 text-base md:text-lg font-extrabold text-white rounded-xl shadow-xl transition-all duration-300 transform ${
               !currentUser
-                ? "bg-gray-750 cursor-not-allowed opacity-50 text-gray-450"
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.03] shadow-purple-500/25 active:scale-[0.98]"
                 : !isVerified
                 ? "bg-yellow-750 text-yellow-100 cursor-not-allowed border border-yellow-700/30"
                 : isLimitReached
@@ -344,7 +359,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
                 Redecorating Space...
               </span>
             ) : !currentUser ? (
-              "Login to Start Redesigning"
+              "Sign In & Generate Redesign"
             ) : !isVerified ? (
               "Verify Email to Continue"
             ) : isLimitReached ? (
@@ -426,6 +441,16 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           />
         </div>
       )}
+
+      {/* Zero-friction Auth Modal for guests */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authModalMode}
+        onSuccess={() => {
+          setIsAuthModalOpen(false);
+        }}
+      />
     </div>
   );
 };
