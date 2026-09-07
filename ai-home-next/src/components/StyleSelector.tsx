@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { ELEMENT_CATEGORIES } from "../constants";
-import type { SelectionChoice, SelectionCategory } from "../types";
+import type { SelectionChoice } from "../types";
 
 interface StyleSelectorProps {
   onStyleSelect: (style: SelectionChoice | null) => void;
@@ -14,136 +14,187 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
   selectedStyle,
   disabled,
 }) => {
-  const [openCategoryId, setOpenCategoryId] = useState<string | null>("full_redesign");
+  // Find which category the currently selected style belongs to, default to 'full_redesign'
+  const initialCategory = useMemo(() => {
+    if (!selectedStyle) return "full_redesign";
+    const found = ELEMENT_CATEGORIES.find((cat) =>
+      cat.choices.some((c) => c.name === selectedStyle.name)
+    );
+    return found ? found.id : "full_redesign";
+  }, [selectedStyle]);
 
-  const toggleCategory = (categoryId: string) => {
-    if (openCategoryId === categoryId) {
-      setOpenCategoryId(null);
-    } else {
-      setOpenCategoryId(categoryId);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(initialCategory);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const activeCategory = useMemo(() => {
+    return (
+      ELEMENT_CATEGORIES.find((c) => c.id === activeCategoryId) ||
+      ELEMENT_CATEGORIES[0]
+    );
+  }, [activeCategoryId]);
+
+  // Filter styles if user searches
+  const filteredChoices = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return activeCategory.choices;
     }
-  };
-
-  const handleStyleClick = (style: SelectionChoice) => {
-    onStyleSelect(style);
-  };
+    const q = searchQuery.toLowerCase();
+    return activeCategory.choices.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.promptSuffix.toLowerCase().includes(q)
+    );
+  }, [activeCategory, searchQuery]);
 
   return (
     <div
-      className={`w-full transition-all duration-300 ${
+      className={`w-full transition-all duration-300 flex flex-col ${
         disabled ? "opacity-60 pointer-events-none" : ""
       }`}
     >
-      <h2 className="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center gap-2">
-        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-purple-900/30 border border-purple-500/20 text-purple-400 text-sm font-bold">2</span>
-        Choose Element Category
-      </h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-base md:text-lg font-extrabold text-white flex items-center gap-2">
+          <span className="flex items-center justify-center w-6 h-6 rounded-md bg-purple-900/40 border border-purple-500/30 text-purple-400 text-xs font-bold">
+            2
+          </span>
+          Choose Design Style
+        </h2>
+        {selectedStyle && (
+          <span className="text-[11px] font-semibold text-purple-300 truncate max-w-[180px] bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/20">
+            Selected: <strong className="text-white">{selectedStyle.name}</strong>
+          </span>
+        )}
+      </div>
 
-      <div className="space-y-3">
+      {/* Category Pills / Horizontal Tabs */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2.5 no-scrollbar">
         {ELEMENT_CATEGORIES.map((category) => {
-          const isCategoryOpen = openCategoryId === category.id;
+          const isActive = activeCategoryId === category.id;
           return (
-            <div
+            <button
               key={category.id}
-              className="bg-obsidian-850 border border-gray-800/60 rounded-xl overflow-hidden transition-all duration-200"
+              type="button"
+              onClick={() => {
+                setActiveCategoryId(category.id);
+                setSearchQuery("");
+              }}
+              disabled={disabled}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border whitespace-nowrap ${
+                isActive
+                  ? "bg-purple-600/35 border-purple-500 text-white shadow-sm ring-1 ring-purple-500/40"
+                  : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-400 hover:text-white"
+              }`}
             >
-              <button
-                onClick={() => toggleCategory(category.id)}
-                disabled={disabled}
-                className="w-full flex justify-between items-center p-4 text-left text-white font-bold hover:bg-obsidian-800/50 transition-colors focus:outline-none disabled:cursor-not-allowed text-sm md:text-base"
+              <span>{category.icon}</span>
+              <span>{category.name}</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  isActive
+                    ? "bg-purple-500/30 text-purple-200"
+                    : "bg-obsidian-750 text-gray-400"
+                }`}
               >
-                <span className="tracking-wide flex items-center gap-2">
-                  <span>{category.icon}</span> {category.name}
-                </span>
-                <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-obsidian-800 border border-gray-750 text-gray-400">
-                  <svg
-                    className={`h-4 w-4 transition-transform duration-250 ${
-                      isCategoryOpen ? "rotate-180" : "rotate-0"
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-
-              {/* Styles Grid inside Accordion */}
-              {isCategoryOpen && (
-                <div className="bg-obsidian-900/80 p-4 border-t border-gray-800/40 grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade">
-                  {category.choices.map((choice) => {
-                    const isSelected = selectedStyle?.name === choice.name;
-
-                    return (
-                      <button
-                        key={choice.name}
-                        onClick={() => handleStyleClick(choice)}
-                        disabled={disabled}
-                        className={`
-                          relative text-left p-4 rounded-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group border min-h-[90px]
-                          ${
-                            isSelected
-                              ? "border-purple-500 bg-gradient-to-br from-purple-950/40 to-obsidian-900 shadow-md shadow-purple-500/5 ring-1 ring-purple-500"
-                              : "border-gray-750 hover:border-purple-400 bg-gradient-to-br from-obsidian-800 via-obsidian-850 to-obsidian-900 hover:scale-[1.02] shadow-sm hover:shadow-md"
-                          }
-                          disabled:cursor-not-allowed disabled:hover:scale-100
-                        `}
-                      >
-                        {/* Selector Indicator */}
-                        {isSelected && (
-                          <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-purple-500 rounded-bl-lg"></div>
-                        )}
-
-                        {/* Card Content */}
-                        <div className="relative z-10 w-full pr-6">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-bold text-sm text-white group-hover:text-purple-400 transition-colors">
-                              {choice.name}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-gray-300 line-clamp-2 leading-relaxed">
-                            {choice.promptSuffix}
-                          </p>
-                        </div>
-
-                        {/* Subtle interactive hover light */}
-                        <div className="absolute inset-0 bg-purple-500/[0.02] dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                {category.choices.length}
+              </span>
+            </button>
           );
         })}
       </div>
 
-      {selectedStyle && !disabled && (
-        <div className="mt-4 p-3 rounded-xl bg-purple-900/15 border border-purple-500/20 text-xs text-purple-300 flex items-center gap-2 animate-fade">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 text-purple-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      {/* Style Search / Quick Filter Bar */}
+      <div className="relative mb-2.5">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={`Search in ${activeCategory.name}...`}
+          disabled={disabled}
+          className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-obsidian-850 border border-gray-800 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-transparent transition-all"
+        />
+        <svg
+          className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-2.5 pointer-events-none"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery("")}
+            className="absolute right-2.5 top-2 text-xs text-gray-500 hover:text-white"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 16h-1v-4h-1m1-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>
-            Selected Style: <strong className="text-white">{selectedStyle.name}</strong>. Ready to design!
-          </span>
-        </div>
-      )}
+            ✕
+          </button>
+        )}
+      </div>
+
+      {/* Scrollable Compact Grid for Styles */}
+      <div className="h-[280px] md:h-[310px] overflow-y-auto pr-1.5 custom-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-obsidian-900/60 p-2 rounded-xl border border-gray-800/80">
+        {filteredChoices.length === 0 ? (
+          <div className="col-span-full flex flex-col items-center justify-center py-8 text-center text-gray-400">
+            <p className="text-xs font-semibold">No styles match "{searchQuery}"</p>
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="mt-2 text-xs text-purple-400 hover:underline"
+            >
+              Clear search filter
+            </button>
+          </div>
+        ) : (
+          filteredChoices.map((choice) => {
+            const isSelected = selectedStyle?.name === choice.name;
+
+            return (
+              <button
+                key={choice.name}
+                type="button"
+                onClick={() => onStyleSelect(choice)}
+                disabled={disabled}
+                className={`
+                  relative text-left p-3 rounded-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group border h-[72px]
+                  ${
+                    isSelected
+                      ? "border-purple-500 bg-gradient-to-br from-purple-950/50 to-obsidian-900 ring-1 ring-purple-500 shadow-sm shadow-purple-500/20"
+                      : "border-gray-800 hover:border-gray-700 bg-obsidian-850/90 hover:bg-obsidian-800 hover:scale-[1.01]"
+                  }
+                  disabled:cursor-not-allowed
+                `}
+              >
+                {/* Active Indicator Pin */}
+                {isSelected && (
+                  <div className="absolute top-0 right-0 w-3 h-3 bg-purple-500 rounded-bl-md flex items-center justify-center">
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                  </div>
+                )}
+
+                <div className="w-full pr-3">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span
+                      className={`font-bold text-xs truncate ${
+                        isSelected ? "text-purple-300" : "text-white group-hover:text-purple-300"
+                      } transition-colors`}
+                    >
+                      {choice.name}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 line-clamp-2 leading-tight">
+                    {choice.promptSuffix}
+                  </p>
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 };

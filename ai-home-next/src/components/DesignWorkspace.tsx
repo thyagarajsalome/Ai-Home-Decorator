@@ -281,23 +281,24 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           </div>
         </div>
 
-        <div className="text-center pt-8 border-t border-gray-800/60">
+        {/* In-Card Action Button Area */}
+        <div className="text-center pt-6 border-t border-gray-800/60">
           {!currentUser && !isLoading && (
-            <div className="max-w-md mx-auto mb-8 p-6 bg-obsidian-850/50 border border-gray-800/60 rounded-2xl text-center shadow-lg animate-fade">
-              <p className="text-lg font-bold text-white mb-1">
+            <div className="max-w-md mx-auto mb-6 p-5 bg-obsidian-850/50 border border-gray-800/60 rounded-2xl text-center shadow-lg animate-fade">
+              <p className="text-base font-bold text-white mb-1">
                 Ready to redesign?
               </p>
-              <p className="text-xs text-gray-400 mb-5">
+              <p className="text-xs text-gray-400 mb-4">
                 Create a free account to save your generated designs and get free starter credits.
               </p>
-              <div className="flex justify-center gap-4 text-xs font-bold">
+              <div className="flex justify-center gap-3 text-xs font-bold">
                 <button
                   type="button"
                   onClick={() => {
                     setAuthModalMode("login");
                     setIsAuthModalOpen(true);
                   }}
-                  className="px-6 py-2.5 rounded-lg border border-gray-750 bg-obsidian-800 text-gray-300 hover:text-white transition-colors"
+                  className="px-5 py-2 rounded-lg border border-gray-750 bg-obsidian-800 text-gray-300 hover:text-white transition-colors"
                 >
                   Login
                 </button>
@@ -307,7 +308,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
                     setAuthModalMode("signup");
                     setIsAuthModalOpen(true);
                   }}
-                  className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white transition-colors shadow-md shadow-purple-500/10"
+                  className="px-5 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white transition-colors shadow-md shadow-purple-500/10"
                 >
                   Sign Up
                 </button>
@@ -322,16 +323,16 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               (currentUser && !isVerified) ||
               isLimitReached
             }
-            className={`w-full md:w-auto px-12 py-4.5 text-base md:text-lg font-extrabold text-white rounded-xl shadow-xl transition-all duration-300 transform ${
+            className={`w-full md:w-auto px-10 py-3.5 text-base md:text-lg font-extrabold text-white rounded-xl shadow-xl transition-all duration-300 transform ${
               !currentUser
-                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.03] shadow-purple-500/25 active:scale-[0.98]"
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] shadow-purple-500/25 active:scale-[0.98]"
                 : !isVerified
                 ? "bg-yellow-750 text-yellow-100 cursor-not-allowed border border-yellow-700/30"
                 : isLimitReached
                 ? "bg-red-900/40 text-red-400 cursor-not-allowed border border-red-900/30"
                 : isLoading
                 ? "bg-gray-850 cursor-wait scale-[0.98] opacity-90 border border-gray-800"
-                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.03] hover:shadow-purple-500/20 active:scale-[0.97]"
+                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] hover:shadow-purple-500/20 active:scale-[0.97]"
             } disabled:opacity-50 disabled:scale-100 disabled:shadow-none`}
           >
             {isLoading ? (
@@ -370,18 +371,18 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           </button>
 
           {currentUser && isVerified && (
-            <div className="mt-5 flex flex-col items-center animate-fade">
+            <div className="mt-4 flex flex-col items-center animate-fade">
               <p className="text-xs font-semibold text-gray-400">
                 Credits Remaining:{" "}
-                <span className="text-white font-bold bg-obsidian-850 border border-gray-800/60 px-2.5 py-1 rounded-md ml-1 shadow-sm">
+                <span className="text-white font-bold bg-obsidian-850 border border-gray-800/60 px-2.5 py-0.5 rounded-md ml-1 shadow-sm">
                   {isAdmin ? "Admin (∞)" : credits}
                 </span>
               </p>
 
               {isLimitReached && (
-                <div className="mt-5 p-5 bg-purple-900/10 border border-purple-500/20 text-purple-300 rounded-2xl text-center max-w-md shadow-md animate-pulse">
+                <div className="mt-4 p-4 bg-purple-900/10 border border-purple-500/20 text-purple-300 rounded-xl text-center max-w-md shadow-md animate-pulse">
                   <p className="font-bold text-sm mb-1 text-white">Out of Credits?</p>
-                  <p className="text-xs text-gray-450 mb-4">You need more credits to process this design.</p>
+                  <p className="text-xs text-gray-450 mb-3">You need more credits to process this design.</p>
                   {isAppMode ? (
                     <button
                       onClick={handleExternalPurchase}
@@ -401,6 +402,70 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               )}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* --- STICKY FLOATING QUICK ACTION BAR (Instant access anywhere on page) --- */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-xl animate-slideUp">
+        <div className="glass-card bg-obsidian-900/95 backdrop-blur-xl border border-purple-500/30 shadow-2xl shadow-purple-950/50 rounded-2xl p-2.5 md:p-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0 pl-1.5">
+            <div className="w-8 h-8 rounded-lg bg-purple-950/60 border border-purple-500/30 flex items-center justify-center flex-shrink-0">
+              {uploadedImageFile ? (
+                <span className="text-sm">📸</span>
+              ) : (
+                <span className="text-sm">✨</span>
+              )}
+            </div>
+            <div className="min-w-0 text-left">
+              <p className="text-xs font-bold text-white truncate">
+                {designMode === "style"
+                  ? selectedStyle?.name || "Choose a style"
+                  : customPrompt ? "Custom Prompt" : "Enter prompt"}
+              </p>
+              <p className="text-[10px] text-gray-400 truncate">
+                {uploadedImageFile ? "Photo Ready" : "Photo needed"} •{" "}
+                {costForCurrentMode} Credit{costForCurrentMode > 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDecorateClick}
+            disabled={isLoading || (currentUser && !isVerified) || isLimitReached}
+            className={`flex-shrink-0 px-5 py-2.5 text-xs md:text-sm font-bold text-white rounded-xl shadow-lg transition-all duration-200 ${
+              !currentUser
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-purple-500/30"
+                : !isVerified
+                ? "bg-yellow-750 text-yellow-100"
+                : isLimitReached
+                ? "bg-red-900/50 text-red-300"
+                : isLoading
+                ? "bg-gray-800 cursor-wait opacity-80"
+                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-105 active:scale-95 shadow-purple-500/30"
+            } disabled:opacity-50`}
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-1.5">
+                <svg
+                  className="animate-spin h-3.5 w-3.5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            ) : !currentUser ? (
+              "Sign In & Redesign"
+            ) : !uploadedImageFile ? (
+              "Upload & Generate"
+            ) : (
+              "Generate Now ⚡"
+            )}
+          </button>
         </div>
       </div>
 
