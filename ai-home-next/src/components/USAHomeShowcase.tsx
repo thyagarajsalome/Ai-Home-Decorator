@@ -1,18 +1,18 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import Link from "next/link";
+import SafeImage from "@/components/SafeImage";
 
 export interface ShowcaseRoom {
   id: string;
-  category: "all" | "living" | "bedroom" | "kitchen" | "bath" | "outdoor" | "flooring" | "walls" | "lighting";
+  category: "living" | "bedroom" | "kitchen" | "bath" | "outdoor" | "walls" | "flooring" | "lighting";
   roomBadge: string;
   location: string;
   styleName: string;
   styleCategory: string;
-  transformationTag: string;
+  title: string;
   description: string;
-  beforeImage: string;
-  afterImage: string;
+  image: string;
+  fallbackImage: string;
 }
 
 export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
@@ -23,22 +23,22 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     location: "Los Angeles, CA",
     styleName: "Modern",
     styleCategory: "full_redesign",
-    transformationTag: "Empty Space → Luxury Modern Living",
-    description: "Replaces empty unfinished room with sleek geometric sofas, modern floor lamp, statement art, and refined marble coffee tables.",
-    beforeImage: "/images/showcase/living-room-before.jpg",
-    afterImage: "/images/showcase/living-room-after.jpg",
+    title: "Modern Luxury Living",
+    description: "Sleek geometric sectional, modern architectural floor lighting, statement art, and refined marble coffee tables.",
+    image: "/images/showcase/living-room-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "bedroom-japandi",
     category: "bedroom",
-    roomBadge: "Master Bedroom",
+    roomBadge: "Bedroom",
     location: "Seattle, WA",
     styleName: "Japandi",
     styleCategory: "full_redesign",
-    transformationTag: "Bare Room → Organic Japandi Sanctuary",
-    description: "Transforms plain drywall space into a tranquil retreat with low-profile oak platform bed, shoji screens, and soft linen layers.",
-    beforeImage: "/images/showcase/bedroom-before.jpg",
-    afterImage: "/images/showcase/bedroom-after.jpg",
+    title: "Organic Japandi Sanctuary",
+    description: "Tranquil retreat with low-profile oak platform bed, shoji screens, warm wood paneling, and soft linen layers.",
+    image: "/images/showcase/bedroom-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "kitchen-farmhouse",
@@ -47,10 +47,10 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     location: "Austin, TX",
     styleName: "Farmhouse Kitchen",
     styleCategory: "kitchen",
-    transformationTag: "Outdated Layout → Luxury White Quartz Island",
-    description: "Complete architectural kitchen redesign with custom white shaker cabinets, solid waterfall quartz island, and brass fixtures.",
-    beforeImage: "/images/showcase/kitchen-before.jpg",
-    afterImage: "/images/showcase/kitchen-after.jpg",
+    title: "Luxury Quartz Farmhouse Kitchen",
+    description: "Architectural kitchen redesign with custom white shaker cabinets, solid waterfall quartz island, and warm brass fixtures.",
+    image: "/images/showcase/kitchen-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "bathroom-spa",
@@ -59,22 +59,34 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     location: "Miami, FL",
     styleName: "Luxury Spa",
     styleCategory: "bathroom",
-    transformationTag: "Standard Shower → Wellness Freestanding Tub",
-    description: "Replaces basic tiled bathroom with a high-end wellness sanctuary featuring deep oval soaking tub and full-height stone wall slabs.",
-    beforeImage: "/images/showcase/bathroom-before.jpg",
-    afterImage: "/images/showcase/bathroom-after.jpg",
+    title: "Luxury Spa Sanctuary",
+    description: "High-end wellness bathroom sanctuary featuring a deep oval soaking tub, black fixtures, and stone wall slabs.",
+    image: "/images/showcase/bathroom-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "patio-mediterranean",
     category: "outdoor",
-    roomBadge: "Outdoor Patio",
+    roomBadge: "Patio",
     location: "Phoenix, AZ",
     styleName: "Mediterranean Terrace",
     styleCategory: "outdoor_patio",
-    transformationTag: "Bare Yard → Mediterranean Stone Terrace",
-    description: "Transforms empty concrete outdoor zone into an upscale resort-style terrace with terracotta stone pavers, wrought iron seating, and lush olive trees.",
-    beforeImage: "/images/showcase/patio-before.jpg",
-    afterImage: "/images/showcase/patio-after.jpg",
+    title: "Mediterranean Resort Terrace",
+    description: "Terracotta stone pavers, wrought iron lounge seating, ambient string lighting, and lush potted olive trees.",
+    image: "/images/showcase/patio-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "walls-brick",
+    category: "walls",
+    roomBadge: "Wall Paints",
+    location: "New York, NY",
+    styleName: "Exposed Brick",
+    styleCategory: "wall_paint",
+    title: "Brooklyn Exposed Brick & Paint",
+    description: "Authentic loft aesthetic with rich red masonry brick textures, warm directional lighting, and designer matte paint.",
+    image: "/images/showcase/wall-paint-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "flooring-marble",
@@ -83,34 +95,22 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     location: "Chicago, IL",
     styleName: "Marble Flooring",
     styleCategory: "flooring",
-    transformationTag: "Worn Wood Flooring → High-Gloss Calacatta Marble",
-    description: "Retains all furniture and architecture while upgrading floor surface to high-gloss polished white Calacatta marble with gold veining.",
-    beforeImage: "/images/showcase/flooring-before.jpg",
-    afterImage: "/images/showcase/flooring-after.jpg",
-  },
-  {
-    id: "walls-brick",
-    category: "walls",
-    roomBadge: "Wall Paint & Accent",
-    location: "New York, NY",
-    styleName: "Exposed Brick",
-    styleCategory: "wall_paint",
-    transformationTag: "Plain White Walls → NYC Reclaimed Exposed Brick",
-    description: "Transforms flat bland drywalls into an authentic Brooklyn loft aesthetic with textured red masonry brick accents.",
-    beforeImage: "/images/showcase/wall-paint-before.jpg",
-    afterImage: "/images/showcase/wall-paint-after.jpg",
+    title: "Calacatta Gold Marble Flooring",
+    description: "High-gloss polished white Calacatta marble flooring with subtle golden veining that brightens the entire space.",
+    image: "/images/showcase/flooring-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "lighting-golden-hour",
     category: "lighting",
-    roomBadge: "Lighting & Mood",
+    roomBadge: "Lighting",
     location: "Denver, CO",
     styleName: "Golden Hour",
     styleCategory: "lighting_mood",
-    transformationTag: "Dim Lighting → Cinematic Golden Hour Glow",
-    description: "Changes harsh ambient lighting to warm directional sun rays with deep architectural shadows and cinematic warmth.",
-    beforeImage: "/images/showcase/lighting-before.jpg",
-    afterImage: "/images/showcase/lighting-after.jpg",
+    title: "Cinematic Golden Hour Mood",
+    description: "Warm directional lighting with golden sun rays, deep architectural shadows, and cozy evening warmth.",
+    image: "/images/showcase/lighting-after.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
@@ -120,79 +120,39 @@ interface ShowcaseCardProps {
 }
 
 const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ room, onApplyStyle }) => {
-  const [sliderPos, setSliderPos] = useState(50);
-
   return (
     <div className="bg-obsidian-900/90 border border-gray-800/80 rounded-2xl overflow-hidden shadow-xl hover:border-purple-500/40 transition-all duration-300 flex flex-col group">
-      {/* Before / After Slider Frame */}
-      <div className="relative aspect-[3/2] w-full select-none overflow-hidden bg-obsidian-950">
-        {/* Before Image */}
-        <img
-          src={room.beforeImage}
-          alt={`Original ${room.roomBadge} before redesign`}
+      {/* Single Clean Image Frame */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-obsidian-950">
+        <SafeImage
+          src={room.image}
+          fallbackSrc={room.fallbackImage}
+          alt={room.title}
           loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
 
-        {/* After Image Clipped */}
-        <div
-          className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none"
-          style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
-        >
-          <img
-            src={room.afterImage}
-            alt={`Redesigned ${room.roomBadge} with ${room.styleName}`}
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+        {/* Floating Badges */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+          <span className="bg-black/75 backdrop-blur-md text-purple-300 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-purple-500/30">
+            {room.roomBadge}
+          </span>
+          <span className="bg-black/75 backdrop-blur-md text-gray-300 text-[11px] font-medium px-2.5 py-1 rounded-lg border border-gray-700/50">
+            📍 {room.location}
+          </span>
         </div>
 
-        {/* Comparison Line */}
-        <div
-          className="absolute top-0 bottom-0 w-0.5 bg-white pointer-events-none shadow-md"
-          style={{ left: `${sliderPos}%` }}
-        >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-obsidian-900 rounded-full shadow-md border border-purple-500 flex items-center justify-center text-[10px] text-purple-400">
-            ↔
-          </div>
-        </div>
-
-        {/* Slider Native Range Input */}
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={sliderPos}
-          onChange={(e) => setSliderPos(Number(e.target.value))}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-10"
-          aria-label={`Compare before and after for ${room.roomBadge} ${room.styleName}`}
-        />
-
-        {/* Badges */}
-        <span className="absolute top-2.5 left-2.5 z-0 bg-black/70 backdrop-blur-sm text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-md border border-purple-500/30">
-          AFTER (AI)
-        </span>
-        <span className="absolute top-2.5 right-2.5 z-0 bg-black/70 backdrop-blur-sm text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-md border border-gray-700/50">
-          ORIGINAL
-        </span>
+        {/* Soft bottom vignette */}
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-obsidian-900 via-obsidian-900/40 to-transparent pointer-events-none"></div>
       </div>
 
       {/* Info & Action */}
-      <div className="p-4 flex-grow flex flex-col justify-between">
+      <div className="p-5 flex-grow flex flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/20">
-              {room.roomBadge}
-            </span>
-            <span className="text-[10px] text-gray-400 font-medium">
-              📍 {room.location}
-            </span>
-          </div>
-
-          <h3 className="text-sm font-extrabold text-white mb-1 font-heading group-hover:text-purple-300 transition-colors">
-            {room.transformationTag}
+          <h3 className="text-base font-extrabold text-white mb-1.5 font-heading group-hover:text-purple-300 transition-colors">
+            {room.title}
           </h3>
-          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed mb-4">
+          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed mb-5">
             {room.description}
           </p>
         </div>
@@ -206,7 +166,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ room, onApplyStyle }) => {
             const el = document.getElementById("workspace");
             el?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full py-2 px-3 rounded-xl bg-obsidian-850 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 border border-gray-750 hover:border-transparent text-xs font-bold text-gray-200 hover:text-white transition-all shadow-sm flex items-center justify-center gap-1.5 group/btn"
+          className="w-full py-2.5 px-3 rounded-xl bg-obsidian-850 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 border border-gray-750 hover:border-transparent text-xs font-bold text-gray-200 hover:text-white transition-all shadow-sm flex items-center justify-center gap-1.5 group/btn"
         >
           <span>Apply {room.styleName} Style</span>
           <span className="group-hover/btn:translate-x-0.5 transition-transform">⚡</span>
@@ -227,9 +187,7 @@ const CATEGORY_TABS = [
   { id: "kitchen", label: "Kitchen" },
   { id: "bath", label: "Bathroom" },
   { id: "outdoor", label: "Patio" },
-  { id: "flooring", label: "Flooring" },
-  { id: "walls", label: "Wall Paint" },
-  { id: "lighting", label: "Lighting" },
+  { id: "walls", label: "Wall Paints" },
 ];
 
 const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle }) => {
@@ -241,31 +199,22 @@ const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle
   }, [selectedFilter]);
 
   return (
-    <section className="w-full max-w-7xl mx-auto mt-16 px-4">
+    <section id="showcase" className="w-full max-w-7xl mx-auto mt-16 px-4">
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 pb-4 border-b border-gray-800/80 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-base">🇺🇸</span>
             <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
-              Before & After Visual Transformations
+              AI Room Transformations
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading tracking-tight">
             Complete Room & Element Transformations
           </h2>
           <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl leading-relaxed">
-            Real architectural redesigns across living halls, bedrooms, kitchens, bathrooms, patios, flooring, wall paint and lighting. Drag the slider on any card to compare.
+            Explore curated room designs across Living Hall, Bedroom, Kitchen, Bathroom, Patio, and Wall Paints. Tap any design to style your room instantly.
           </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href="/design-styles"
-            className="text-xs font-bold text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1"
-          >
-            Browse all 70+ styles →
-          </Link>
         </div>
       </div>
 
@@ -290,8 +239,8 @@ const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle
         })}
       </div>
 
-      {/* Grid of interactive cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 animate-fade">
+      {/* Grid of clean single-image cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 animate-fade">
         {filteredRooms.map((room) => (
           <ShowcaseCard
             key={room.id}

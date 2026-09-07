@@ -1,12 +1,10 @@
 import { MetadataRoute } from "next";
 import { ELEMENT_CATEGORIES } from "@/constants";
 import { supabase } from "@/supabaseClient";
-import { designStyles } from "@/data/designStyles";
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aihomedecorator.com";
 
-  const staticRoutes = ["", "/about", "/pricing", "/terms", "/policy", "/disclaimer", "/usa", "/design-styles"].map(
+  const staticRoutes = ["", "/about", "/pricing", "/terms", "/policy", "/disclaimer", "/usa"].map(
     (route) => ({
       url: `${baseUrl}${route}`,
       lastModified: new Date(),
@@ -30,14 +28,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  // New Interactive Regional Style Guides
-  const regionalStyleRoutes = designStyles.map((style) => ({
-    url: `${baseUrl}/design-styles/${style.id}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
   // Fetch all Programmatic SEO cities from Supabase
   const { data: citiesData } = await supabase.from("seo_cities").select("state, city");
   
@@ -48,5 +38,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...designRoutes, ...regionalStyleRoutes, ...cityRoutes];
+  return [...staticRoutes, ...designRoutes, ...cityRoutes];
 }

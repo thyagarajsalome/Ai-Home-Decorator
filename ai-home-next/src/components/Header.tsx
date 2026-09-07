@@ -59,12 +59,6 @@ const Header: React.FC = () => {
             >
               About
             </Link>
-            <Link
-              href="/design-styles"
-              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200"
-            >
-              Design Styles
-            </Link>
 
             {!isAppMode && (
               <Link
@@ -202,13 +196,6 @@ const Header: React.FC = () => {
               className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
             >
               About
-            </Link>
-            <Link
-              href="/design-styles"
-              onClick={closeMenu}
-              className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
-            >
-              Design Styles
             </Link>
 
             {!isAppMode && (

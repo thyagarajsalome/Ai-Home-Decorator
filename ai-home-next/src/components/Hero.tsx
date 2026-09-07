@@ -34,12 +34,12 @@ const Hero: React.FC = () => {
             >
               Start Decorating Free
             </a>
-            <Link
-              href="/design-styles"
+            <a
+              href="#showcase"
               className="w-full sm:w-auto px-8 py-4 text-base font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-obsidian-800/60 hover:bg-gray-50 dark:hover:bg-obsidian-800 border border-gray-250 dark:border-gray-750/60 hover:border-gray-300 dark:hover:border-gray-600 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md text-center"
             >
               Explore Examples
-            </Link>
+            </a>
           </div>
           
           <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-3 text-gray-500 dark:text-gray-400 animate-fade" style={{ animationDelay: '300ms' }}>
