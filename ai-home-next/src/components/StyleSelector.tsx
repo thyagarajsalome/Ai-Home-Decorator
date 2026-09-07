@@ -54,8 +54,8 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
     >
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base md:text-lg font-extrabold text-white flex items-center gap-2">
-          <span className="flex items-center justify-center w-6 h-6 rounded-md bg-purple-900/40 border border-purple-500/30 text-purple-400 text-xs font-bold">
-            2
+          <span className="flex items-center justify-center w-6 h-6 rounded-md bg-purple-900/40 border border-purple-500/30 text-purple-400 text-xs">
+            🎨
           </span>
           Choose Design Style
         </h2>

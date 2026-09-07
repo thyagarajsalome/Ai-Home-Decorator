@@ -196,55 +196,67 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
         </div>
       )}
 
-      {/* --- MAIN WORKSPACE CONTAINER --- */}
-      <div className="w-full max-w-6xl mx-auto glass-card rounded-3xl p-6 md:p-10 border border-gray-800 flex flex-col space-y-10 relative overflow-hidden animate-slideUp">
+      {/* --- MAIN WORKSPACE CONTAINER (Google Vids Studio Layout: Sidebar Controls Left, Main Canvas Center) --- */}
+      <div className="w-full max-w-7xl mx-auto glass-card rounded-3xl p-5 md:p-8 border border-gray-800 flex flex-col space-y-8 relative overflow-hidden animate-slideUp">
         
         {/* Highlight Glow Effect Line */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-60"></div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-          
-          {/* Left Column: Image Upload */}
-          <div className="flex flex-col space-y-4">
-            <ImageUploader
-              onImageChange={handleImageChange}
-              currentImage={uploadedImageFile}
-              currentDescription={roomDescription}
-              onDescriptionChange={setRoomDescription}
-              disabled={isDisabled}
-            />
+        {/* Top Studio Bar */}
+        <div className="flex flex-wrap items-center justify-between pb-3 border-b border-gray-800/60 gap-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">AI Design Studio</span>
+            <span className="text-[11px] text-gray-500 hidden sm:inline">• Google Vids-Style Canvas</span>
           </div>
 
-          {/* Right Column: Style Selection */}
-          <div className="transition-all duration-300 flex flex-col space-y-6">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-gray-400">
+              {currentUser ? (
+                <>Credits: <strong className="text-white">{isAdmin ? "Admin (∞)" : credits}</strong></>
+              ) : (
+                <span className="text-purple-400 font-bold">Free Starter Credits</span>
+              )}
+            </span>
+          </div>
+        </div>
+
+        {/* Studio Grid: Left Sidebar (Styles/Prompt) + Center Stage (Photo Upload & Canvas) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* LEFT SIDEBAR: Style & Tool Palette (cols 1-5 on lg, order-2 on mobile so canvas is top or order-1) */}
+          <div className="lg:col-span-5 flex flex-col space-y-5 bg-obsidian-950/40 p-4 md:p-5 rounded-2xl border border-gray-800/80">
+            {/* Mode Switcher */}
             <div className="flex flex-col space-y-2">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                Select Redesign Mode
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                1. Select Design Mode
               </span>
-              <div className="flex w-full rounded-xl bg-obsidian-850 p-1.5 gap-2 border border-gray-800/60 shadow-inner">
+              <div className="flex w-full rounded-xl bg-obsidian-850 p-1 gap-1.5 border border-gray-800/80 shadow-inner">
                 <button
+                  type="button"
                   onClick={() => setDesignMode("style")}
                   disabled={isLoading}
-                  className={`w-1/2 p-3 rounded-lg text-xs md:text-sm font-bold transition-all ${getButtonActiveStyle(
+                  className={`w-1/2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${getButtonActiveStyle(
                     designMode === "style"
                   )} disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  Preset Design Styles
+                  Preset Styles
                 </button>
                 <button
+                  type="button"
                   onClick={() => setDesignMode("custom")}
                   disabled={isLoading}
-                  className={`w-1/2 p-3 rounded-lg text-xs md:text-sm font-bold transition-all ${getButtonActiveStyle(
+                  className={`w-1/2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${getButtonActiveStyle(
                     designMode === "custom"
                   )} disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  Custom Prompt Mode
+                  Custom Prompt
                 </button>
               </div>
             </div>
 
             {designMode === "custom" && !isDisabled && (
-              <div className="flex items-center gap-2 text-xs text-purple-300 bg-purple-900/10 border border-purple-500/20 p-3.5 rounded-xl animate-fade">
+              <div className="flex items-center gap-2 text-xs text-purple-300 bg-purple-900/10 border border-purple-500/20 p-3 rounded-xl animate-fade">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-4 w-4 text-purple-400 flex-shrink-0"
@@ -259,12 +271,13 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
                     d="M13 10V3L4 14h7v7l9-11h-7z"
                   />
                 </svg>
-                <span className="font-semibold">
-                  Custom designs require <strong>{CUSTOM_GENERATION_COST} credits</strong> per generation.
+                <span className="text-[11px] font-semibold">
+                  Custom prompt uses <strong>{CUSTOM_GENERATION_COST} credits</strong> per generation.
                 </span>
               </div>
             )}
 
+            {/* Style Selector or Custom Prompt */}
             {designMode === "style" ? (
               <StyleSelector
                 onStyleSelect={setSelectedStyle}
@@ -279,6 +292,18 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               />
             )}
           </div>
+
+          {/* CENTER STAGE: Main Upload Canvas & Room Configuration (cols 6-12 on lg) */}
+          <div className="lg:col-span-7 flex flex-col space-y-4">
+            <ImageUploader
+              onImageChange={handleImageChange}
+              currentImage={uploadedImageFile}
+              currentDescription={roomDescription}
+              onDescriptionChange={setRoomDescription}
+              disabled={isDisabled}
+            />
+          </div>
+
         </div>
 
         {/* In-Card Action Button Area */}

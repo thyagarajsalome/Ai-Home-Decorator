@@ -148,8 +148,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       }`}
     >
       <h2 className="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center gap-2">
-        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-purple-900/30 border border-purple-500/20 text-purple-400 text-sm font-bold">1</span>
-        Upload & Describe Space
+        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-purple-900/30 border border-purple-500/20 text-purple-400 text-sm">
+          📸
+        </span>
+        Room Canvas & Photo
       </h2>
 
       <div
