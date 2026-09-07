@@ -322,21 +322,32 @@ app.post('/api/decorate', verifySupabaseToken, upload.single('image'), async (re
     }
 
     // STEP 4: GENERATE VIRAL VIDEO & DELIVER PAYLOADS
-    console.log('Generating viral transition video...');
-    
-    // We use the watermarked buffer for the video so the brand travels with it
-    const videoBufferTarget = cloudProcessedWatermarkedBuffer || Buffer.from(generatedImageBase64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+    let viralVideoBase64 = null;
+    const shouldGenerateVideo = req.body.generateVideo === 'true' || req.query.video === 'true';
 
-    // Get target dimensions for matching resolutions in the transition video
-    const targetMetadata = await sharp(videoBufferTarget).metadata();
+    if (shouldGenerateVideo) {
+      try {
+        console.log('Generating viral transition video...');
+        
+        // We use the watermarked buffer for the video so the brand travels with it
+        const videoBufferTarget = cloudProcessedWatermarkedBuffer || Buffer.from(generatedImageBase64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
 
-    // Convert source upload to standard jpeg buffer and resize to target dimensions for FFmpeg compatibility
-    const sourceJpegBuffer = await sharp(file.buffer)
-      .resize(targetMetadata.width, targetMetadata.height, { fit: 'fill' })
-      .jpeg()
-      .toBuffer();
+        // Get target dimensions for matching resolutions in the transition video
+        const targetMetadata = await sharp(videoBufferTarget).metadata();
 
-    const viralVideoBase64 = await createMorphVideo(sourceJpegBuffer, videoBufferTarget);
+        // Convert source upload to standard jpeg buffer and resize to target dimensions for FFmpeg compatibility
+        const sourceJpegBuffer = await sharp(file.buffer)
+          .resize(targetMetadata.width, targetMetadata.height, { fit: 'fill' })
+          .jpeg()
+          .toBuffer();
+
+        viralVideoBase64 = await createMorphVideo(sourceJpegBuffer, videoBufferTarget);
+      } catch (videoErr) {
+        console.warn('Video rendering skipped or failed:', videoErr.message);
+      }
+    } else {
+      console.log('Skipping viral video generation (not requested by client).');
+    }
 
     console.log('Dispensing complete asset payload.');
     return res.status(200).json({
