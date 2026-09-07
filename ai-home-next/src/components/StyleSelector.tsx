@@ -66,39 +66,67 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
         )}
       </div>
 
-      {/* Category Pills / Horizontal Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2.5 no-scrollbar">
-        {ELEMENT_CATEGORIES.map((category) => {
-          const isActive = activeCategoryId === category.id;
-          return (
-            <button
-              key={category.id}
-              type="button"
-              onClick={() => {
-                setActiveCategoryId(category.id);
-                setSearchQuery("");
-              }}
-              disabled={disabled}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border whitespace-nowrap ${
-                isActive
-                  ? "bg-purple-600/35 border-purple-500 text-white shadow-sm ring-1 ring-purple-500/40"
-                  : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-400 hover:text-white"
-              }`}
-            >
-              <span>{category.icon}</span>
-              <span>{category.name}</span>
-              <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+      {/* Category Dropdown & Quick Selector Bar */}
+      <div className="flex flex-col gap-2 mb-3">
+        <div className="flex items-center justify-between gap-2">
+          <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">
+            Category
+          </label>
+          <span className="text-[10px] text-purple-400 font-semibold">
+            {activeCategory.choices.length} Styles Available
+          </span>
+        </div>
+
+        {/* Custom Expandable Dropdown */}
+        <div className="relative">
+          <select
+            value={activeCategoryId}
+            onChange={(e) => {
+              setActiveCategoryId(e.target.value);
+              setSearchQuery("");
+            }}
+            disabled={disabled}
+            className="w-full appearance-none px-3.5 py-2.5 rounded-xl bg-obsidian-850 hover:bg-obsidian-800 border border-purple-500/30 text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer shadow-md transition-all pr-10"
+          >
+            {ELEMENT_CATEGORIES.map((cat) => (
+              <option key={cat.id} value={cat.id} className="bg-obsidian-900 text-white font-semibold py-1">
+                {cat.icon} {cat.name} ({cat.choices.length} styles)
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-purple-400 flex items-center gap-1">
+            <span className="text-[10px] uppercase font-bold text-gray-400 hidden sm:inline">Change</span>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Quick Popular Category Pills (Wrapped & clear, not hidden) */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {ELEMENT_CATEGORIES.map((category) => {
+            const isActive = activeCategoryId === category.id;
+            return (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => {
+                  setActiveCategoryId(category.id);
+                  setSearchQuery("");
+                }}
+                disabled={disabled}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 border ${
                   isActive
-                    ? "bg-purple-500/30 text-purple-200"
-                    : "bg-obsidian-750 text-gray-400"
+                    ? "bg-purple-600/40 border-purple-500 text-white shadow-sm ring-1 ring-purple-500/50"
+                    : "bg-obsidian-850/80 hover:bg-obsidian-800 border-gray-750/70 text-gray-400 hover:text-white"
                 }`}
               >
-                {category.choices.length}
-              </span>
-            </button>
-          );
-        })}
+                <span>{category.icon}</span>
+                <span>{category.name}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Style Search / Quick Filter Bar */}
@@ -107,12 +135,12 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={`Search in ${activeCategory.name}...`}
+          placeholder={`Search ${activeCategory.name} styles...`}
           disabled={disabled}
-          className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-obsidian-850 border border-gray-800 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-transparent transition-all"
+          className="w-full pl-8 pr-3 py-2 rounded-xl bg-obsidian-850 border border-gray-800 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-transparent transition-all"
         />
         <svg
-          className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-2.5 pointer-events-none"
+          className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-3 pointer-events-none"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -129,7 +157,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
           <button
             type="button"
             onClick={() => setSearchQuery("")}
-            className="absolute right-2.5 top-2 text-xs text-gray-500 hover:text-white"
+            className="absolute right-2.5 top-2.5 text-xs text-gray-500 hover:text-white"
           >
             ✕
           </button>
@@ -137,7 +165,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
       </div>
 
       {/* Scrollable Compact Grid for Styles */}
-      <div className="h-[280px] md:h-[310px] overflow-y-auto pr-1.5 custom-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-obsidian-900/60 p-2 rounded-xl border border-gray-800/80">
+      <div className="max-h-[340px] overflow-y-auto pr-1.5 custom-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-obsidian-900/60 p-2.5 rounded-xl border border-gray-800/80">
         {filteredChoices.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center py-8 text-center text-gray-400">
             <p className="text-xs font-semibold">No styles match "{searchQuery}"</p>
