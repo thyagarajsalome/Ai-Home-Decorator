@@ -172,6 +172,100 @@ const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle
         </div>
       </div>
 
+      {/* HDE US Cost Calculator Promo Card */}
+      <div className="mb-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-blue-950/80 via-obsidian-900 to-indigo-950/80 border border-blue-500/35 shadow-2xl flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5 text-left">
+            <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-400/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
+              🇺🇸
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-extrabold text-blue-400 tracking-wide uppercase">Partner Cost Estimator</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-900/60 text-blue-200 border border-blue-400/30 font-bold">
+                  USA MODE
+                </span>
+                <span className="hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-semibold">
+                  ✓ 50 US States Supported
+                </span>
+              </div>
+              <h3 className="text-base sm:text-xl font-bold text-white font-heading mt-1">
+                Budgeting your room transformation? Calculate US Remodel Costs
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-300 mt-1">
+                Get accurate line-item estimates, $/sqft labor and materials breakdown, and contractor-ready PDF proposals with HDE.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://www.homedesignenglish.com/?region=US"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 hover:scale-105 flex-shrink-0"
+          >
+            <span>Open All US Calculators</span>
+            <span className="text-sm">↗</span>
+          </a>
+        </div>
+
+        {/* Quick Calculators Grid */}
+        <div className="pt-2 border-t border-gray-800/80 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex-shrink-0">
+            Popular US Calculators:
+          </span>
+          <a
+            href="https://www.homedesignenglish.com/?region=US&calc=usa-kitchen-remodel"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-obsidian-850 hover:bg-blue-600/30 border border-gray-750 hover:border-blue-400/50 text-xs font-semibold text-gray-200 hover:text-white transition-all flex-shrink-0 shadow-sm"
+          >
+            <span>🍳</span>
+            <span>Kitchen Remodel</span>
+            <span className="text-[10px] text-blue-400">↗</span>
+          </a>
+          <a
+            href="https://www.homedesignenglish.com/?region=US&calc=usa-bathroom-remodel"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-obsidian-850 hover:bg-blue-600/30 border border-gray-750 hover:border-blue-400/50 text-xs font-semibold text-gray-200 hover:text-white transition-all flex-shrink-0 shadow-sm"
+          >
+            <span>🛁</span>
+            <span>Bath Remodel</span>
+            <span className="text-[10px] text-blue-400">↗</span>
+          </a>
+          <a
+            href="https://www.homedesignenglish.com/?region=US&calc=usa-interior-design"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-obsidian-850 hover:bg-blue-600/30 border border-gray-750 hover:border-blue-400/50 text-xs font-semibold text-gray-200 hover:text-white transition-all flex-shrink-0 shadow-sm"
+          >
+            <span>🛋️</span>
+            <span>Interior Design</span>
+            <span className="text-[10px] text-blue-400">↗</span>
+          </a>
+          <a
+            href="https://www.homedesignenglish.com/?region=US&calc=usa-home-addition"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-obsidian-850 hover:bg-blue-600/30 border border-gray-750 hover:border-blue-400/50 text-xs font-semibold text-gray-200 hover:text-white transition-all flex-shrink-0 shadow-sm"
+          >
+            <span>🏡</span>
+            <span>Home Addition</span>
+            <span className="text-[10px] text-blue-400">↗</span>
+          </a>
+          <a
+            href="https://www.homedesignenglish.com/?region=US&calc=usa-roofing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-obsidian-850 hover:bg-blue-600/30 border border-gray-750 hover:border-blue-400/50 text-xs font-semibold text-gray-200 hover:text-white transition-all flex-shrink-0 shadow-sm"
+          >
+            <span>🏠</span>
+            <span>Roofing &amp; Shingles</span>
+            <span className="text-[10px] text-blue-400">↗</span>
+          </a>
+        </div>
+      </div>
+
       {/* Category Filter Pills */}
       <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
         {CATEGORY_TABS.map((tab) => {

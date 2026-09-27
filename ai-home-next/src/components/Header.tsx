@@ -80,6 +80,20 @@ const Header: React.FC = () => {
               </svg>
               <span>Get App</span>
             </a>
+
+            <a
+              href="https://www.homedesignenglish.com?region=US"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-950/60 hover:bg-blue-900/80 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold transition-all shadow-sm hover:scale-105"
+              title="US Construction & Interior Remodel Cost Calculator by HDE"
+            >
+              <span>🇺🇸</span>
+              <span>US Cost Calculator</span>
+              <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
           </nav>
 
           {/* Action buttons and components */}
@@ -246,6 +260,20 @@ const Header: React.FC = () => {
                 <path d="M3.609 1.814L13.792 12 3.61 22.186a2.41 2.41 0 01-.61-.92L3 21.13V2.87l.001-.136a2.41 2.41 0 01.608-.92zM15.207 13.414l2.573 2.574-12.06 6.892 9.487-9.466zM15.207 10.586L5.72 1.12l12.06 6.892-2.573 2.574zm1.414 1.414l3.164-1.808a1.5 1.5 0 010 2.616l-3.164 1.808-1.414-1.414 1.414-1.202z"/>
               </svg>
               <span>Get Android App (Google Play)</span>
+            </a>
+
+            <a
+              href="https://www.homedesignenglish.com?region=US"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMenu}
+              className="flex items-center justify-between p-2.5 rounded-xl bg-blue-950/50 border border-blue-500/40 text-blue-300 text-xs font-bold hover:bg-blue-900/60 transition-colors mt-1"
+            >
+              <div className="flex items-center gap-2">
+                <span>🇺🇸</span>
+                <span>HDE - US Remodel Cost Calculator</span>
+              </div>
+              <span className="text-xs text-blue-400 font-semibold">Open ↗</span>
             </a>
 
             <hr className="border-gray-200 dark:border-gray-800 my-2" />

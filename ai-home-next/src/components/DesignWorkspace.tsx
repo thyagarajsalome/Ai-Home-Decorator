@@ -480,6 +480,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
           <ResultDisplay
             originalImage={originalImageUrl}
             generatedImage={generatedImageUrl}
+            styleName={selectedStyle?.name}
             onTryAnotherStyle={() => {
               const el = document.getElementById("workspace");
               el?.scrollIntoView({ behavior: "smooth" });

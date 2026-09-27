@@ -6,6 +6,8 @@ interface ResultDisplayProps {
   generatedImage: string;
   onTryAnotherStyle?: () => void;
   onNewPhoto?: () => void;
+  styleName?: string;
+  categoryName?: string;
 }
 
 const ResultDisplay: React.FC<ResultDisplayProps> = ({
@@ -13,9 +15,28 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   generatedImage,
   onTryAnotherStyle,
   onNewPhoto,
+  styleName,
+  categoryName,
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const getHdeLink = () => {
+    const combined = `${styleName || ""} ${categoryName || ""}`.toLowerCase();
+    if (combined.includes("kitchen")) {
+      return "https://www.homedesignenglish.com/?region=US&calc=usa-kitchen-remodel";
+    }
+    if (combined.includes("bath")) {
+      return "https://www.homedesignenglish.com/?region=US&calc=usa-bathroom-remodel";
+    }
+    if (combined.includes("patio") || combined.includes("outdoor") || combined.includes("deck")) {
+      return "https://www.homedesignenglish.com/?region=US&calc=usa-outdoor-kitchen";
+    }
+    if (combined.includes("roof")) {
+      return "https://www.homedesignenglish.com/?region=US&calc=usa-roofing";
+    }
+    return "https://www.homedesignenglish.com/?region=US&calc=usa-interior-design";
+  };
 
   const handleDownload = () => {
     const link = document.createElement('a');
@@ -173,6 +194,40 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
             Upload Different Room
           </button>
         )}
+      </div>
+
+      {/* Design-to-Cost Conversion Hook (HDE US Remodel Estimator) */}
+      <div className="mt-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-blue-950/80 via-obsidian-900 to-indigo-950/80 border border-blue-500/35 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 text-left animate-slideUp">
+        <div className="flex items-start sm:items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-400/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
+            🔨
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-500/30">
+                Next Step
+              </span>
+              <span className="text-[10px] text-gray-400 font-semibold">
+                🇺🇸 US Real-World Budget
+              </span>
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-white font-heading mt-1">
+              Want to build this redesign in real life?
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-300 mt-0.5 max-w-xl">
+              Calculate accurate line-item contractor costs, $/sqft materials takeoff, and printable PDF proposals for your US state on HDE.
+            </p>
+          </div>
+        </div>
+        <a
+          href={getHdeLink()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold transition-all shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 hover:scale-105 flex-shrink-0"
+        >
+          <span>Estimate Remodel Cost</span>
+          <span className="text-sm">↗</span>
+        </a>
       </div>
 
       {/* Fullscreen Lightbox Modal */}
