@@ -7,13 +7,13 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-slate-100 dark:bg-obsidian-950 border-t border-gray-200/80 dark:border-gray-800/40 py-12 mt-auto transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-center md:items-start text-center md:text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 items-start text-left">
           {/* Brand Column */}
           <div className="flex flex-col space-y-2">
             <h3 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-500 bg-clip-text text-transparent">
               AI Home Decorator
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 text-xs max-w-sm mx-auto md:mx-0 font-medium">
+            <p className="text-gray-600 dark:text-gray-400 text-xs max-w-sm font-medium">
               Redecorate and visualize any room layout in standard design styles instantly using Google Gemini AI models.
             </p>
             <p className="text-gray-500 dark:text-gray-500 text-[10px] pt-1">
@@ -59,12 +59,54 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Legal Links Column */}
+          {/* US Cities Directory (SEO) */}
           <div className="flex flex-col space-y-3">
             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
-              Legal Info
+              US Cities
             </h4>
             <div className="flex flex-col space-y-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
+              <Link href="/usa/ca/los-angeles" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Los Angeles, CA
+              </Link>
+              <Link href="/usa/ca/san-jose" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                San Jose, CA
+              </Link>
+              <Link href="/usa/tx/houston" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Houston, TX
+              </Link>
+              <Link href="/usa/fl/miami" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Miami, FL
+              </Link>
+              <Link href="/usa/fl/tampa" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Tampa, FL
+              </Link>
+              <Link href="/usa/or/portland" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                Portland, OR
+              </Link>
+              <Link href="/usa" className="text-purple-600 dark:text-purple-400 font-bold hover:underline pt-1 text-xs">
+                All 50 US Cities &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Legal & Account Links Column */}
+          <div className="flex flex-col space-y-3">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-800 dark:text-gray-300">
+              Quick Links
+            </h4>
+            <div className="flex flex-col space-y-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
+              <Link
+                href="/pricing"
+                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"
+              >
+                Pricing &amp; Plans
+              </Link>
+              <Link
+                href="/about"
+                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"
+              >
+                About Us
+              </Link>
               <Link
                 href="/terms"
                 className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"

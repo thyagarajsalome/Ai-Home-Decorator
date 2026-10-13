@@ -1,7 +1,15 @@
-"use client";
-// src/pages/About.tsx
+import { Metadata } from "next";
 import React from "react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "About Us | AI Home Decorator",
+  description:
+    "Learn about AI Home Decorator. Powered by Google Gemini AI vision models to visualize your dream space without expensive design fees.",
+  alternates: {
+    canonical: "https://aihomedecorator.com/about",
+  },
+};
 
 const About: React.FC = () => {
   return (

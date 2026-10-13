@@ -7,6 +7,7 @@ import InstallPWAButton from "@/components/InstallPWAButton";
 import HDEPromoBanner from "@/components/HDEPromoBanner";
 import PinterestWelcomeBadge from "@/components/PinterestWelcomeBadge";
 export const metadata: Metadata = { 
+  metadataBase: new URL("https://aihomedecorator.com"),
   title: "Ai Home Decorator", 
   description: "Design your home with AI",
   verification: {

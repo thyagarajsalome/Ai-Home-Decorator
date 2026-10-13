@@ -1,7 +1,14 @@
-"use client";
-// src/pages/TermsPage.tsx
+import { Metadata } from "next";
 import React from "react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Terms of Service | AI Home Decorator",
+  description: "Terms of Service and legal agreements for AI Home Decorator.",
+  alternates: {
+    canonical: "https://aihomedecorator.com/terms",
+  },
+};
 
 const TermsPage: React.FC = () => {
   return (

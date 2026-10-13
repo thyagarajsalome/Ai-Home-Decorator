@@ -1,6 +1,13 @@
-"use client";
-// src/pages/DisclaimerPage.tsx
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Disclaimer | AI Home Decorator",
+  description: "AI generation and preview disclaimer for AI Home Decorator.",
+  alternates: {
+    canonical: "https://aihomedecorator.com/disclaimer",
+  },
+};
 
 const DisclaimerPage: React.FC = () => {
   return (

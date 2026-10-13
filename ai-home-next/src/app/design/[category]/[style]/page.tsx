@@ -49,12 +49,18 @@ export async function generateMetadata({
   const title = `${styleObj.name} ${catObj.name} AI Design Generator`;
   const description = `Use our free AI tool to redesign your space with a stunning ${styleObj.name} ${catObj.name.toLowerCase()}. Upload a photo and let our AI generate the perfect interior design.`;
 
+  const pageUrl = `https://aihomedecorator.com/design/${category}/${style}`;
+
   return {
     title,
     description,
+    alternates: {
+      canonical: pageUrl,
+    },
     openGraph: {
       title,
       description,
+      url: pageUrl,
       images: styleObj.thumbnail ? [
         {
           url: styleObj.thumbnail,

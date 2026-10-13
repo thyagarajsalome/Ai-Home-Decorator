@@ -1,6 +1,13 @@
-"use client";
-// src/pages/PolicyPage.tsx
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | AI Home Decorator",
+  description: "Privacy Policy and data protection practices for AI Home Decorator.",
+  alternates: {
+    canonical: "https://aihomedecorator.com/policy",
+  },
+};
 
 const PolicyPage: React.FC = () => {
   return (
