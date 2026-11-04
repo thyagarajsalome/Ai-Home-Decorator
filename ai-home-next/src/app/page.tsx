@@ -508,42 +508,7 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 7. HDE CROSS-PROMOTION BANNER: Remodel Cost Takeoff */}
-      {/* ============================================================ */}
-      <section className="py-12 bg-[#FAF4EC] border-t border-[#EEDBC9]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="rounded-3xl bg-gradient-to-r from-[#4A2508] via-[#5C3314] to-[#3E1805] text-white p-8 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4 text-center md:text-left">
-              <div className="w-14 h-14 rounded-2xl bg-[#E87A1E]/30 border border-[#E87A1E] flex items-center justify-center text-3xl flex-shrink-0">
-                🔨
-              </div>
-              <div>
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#FCD7BA]">
-                  Partner Remodel Calculator &bull; Home Design English
-                </span>
-                <h3 className="text-xl sm:text-2xl font-black font-heading mt-0.5">
-                  Planning a Real Renovation in the USA?
-                </h3>
-                <p className="text-xs sm:text-sm text-[#F7F2EE]/80 mt-1 max-w-lg">
-                  Get instant $/sqft material takeoff, contractor labor quotes, and bill of quantities for your kitchen, bathroom, or whole-house remodel.
-                </p>
-              </div>
-            </div>
-
-            <a
-              href="https://www.homedesignenglish.com?region=US"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-brand-primary px-6 py-3.5 text-xs sm:text-sm font-black whitespace-nowrap shadow-lg flex-shrink-0"
-            >
-              <span>Estimate Costs Free ↗</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 8. BIG BOTTOM CONVERSION BANNER */}
+      {/* 7. BIG BOTTOM CONVERSION BANNER */}
       {/* ============================================================ */}
       <section className="py-20 bg-white border-t border-[#F1E4D5]">
         <div className="max-w-4xl mx-auto px-4 text-center">

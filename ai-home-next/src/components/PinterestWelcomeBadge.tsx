@@ -1,6 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
+const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
+
 const PinterestWelcomeBadge: React.FC = () => {
   const [isFromPinterest, setIsFromPinterest] = useState(false);
   const [isDismissed, setIsDismissed] = useState(true);
@@ -66,18 +69,18 @@ const PinterestWelcomeBadge: React.FC = () => {
       </div>
 
       <p className="text-xs text-gray-300 mt-2.5 leading-relaxed">
-        Love the visual design ideas on Pinterest? Turn them into reality with instant <strong>US contractor &amp; material cost estimates</strong> on our partner calculator, <strong>HDE</strong>.
+        Love the visual design ideas on Pinterest? Recreate them in your room with our <strong>AI Home Decorator</strong> Android app in seconds.
       </p>
 
       <div className="mt-3.5 flex items-center gap-2">
         <a
-          href="https://www.homedesignenglish.com/?region=US"
+          href={PLAY_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2 px-3 text-center rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-1.5"
+          className="flex-1 py-2 px-3 text-center rounded-xl bg-[#E87A1E] hover:bg-[#D46513] text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-1.5"
         >
-          <span>Calculate Remodel Costs</span>
-          <span className="text-xs">↗</span>
+          <span>Get Android App</span>
+          <span className="text-xs">&rarr;</span>
         </a>
         <button
           type="button"

@@ -169,35 +169,6 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
           </div>
         </div>
 
-        {/* HDE US Cost Calculator Cross-Promotion Banner */}
-        <div className="mb-12 p-6 rounded-3xl bg-gradient-to-r from-[#4A2508] to-[#5C3314] text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 text-left">
-            <div className="w-12 h-12 rounded-xl bg-[#E87A1E]/30 border border-[#E87A1E] flex items-center justify-center text-2xl flex-shrink-0">
-              🔨
-            </div>
-            <div>
-              <span className="text-[10px] font-black text-[#FCD7BA] uppercase tracking-wider">
-                Planning Real Work in {cityData.name}?
-              </span>
-              <h3 className="text-base font-bold text-white font-heading">
-                Calculate Remodel Costs in {cityData.state_name}
-              </h3>
-              <p className="text-xs text-[#F7F2EE]/80 mt-0.5">
-                Instant $/sqft materials and contractor takeoff with Home Design English.
-              </p>
-            </div>
-          </div>
-          <a
-            href="https://www.homedesignenglish.com/?region=US"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-brand-primary px-5 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 flex-shrink-0"
-          >
-            <span>Estimate Costs in {cityData.name}</span>
-            <span>↗</span>
-          </a>
-        </div>
-
         {/* CTA: Redesign in App */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-black text-[#4A2508] tracking-tight font-heading mb-2">

@@ -229,34 +229,6 @@ export default async function ProgrammaticSEODesignPage({
 
         </div>
 
-        {/* HDE US Remodel Cost Calculator Banner */}
-        <div className="mb-16 p-6 rounded-3xl bg-gradient-to-r from-[#4A2508] to-[#5C3314] text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#E87A1E]/30 border border-[#E87A1E] flex items-center justify-center text-2xl flex-shrink-0">
-              🔨
-            </div>
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-[#FCD7BA]">
-                Renovating in the USA?
-              </span>
-              <h3 className="text-lg font-bold font-heading">
-                Calculate {styleObj.name} Remodel Costs
-              </h3>
-              <p className="text-xs text-[#F7F2EE]/80 mt-0.5">
-                Get $/sqft materials and labor estimate with our partner Home Design English.
-              </p>
-            </div>
-          </div>
-          <a
-            href="https://www.homedesignenglish.com?region=US"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-brand-primary px-5 py-2.5 text-xs font-black whitespace-nowrap shadow-md flex-shrink-0"
-          >
-            Estimate Remodel Cost ↗
-          </a>
-        </div>
-
         {/* SEO FAQ Section */}
         <div className="mb-16 bg-white border border-[#F1E4D5] rounded-3xl p-8 sm:p-10 shadow-xs">
           <h2 className="text-2xl font-black text-[#4A2508] mb-6 font-heading">

@@ -142,28 +142,28 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Partner & Cost Estimator */}
+          {/* Contact & Support */}
           <div className="flex flex-col space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-[#4A2508]">
-              US Remodel Tools
+              Contact &amp; Support
             </h4>
             <p className="text-xs text-[#6D5D53] leading-relaxed">
-              Planning physical contractor work? Calculate material and labor costs across all 50 states:
+              Have feedback, questions, or room styling suggestions?
             </p>
-            <a
-              href="https://www.homedesignenglish.com?region=US"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 p-3 rounded-xl bg-white border border-[#EEDBC9] hover:border-[#E87A1E] text-[#4A2508] hover:text-[#E87A1E] text-xs font-bold transition-all shadow-xs"
-            >
-              <span>🇺🇸</span>
-              <span>HDE US Cost Calculator ↗</span>
-            </a>
-
-            <div className="pt-2 text-xs text-[#7A4B27]">
+            <div className="pt-1 text-xs text-[#7A4B27]">
               <span>Email: </span>
-              <a href="mailto:contactaihomedecorator@gmail.com" className="underline hover:text-[#E87A1E]">
+              <a href="mailto:contactaihomedecorator@gmail.com" className="underline hover:text-[#E87A1E] font-medium">
                 contactaihomedecorator@gmail.com
+              </a>
+            </div>
+            <div className="pt-2">
+              <a
+                href={PLAY_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-brand-primary px-4 py-2 text-xs font-black"
+              >
+                Get Android App &rarr;
               </a>
             </div>
           </div>

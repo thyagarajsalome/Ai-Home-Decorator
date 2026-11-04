@@ -4,7 +4,6 @@ import { Providers } from "./providers";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import InstallPWAButton from "@/components/InstallPWAButton";
-import HDEPromoBanner from "@/components/HDEPromoBanner";
 import PinterestWelcomeBadge from "@/components/PinterestWelcomeBadge";
 
 export const metadata: Metadata = { 
@@ -41,7 +40,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="min-h-screen bg-[#FFFBF7] text-[#382A22] antialiased flex flex-col selection:bg-brand-100 selection:text-brand-900">
         <Providers>
-          <HDEPromoBanner />
           <Header />
           <div className="flex-grow">{children}</div>
           <Footer />

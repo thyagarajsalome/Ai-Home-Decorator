@@ -79,21 +79,6 @@ const Header: React.FC = () => {
             >
               About
             </Link>
-
-            {/* HDE Cost Calculator Cross-Promotion */}
-            <a
-              href="https://www.homedesignenglish.com?region=US"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] text-[#8D3D10] text-xs font-bold transition-all shadow-xs hover:scale-105"
-              title="US Construction & Interior Remodel Cost Calculator by HDE"
-            >
-              <span>🔨</span>
-              <span>US Remodel Calculator</span>
-              <svg className="w-3 h-3 text-[#D46513]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
           </nav>
 
           {/* Primary App Download CTA */}
@@ -177,15 +162,6 @@ const Header: React.FC = () => {
           >
             About AI Home Decorator
           </Link>
-          <a
-            href="https://www.homedesignenglish.com?region=US"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={closeMenu}
-            className="block px-3 py-2 rounded-lg text-sm font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA]"
-          >
-            🔨 US Remodel Cost Calculator (HDE) ↗
-          </a>
 
           <div className="pt-2">
             <a
