@@ -75,11 +75,32 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FFFBF7]">
+    <div className="relative flex flex-col min-h-screen bg-[#FFFBF7]">
+      {/* Subtle Whole-Page Architectural Blueprint Texture */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0 opacity-[0.06] mix-blend-multiply bg-center bg-repeat"
+        style={{
+          backgroundImage: "url('/brand/floor-plan.jpg')",
+          backgroundSize: "1000px auto",
+        }}
+        aria-hidden="true"
+      />
+
       {/* ============================================================ */}
       {/* 1. HERO SECTION: Brand Colors, Logo, Promo Mockups & Download */}
       {/* ============================================================ */}
       <section className="relative overflow-hidden pt-10 pb-16 lg:pt-16 lg:pb-24 glow-warm">
+        {/* Architectural Floor Plan Background Highlight */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-25 mix-blend-multiply bg-center bg-cover bg-no-repeat"
+          style={{
+            backgroundImage: "url('/brand/floor-plan.jpg')",
+            maskImage: "radial-gradient(ellipse at 50% 40%, black 25%, transparent 80%)",
+            WebkitMaskImage: "radial-gradient(ellipse at 50% 40%, black 25%, transparent 80%)",
+          }}
+          aria-hidden="true"
+        />
+
         {/* Soft decorative background circles */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-[#FEEDDF]/60 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 rounded-full bg-[#FCD7BA]/40 blur-3xl pointer-events-none" />
@@ -505,8 +526,19 @@ export default function Home() {
       {/* ============================================================ */}
       {/* 7. BIG BOTTOM CONVERSION BANNER */}
       {/* ============================================================ */}
-      <section className="py-20 bg-white border-t border-[#F1E4D5]">
-        <div className="max-w-4xl mx-auto px-4 text-center">
+      <section className="relative overflow-hidden py-20 bg-white border-t border-[#F1E4D5]">
+        {/* Floor Plan Background in Bottom Banner */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-20 mix-blend-multiply bg-center bg-cover"
+          style={{
+            backgroundImage: "url('/brand/floor-plan.jpg')",
+            maskImage: "radial-gradient(ellipse at center, black 20%, transparent 75%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black 20%, transparent 75%)",
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
           <div className="relative w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-6 shadow-md border border-[#FCD7BA]">
             <Image
               src="/brand/logo.jpg"
