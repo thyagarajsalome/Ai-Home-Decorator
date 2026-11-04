@@ -182,10 +182,7 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
 
       {/* Interactive Simulator */}
       <div className="max-w-5xl mx-auto px-4 mb-12">
-        <InteractiveBeforeAfter
-          roomName={`${cityData.name} Space`}
-          styleName={cityData.popular_style || "Modern"}
-        />
+        <InteractiveBeforeAfter />
       </div>
 
       {/* Big Download Card for this City */}

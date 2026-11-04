@@ -261,12 +261,7 @@ export default function Home() {
           </div>
 
           {/* Interactive Component */}
-          <InteractiveBeforeAfter
-            beforeImg="/images/showcase/living-room-before.jpg"
-            afterImg="/images/showcase/living-room-after.jpg"
-            roomName="American Living Room"
-            styleName="Warm Contemporary"
-          />
+          <InteractiveBeforeAfter />
 
           {/* App download button below slider */}
           <div className="mt-8 text-center">
