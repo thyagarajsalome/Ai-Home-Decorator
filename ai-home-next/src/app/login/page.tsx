@@ -1,7 +1,7 @@
 "use client";
-// src/pages/LoginPage.tsx
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
@@ -47,6 +47,7 @@ const LoginPage: React.FC = () => {
       if (error) {
         throw error;
       }
+      router.push("/");
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(
@@ -75,43 +76,46 @@ const LoginPage: React.FC = () => {
     }
   };
 
-
   if (currentUser) {
     return null;
   }
 
   return (
-    <div className="relative min-h-[80vh] flex items-center justify-center px-4 py-16 overflow-hidden">
-      {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div className="w-full max-w-md glass-card rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-200 dark:border-gray-800/50 backdrop-blur-md animate-fade relative z-10">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-16 bg-[#FFFBF7]">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 sm:p-10 border border-[#FCD7BA] animate-fade relative z-10">
+        
+        {/* Logo and Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-3">
-            <img
-              src="/icons/icon-512x512_bg.png"
-              alt="Logo"
-              className="h-16 w-16 mx-auto rounded-xl shadow-lg border border-amber-500/20"
-            />
+          <Link href="/" className="inline-block mb-3 group">
+            <div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden shadow-md border-2 border-[#FCD7BA] group-hover:scale-105 transition-transform">
+              <Image
+                src="/brand/logo.jpg"
+                alt="AI Home Decorator Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
           </Link>
-          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight font-heading">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#4A2508] tracking-tight font-heading">
             Welcome Back
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">
-            Login to continue designing your dream spaces
+          <p className="text-xs sm:text-sm text-[#7A4B27] mt-1 font-medium">
+            Sign in to your AI Home Decorator account
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        {/* Form */}
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
             <label
               htmlFor="email"
-              className="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2"
+              className="block text-xs font-bold uppercase tracking-wider text-[#4A2508] mb-2"
             >
               Email Address
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#BFA08B]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -133,7 +137,7 @@ const LoginPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
+                className="w-full p-3 pl-11 rounded-xl bg-[#FFFBF7] border border-[#E2CEBD] text-[#382A22] placeholder-[#BFA08B] focus:outline-none focus:ring-2 focus:ring-[#E87A1E] focus:border-transparent transition-all text-sm"
                 placeholder="you@example.com"
                 disabled={loading}
               />
@@ -143,12 +147,12 @@ const LoginPage: React.FC = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2"
+              className="block text-xs font-bold uppercase tracking-wider text-[#4A2508] mb-2"
             >
               Password
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#BFA08B]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -170,7 +174,7 @@ const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
+                className="w-full p-3 pl-11 rounded-xl bg-[#FFFBF7] border border-[#E2CEBD] text-[#382A22] placeholder-[#BFA08B] focus:outline-none focus:ring-2 focus:ring-[#E87A1E] focus:border-transparent transition-all text-sm"
                 placeholder="••••••••"
                 disabled={loading}
               />
@@ -178,10 +182,10 @@ const LoginPage: React.FC = () => {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-red-650 dark:text-red-400 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 p-3 rounded-lg font-semibold">
+            <div className="flex items-center gap-2 text-red-700 text-xs bg-red-50 border border-red-200 p-3 rounded-xl font-semibold">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 flex-shrink-0 text-red-500 dark:text-red-400"
+                className="h-5 w-5 flex-shrink-0 text-red-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -200,49 +204,24 @@ const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 hover:shadow-orange-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
+            className="w-full py-3.5 text-sm font-extrabold text-white rounded-xl bg-gradient-to-r from-[#E87A1E] to-[#D46513] hover:from-[#F28C32] hover:to-[#E87A1E] transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-[#E87A1E]/20 flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            {loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Logging in...
-              </>
-            ) : (
-              "Log In"
-            )}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        {/* --- GOOGLE SIGN IN SECTION --- */}
+        {/* Divider */}
         <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
-          <span className="mx-4 text-xs font-bold uppercase tracking-wider text-gray-500">or</span>
-          <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
+          <div className="flex-grow border-t border-[#F1E4D5]"></div>
+          <span className="mx-4 text-xs font-bold uppercase tracking-wider text-[#A69588]">or</span>
+          <div className="flex-grow border-t border-[#F1E4D5]"></div>
         </div>
 
+        {/* Google Sign In */}
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+          className="w-full flex items-center justify-center gap-3 bg-white text-[#4A2508] border border-[#E2CEBD] hover:border-[#E87A1E] hover:bg-[#FFFBF7] font-bold py-3 px-4 rounded-xl transition-all shadow-xs text-sm"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
@@ -262,21 +241,22 @@ const LoginPage: React.FC = () => {
               fill="#EA4335"
             />
           </svg>
-          Sign in with Google
+          Continue with Google
         </button>
-        {/* --- END GOOGLE SIGN IN SECTION --- */}
 
-        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800/40 text-center">
-          <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-            Don't have an account?{" "}
+        {/* Link to Sign up */}
+        <div className="mt-8 pt-6 border-t border-[#F1E4D5] text-center">
+          <p className="text-xs sm:text-sm font-semibold text-[#6D5D53]">
+            Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-bold transition-colors hover:underline"
+              className="text-[#E87A1E] hover:underline font-bold transition-colors"
             >
-              Sign Up
+              Create Account &rarr;
             </Link>
           </p>
         </div>
+
       </div>
     </div>
   );

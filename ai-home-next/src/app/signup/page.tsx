@@ -1,7 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/supabaseClient";
+import { useAuth } from "@/context/AuthContext";
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -10,9 +13,14 @@ const SignupPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
+  const router = useRouter();
+  const { currentUser } = useAuth();
 
-  React.useEffect(() => {
-    // Check for error in hash or query parameters (from OAuth redirect callback)
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/");
+    }
+
     const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
     const queryParams = new URLSearchParams(window.location.search);
     const errorDesc =
@@ -24,7 +32,7 @@ const SignupPage: React.FC = () => {
     if (errorDesc) {
       setError(decodeURIComponent(errorDesc.replace(/\+/g, " ")));
     }
-  }, []);
+  }, [currentUser, router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +41,11 @@ const SignupPage: React.FC = () => {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
       return;
     }
 
@@ -48,7 +61,12 @@ const SignupPage: React.FC = () => {
       }
 
       if (data.user) {
-        setVerificationSent(true);
+        // If session is immediately established (email confirmation disabled in Supabase)
+        if (data.session) {
+          router.push("/");
+        } else {
+          setVerificationSent(true);
+        }
       }
     } catch (err: any) {
       console.error("Signup failed:", err);
@@ -76,72 +94,67 @@ const SignupPage: React.FC = () => {
     }
   };
 
+  if (currentUser) {
+    return null;
+  }
 
   return (
-    <div className="relative min-h-[85vh] flex items-center justify-center px-4 py-16 overflow-hidden">
-      {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div className="w-full max-w-md glass-card rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-250 dark:border-gray-800/50 backdrop-blur-md animate-fade relative z-10">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-16 bg-[#FFFBF7]">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 sm:p-10 border border-[#FCD7BA] animate-fade relative z-10">
+        
+        {/* Logo and Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-3">
-            <img
-              src="/icons/icon-512x512_bg.png"
-              alt="Logo"
-              className="h-16 w-16 mx-auto rounded-xl shadow-lg border border-amber-500/20"
-            />
+          <Link href="/" className="inline-block mb-3 group">
+            <div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden shadow-md border-2 border-[#FCD7BA] group-hover:scale-105 transition-transform">
+              <Image
+                src="/brand/logo.jpg"
+                alt="AI Home Decorator Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
           </Link>
-          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight font-heading">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#4A2508] tracking-tight font-heading">
             Create Account
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">
-            Join AI Home Decorator and start redesigning your space today!
+          <p className="text-xs sm:text-sm text-[#7A4B27] mt-1 font-medium">
+            Join AI Home Decorator and start redesigning your space
           </p>
         </div>
 
+        {/* Email Verification Sent Alert */}
         {verificationSent ? (
-          <div className="space-y-6 text-center animate-fade">
-            <div className="mx-auto w-16 h-16 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800/60 rounded-full flex items-center justify-center text-green-600 dark:text-green-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+          <div className="text-center py-6">
+            <div className="w-14 h-14 rounded-full bg-[#FEEDDF] border border-[#F8B98B] flex items-center justify-center text-3xl mx-auto mb-4">
+              ✉️
             </div>
-            <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 rounded-xl text-green-700 dark:text-green-300 text-sm font-semibold">
-              <p className="font-bold mb-1 text-base">Account successfully created!</p>
-              <p className="opacity-90 font-semibold leading-relaxed">
-                Please check your inbox at <strong className="text-gray-900 dark:text-white">{email}</strong> to verify your email address before logging in.
-              </p>
-            </div>
+            <h3 className="text-lg font-bold text-[#4A2508] mb-2 font-heading">
+              Check Your Email
+            </h3>
+            <p className="text-xs sm:text-sm text-[#6D5D53] leading-relaxed mb-6">
+              We have sent a verification link to <strong className="text-[#4A2508]">{email}</strong>. Please click the link to confirm your account and log in.
+            </p>
             <Link
               href="/login"
-              className="block w-full py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 text-center transition-all duration-200"
+              className="btn-brand-primary w-full py-3 text-xs sm:text-sm font-extrabold"
             >
-              Proceed to Login
+              Go to Sign In &rarr;
             </Link>
           </div>
         ) : (
-          <div>
-            <form onSubmit={handleSignup} className="space-y-5">
+          <>
+            {/* Form */}
+            <form onSubmit={handleSignup} className="space-y-4">
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2"
+                  className="block text-xs font-bold uppercase tracking-wider text-[#4A2508] mb-2"
                 >
                   Email Address
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#BFA08B]">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -163,7 +176,7 @@ const SignupPage: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
+                    className="w-full p-3 pl-11 rounded-xl bg-[#FFFBF7] border border-[#E2CEBD] text-[#382A22] placeholder-[#BFA08B] focus:outline-none focus:ring-2 focus:ring-[#E87A1E] focus:border-transparent transition-all text-sm"
                     placeholder="you@example.com"
                     disabled={loading}
                   />
@@ -173,12 +186,12 @@ const SignupPage: React.FC = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-xs font-bold uppercase tracking-wider text-gray-650 dark:text-gray-400 mb-2"
+                  className="block text-xs font-bold uppercase tracking-wider text-[#4A2508] mb-2"
                 >
                   Password
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#BFA08B]">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -200,9 +213,8 @@ const SignupPage: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
-                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
-                    placeholder="••••••••"
+                    className="w-full p-3 pl-11 rounded-xl bg-[#FFFBF7] border border-[#E2CEBD] text-[#382A22] placeholder-[#BFA08B] focus:outline-none focus:ring-2 focus:ring-[#E87A1E] focus:border-transparent transition-all text-sm"
+                    placeholder="At least 6 characters"
                     disabled={loading}
                   />
                 </div>
@@ -211,12 +223,12 @@ const SignupPage: React.FC = () => {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-xs font-bold uppercase tracking-wider text-gray-650 dark:text-gray-400 mb-2"
+                  className="block text-xs font-bold uppercase tracking-wider text-[#4A2508] mb-2"
                 >
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#BFA08B]">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -228,7 +240,7 @@ const SignupPage: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                       />
                     </svg>
                   </span>
@@ -238,19 +250,18 @@ const SignupPage: React.FC = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    minLength={6}
-                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
-                    placeholder="••••••••"
+                    className="w-full p-3 pl-11 rounded-xl bg-[#FFFBF7] border border-[#E2CEBD] text-[#382A22] placeholder-[#BFA08B] focus:outline-none focus:ring-2 focus:ring-[#E87A1E] focus:border-transparent transition-all text-sm"
+                    placeholder="Re-enter password"
                     disabled={loading}
                   />
                 </div>
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 text-red-650 dark:text-red-400 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 p-3 rounded-lg font-semibold animate-fade">
+                <div className="flex items-center gap-2 text-red-700 text-xs bg-red-50 border border-red-200 p-3 rounded-xl font-semibold">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 flex-shrink-0 text-red-500 dark:text-red-400"
+                    className="h-5 w-5 flex-shrink-0 text-red-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -269,49 +280,24 @@ const SignupPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 hover:shadow-orange-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
+                className="w-full py-3.5 text-sm font-extrabold text-white rounded-xl bg-gradient-to-r from-[#E87A1E] to-[#D46513] hover:from-[#F28C32] hover:to-[#E87A1E] transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-[#E87A1E]/20 flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {loading ? (
-                  <>
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Creating Account...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
+                {loading ? "Creating Account..." : "Create Account"}
               </button>
             </form>
 
-            {/* --- GOOGLE SIGN IN SECTION --- */}
+            {/* Divider */}
             <div className="flex items-center my-6">
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
-              <span className="mx-4 text-xs font-bold uppercase tracking-wider text-gray-500">or</span>
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
+              <div className="flex-grow border-t border-[#F1E4D5]"></div>
+              <span className="mx-4 text-xs font-bold uppercase tracking-wider text-[#A69588]">or</span>
+              <div className="flex-grow border-t border-[#F1E4D5]"></div>
             </div>
 
+            {/* Google Sign Up */}
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+              className="w-full flex items-center justify-center gap-3 bg-white text-[#4A2508] border border-[#E2CEBD] hover:border-[#E87A1E] hover:bg-[#FFFBF7] font-bold py-3 px-4 rounded-xl transition-all shadow-xs text-sm"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -321,7 +307,7 @@ const SignupPage: React.FC = () => {
                 <path
                   d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
                   fill="#34A853"
-            />
+                />
                 <path
                   d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
                   fill="#FBBC05"
@@ -333,21 +319,22 @@ const SignupPage: React.FC = () => {
               </svg>
               Sign up with Google
             </button>
-            {/* --- END GOOGLE SIGN IN SECTION --- */}
-          </div>
+
+            {/* Link to Login */}
+            <div className="mt-8 pt-6 border-t border-[#F1E4D5] text-center">
+              <p className="text-xs sm:text-sm font-semibold text-[#6D5D53]">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="text-[#E87A1E] hover:underline font-bold transition-colors"
+                >
+                  Sign In &rarr;
+                </Link>
+              </p>
+            </div>
+          </>
         )}
 
-        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800/40 text-center">
-          <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-bold transition-colors hover:underline"
-            >
-              Log In
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
