@@ -47,7 +47,7 @@ export async function generateMetadata({
   if (!styleObj) return {};
 
   const title = `${styleObj.name} ${catObj.name} AI Design Generator`;
-  const description = `Use our free AI tool to redesign your space with a stunning ${styleObj.name} ${catObj.name.toLowerCase()}. Upload a photo and let our AI generate the perfect interior design.`;
+  const description = `Use our advanced AI tool to redesign your space with a stunning ${styleObj.name} ${catObj.name.toLowerCase()}. Upload a photo and let our AI generate the perfect interior design.`;
 
   const pageUrl = `https://aihomedecorator.com/design/${category}/${style}`;
 
@@ -143,10 +143,10 @@ export default async function ProgrammaticSEODesignPage({
             
             <div>
               <h3 className="text-lg font-semibold text-purple-300 mb-2">
-                Is it free to generate {styleObj.name} designs?
+                How does pricing work for {styleObj.name} designs?
               </h3>
               <p className="text-gray-400 text-sm leading-relaxed">
-                When you create a free account, you receive complimentary credits to try out the AI home decorator. Generating a style redesign costs just {catObj.id ? 1 : 1} credit. You can purchase more credits at any time to continue designing.
+                AI Home Decorator operates on a transparent pay-as-you-go credit model. Each high-resolution style redesign costs 1 credit, with zero recurring monthly subscriptions. Choose from our affordable credit packs to transform your space instantly.
               </p>
             </div>
           </div>

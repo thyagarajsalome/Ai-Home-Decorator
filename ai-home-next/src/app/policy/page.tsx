@@ -92,7 +92,7 @@ const PolicyPage: React.FC = () => {
               id="third-parties"
               className="text-xl font-bold text-white mb-3"
             >
-              4. Third-Party Services
+              5. Third-Party Services
             </h2>
             <ul className="list-disc list-inside space-y-2 text-gray-400 ml-2">
               <li>

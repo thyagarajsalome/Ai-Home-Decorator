@@ -229,7 +229,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               {currentUser ? (
                 <>Credits: <strong className="text-white">{isAdmin ? "Admin (∞)" : credits}</strong></>
               ) : (
-                <span className="text-purple-400 font-bold">Free Starter Credits</span>
+                <span className="text-purple-400 font-bold">Pay As You Go</span>
               )}
             </span>
           </div>
@@ -328,7 +328,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
                 Ready to redesign?
               </p>
               <p className="text-xs text-gray-400 mb-4">
-                Create a free account to save your generated designs and get free starter credits.
+                Create an account to save your designs, manage your credits, and transform your rooms.
               </p>
               <div className="flex justify-center gap-3 text-xs font-bold">
                 <button

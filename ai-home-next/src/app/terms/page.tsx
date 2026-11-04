@@ -97,7 +97,7 @@ const TermsPage: React.FC = () => {
               id="termination"
               className="text-xl font-bold text-white mb-3"
             >
-              5. Termination
+              6. Termination
             </h2>
             <p>
               We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including if you breach these Terms.
@@ -108,7 +108,7 @@ const TermsPage: React.FC = () => {
 
           <div>
             <h2 id="governing-law" className="text-xl font-bold text-white mb-3">
-              6. Governing Law & Jurisdiction (United States)
+              7. Governing Law & Jurisdiction (United States)
             </h2>
             <p>
               These Terms shall be governed by and construed in accordance with the laws of the United States, without regard to its conflict of law provisions. Any legal action or proceeding arising under these Terms will be brought exclusively in the federal or state courts located within the United States.
@@ -119,7 +119,7 @@ const TermsPage: React.FC = () => {
 
           <div>
             <h2 id="links" className="text-xl font-bold text-white mb-3">
-              7. Other Legal Policies
+              8. Other Legal Policies
             </h2>
             <p>
               By agreeing to these Terms, you also agree to our{" "}

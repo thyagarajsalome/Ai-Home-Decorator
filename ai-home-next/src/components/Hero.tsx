@@ -32,7 +32,7 @@ const Hero: React.FC = () => {
               href="#workspace"
               className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 text-center"
             >
-              Start Decorating Free
+              Start Decorating
             </a>
             <a
               href="#showcase"

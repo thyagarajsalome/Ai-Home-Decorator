@@ -118,7 +118,7 @@ export default function AuthModal({
           </h3>
           <p className="text-xs text-gray-400 mt-1.5">
             {mode === "signup"
-              ? "Create a free account to generate and save your AI room transformations."
+              ? "Create an account to save your generated designs and access your credits."
               : "Sign in to access your credits and past room designs."}
           </p>
         </div>

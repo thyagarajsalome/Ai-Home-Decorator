@@ -95,7 +95,7 @@ const SignupPage: React.FC = () => {
             Create Account
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">
-            Get 119 free credits to start redesigning today!
+            Join AI Home Decorator and start redesigning your space today!
           </p>
         </div>
 
