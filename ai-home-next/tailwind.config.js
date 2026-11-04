@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        heading: ["Outfit", "sans-serif"],
+        sans: ["var(--font-roboto)", "Roboto", "sans-serif"],
+        heading: ["var(--font-roboto)", "Roboto", "sans-serif"],
       },
       colors: {
         // Official Brand Orange Palette (from Logo & Promo graphics)

@@ -5,14 +5,14 @@
   body {
     background-color: #FFFBF7;
     color: #382A22;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-roboto), 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', sans-serif;
-    letter-spacing: -0.02em;
+    font-family: var(--font-roboto), 'Roboto', sans-serif;
+    letter-spacing: -0.01em;
     color: #4A2508;
   }
 }
