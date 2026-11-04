@@ -29,11 +29,11 @@ const Header: React.FC = () => {
             <img
               src="/icons/icon-512x512_bg.png"
               alt="AI Home Decorator Logo"
-              className="h-10 w-10 md:h-12 md:w-12 rounded-xl border border-purple-500/20 shadow-md"
+              className="h-10 w-10 md:h-12 md:w-12 rounded-xl border border-amber-500/20 shadow-md"
             />
           </Link>
           <div>
-            <h1 className="text-xl md:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 dark:from-purple-400 dark:to-pink-500 bg-clip-text text-transparent">
+            <h1 className="text-xl md:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent">
               <Link href="/" onClick={closeMenu}>
                 AI Home Decorator
               </Link>
@@ -49,13 +49,13 @@ const Header: React.FC = () => {
           <nav className="flex items-center gap-5 text-sm font-bold text-gray-650 dark:text-gray-300">
             <Link
               href="/"
-              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200"
+              className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-200"
             >
               Home
             </Link>
             <Link
               href="/about"
-              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200"
+              className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-200"
             >
               About
             </Link>
@@ -63,7 +63,7 @@ const Header: React.FC = () => {
             {!isAppMode && (
               <Link
                 href="/pricing"
-                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200"
+                className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-200"
               >
                 Pricing
               </Link>
@@ -73,9 +73,9 @@ const Header: React.FC = () => {
               href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-950/40 hover:bg-purple-900/60 border border-purple-500/30 text-purple-300 hover:text-white text-xs font-bold transition-all shadow-sm hover:scale-105"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-950/40 hover:bg-amber-950/60 border border-amber-500/30 text-amber-300 hover:text-white text-xs font-bold transition-all shadow-sm hover:scale-105"
             >
-              <svg className="w-3.5 h-3.5 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.412 13.8533 8.125 12 8.125c-1.8533 0-3.5902.287-5.1368.8247L4.8409 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.343 14.6589 0 18.761h24c-.343-4.1021-2.6889-7.5743-6.1185-9.4396" />
               </svg>
               <span>Get App</span>
@@ -103,11 +103,11 @@ const Header: React.FC = () => {
                 {/* Credit balance display */}
                 <Link 
                   href="/pricing"
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-500/30 text-purple-750 dark:text-purple-300 text-xs font-bold shadow-inner cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-300 text-xs font-bold shadow-inner cursor-pointer hover:bg-amber-200 dark:hover:bg-amber-950/50 transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-purple-600 dark:text-purple-400"
+                    className="h-4 w-4 text-amber-600 dark:text-amber-400"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -133,13 +133,13 @@ const Header: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Link
                   href="/login"
-                  className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 text-sm font-semibold transition-colors py-2"
+                  className="text-gray-600 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 text-sm font-semibold transition-colors py-2"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all duration-200 shadow-md shadow-purple-500/10 hover:shadow-purple-500/20"
+                  className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all duration-200 shadow-md shadow-orange-500/10 hover:shadow-orange-500/20"
                 >
                   Sign Up
                 </Link>
@@ -189,11 +189,11 @@ const Header: React.FC = () => {
               <Link
                 href="/pricing"
                 onClick={closeMenu} 
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-500/20 text-purple-700 dark:text-purple-300 text-sm font-semibold mb-2 cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 text-sm font-semibold mb-2 cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-950/40 transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-purple-650 dark:text-purple-400"
+                  className="h-5 w-5 text-amber-700 dark:text-amber-400"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -212,14 +212,14 @@ const Header: React.FC = () => {
             <Link
               href="/"
               onClick={closeMenu}
-              className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
+              className="hover:text-amber-600 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
             >
               Home
             </Link>
             <Link
               href="/about"
               onClick={closeMenu}
-              className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
+              className="hover:text-amber-600 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
             >
               About
             </Link>
@@ -228,7 +228,7 @@ const Header: React.FC = () => {
               <Link
                 href="/pricing"
                 onClick={closeMenu}
-                className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
+                className="hover:text-amber-600 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
               >
                 Pricing
               </Link>
@@ -237,14 +237,14 @@ const Header: React.FC = () => {
             <Link
               href="/terms"
               onClick={closeMenu}
-              className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
+              className="hover:text-amber-600 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
             >
               Terms
             </Link>
             <Link
               href="/policy"
               onClick={closeMenu}
-              className="hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
+              className="hover:text-amber-600 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-obsidian-850/50 p-2.5 rounded-lg transition-colors"
             >
               Privacy
             </Link>
@@ -254,9 +254,9 @@ const Header: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={closeMenu}
-              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-purple-900/20 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-900/40 transition-colors mt-1"
+              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-300 text-xs font-bold hover:bg-amber-950/40 transition-colors mt-1"
             >
-              <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3.609 1.814L13.792 12 3.61 22.186a2.41 2.41 0 01-.61-.92L3 21.13V2.87l.001-.136a2.41 2.41 0 01.608-.92zM15.207 13.414l2.573 2.574-12.06 6.892 9.487-9.466zM15.207 10.586L5.72 1.12l12.06 6.892-2.573 2.574zm1.414 1.414l3.164-1.808a1.5 1.5 0 010 2.616l-3.164 1.808-1.414-1.414 1.414-1.202z"/>
               </svg>
               <span>Get Android App (Google Play)</span>
@@ -290,14 +290,14 @@ const Header: React.FC = () => {
                 <Link
                   href="/login"
                   onClick={closeMenu}
-                  className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-semibold p-2.5 text-center hover:bg-gray-100 dark:hover:bg-obsidian-850/50 rounded-lg transition-colors"
+                  className="text-gray-600 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 font-semibold p-2.5 text-center hover:bg-gray-100 dark:hover:bg-obsidian-850/50 rounded-lg transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
                   onClick={closeMenu}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-3 px-4 rounded-lg text-center transition-all shadow-md shadow-purple-500/10"
+                  className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 text-white font-bold py-3 px-4 rounded-lg text-center transition-all shadow-md shadow-orange-500/10"
                 >
                   Sign Up
                 </Link>

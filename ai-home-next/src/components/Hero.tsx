@@ -9,8 +9,8 @@ const Hero: React.FC = () => {
     <div className="relative bg-slate-50 dark:bg-obsidian-950 pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden transition-colors duration-300">
       {/* Background Gradient & Animated Blobs */}
       <div className="absolute top-0 left-1/2 w-full -translate-x-1/2 h-full z-0 pointer-events-none opacity-20 dark:opacity-40">
-        <div className="absolute top-10 left-1/4 w-[350px] h-[350px] bg-purple-600/20 rounded-full mix-blend-screen filter blur-3xl animate-blob"></div>
-        <div className="absolute top-10 right-1/4 w-[350px] h-[350px] bg-pink-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute top-10 left-1/4 w-[350px] h-[350px] bg-amber-600/20 rounded-full mix-blend-screen filter blur-3xl animate-blob"></div>
+        <div className="absolute top-10 right-1/4 w-[350px] h-[350px] bg-orange-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-10 left-1/3 w-[350px] h-[350px] bg-blue-600/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
 
@@ -20,7 +20,7 @@ const Hero: React.FC = () => {
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6 leading-tight font-heading">
             Redesign Your Space <br className="hidden sm:block" />
             in{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 dark:from-purple-400 dark:via-pink-500 dark:to-purple-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 dark:from-amber-400 dark:via-orange-400 dark:to-amber-500">
               Seconds with AI
             </span>
           </h1>
@@ -30,7 +30,7 @@ const Hero: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
               href="#workspace"
-              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 text-center"
+              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 text-center"
             >
               Start Decorating
             </a>
@@ -62,7 +62,7 @@ const Hero: React.FC = () => {
         {/* Visual Content - Full Width Image Below */}
         <div className="w-full max-w-5xl relative group rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-900/60 backdrop-blur-sm animate-slideUp">
           {/* Ambient Glow behind image container */}
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-2xl blur-lg opacity-15 dark:opacity-25 group-hover:opacity-35 transition duration-1000"></div>
+          <div className="absolute -inset-1.5 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 rounded-2xl blur-lg opacity-15 dark:opacity-25 group-hover:opacity-35 transition duration-1000"></div>
 
           <div className="relative bg-white dark:bg-obsidian-900 rounded-2xl overflow-hidden">
             <img
@@ -74,7 +74,7 @@ const Hero: React.FC = () => {
             {/* AI badge Overlay */}
             <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6">
               <span className="bg-white/90 dark:bg-obsidian-950/80 backdrop-blur-md text-gray-800 dark:text-white text-xs font-semibold px-4 py-2 rounded-full border border-gray-200 dark:border-gray-800/50 shadow-md flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                 Powered by Gemini AI
               </span>
             </div>

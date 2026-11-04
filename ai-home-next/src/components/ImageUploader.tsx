@@ -148,7 +148,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       }`}
     >
       <h2 className="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center gap-2">
-        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-purple-900/30 border border-purple-500/20 text-purple-400 text-sm">
+        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-950/30 border border-amber-500/20 text-amber-400 text-sm">
           📸
         </span>
         Room Canvas & Photo
@@ -158,7 +158,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         {...getRootProps()}
         className={`relative w-full aspect-[4/3] sm:aspect-video rounded-2xl border-2 border-dashed ${
           isDragActive
-            ? "border-purple-500 bg-purple-950/20 shadow-purple-500/5"
+            ? "border-amber-500 bg-amber-950/20 shadow-orange-500/5"
             : "border-gray-750 bg-obsidian-850 hover:border-gray-650 hover:bg-obsidian-800"
         } flex items-center justify-center text-center text-gray-400 cursor-pointer transition-all duration-200 p-4 overflow-hidden shadow-md`}
       >
@@ -167,7 +167,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         {isCompressing ? (
           <div className="flex flex-col items-center animate-fade">
             <svg
-              className="w-10 h-10 text-purple-600 dark:text-purple-400 animate-spin mb-3"
+              className="w-10 h-10 text-amber-600 dark:text-amber-400 animate-spin mb-3"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -197,7 +197,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               className="w-full h-full object-cover rounded-xl"
             />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center">
-              <span className="px-4 py-2 bg-purple-650 hover:bg-purple-600 text-white rounded-lg text-xs font-bold shadow-md transition-colors">
+              <span className="px-4 py-2 bg-amber-600 hover:bg-amber-600 text-white rounded-lg text-xs font-bold shadow-md transition-colors">
                 Replace Photo
               </span>
             </div>
@@ -207,7 +207,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <div className="w-14 h-14 mx-auto rounded-full bg-obsidian-800 border border-gray-750 flex items-center justify-center text-gray-500 mb-4 group-hover:scale-105 transition-transform">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-purple-400"
+                className="h-7 w-7 text-amber-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -226,7 +226,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <p className="text-xs text-gray-400 leading-normal">
               Drag & drop or click to choose from system files. Supports PNG, JPEG, WEBP.
             </p>
-            <span className="inline-block mt-3 px-3 py-1 rounded-full bg-purple-950/40 border border-purple-500/20 text-[10px] font-semibold text-purple-400">
+            <span className="inline-block mt-3 px-3 py-1 rounded-full bg-amber-950/40 border border-amber-500/20 text-[10px] font-semibold text-amber-400">
               Mobile Friendly Optimization Active
             </span>
           </div>
@@ -262,7 +262,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         <div className="mt-5 animate-fade">
           <label className="block text-gray-300 text-xs font-bold mb-2.5 uppercase tracking-wide flex items-center justify-between">
             <span>Select Room Type</span>
-            <span className="text-[10px] text-purple-400 font-semibold normal-case">1-Tap Selection</span>
+            <span className="text-[10px] text-amber-400 font-semibold normal-case">1-Tap Selection</span>
           </label>
           
           <div className="flex flex-wrap gap-2 mb-3">
@@ -279,7 +279,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                   disabled={disabled}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border ${
                     isSelected
-                      ? "bg-purple-600/40 border-purple-500 text-white shadow-sm shadow-purple-500/20 ring-1 ring-purple-500/50"
+                      ? "bg-amber-600/40 border-amber-500 text-white shadow-sm shadow-orange-500/20 ring-1 ring-amber-500/50"
                       : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-300 hover:text-white"
                   }`}
                 >
@@ -293,7 +293,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               disabled={disabled}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border ${
                 selectedRoomType === "Other"
-                  ? "bg-purple-600/40 border-purple-500 text-white shadow-sm shadow-purple-500/20 ring-1 ring-purple-500/50"
+                  ? "bg-amber-600/40 border-amber-500 text-white shadow-sm shadow-orange-500/20 ring-1 ring-amber-500/50"
                   : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-300 hover:text-white"
               }`}
             >
@@ -310,7 +310,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 maxLength={MAX_ROOM_DESCRIPTION_LENGTH}
                 disabled={disabled}
                 placeholder="Describe your room here (e.g. empty library, sunroom)..."
-                className={`w-full p-3.5 rounded-xl bg-obsidian-850 border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all ${
+                className={`w-full p-3.5 rounded-xl bg-obsidian-850 border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm transition-all ${
                   isTooLong ? "border-red-500 focus:ring-red-500" : "border-gray-750"
                 }`}
               />

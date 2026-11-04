@@ -80,7 +80,7 @@ const SignupPage: React.FC = () => {
   return (
     <div className="relative min-h-[85vh] flex items-center justify-center px-4 py-16 overflow-hidden">
       {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="w-full max-w-md glass-card rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-250 dark:border-gray-800/50 backdrop-blur-md animate-fade relative z-10">
         <div className="text-center mb-8">
@@ -88,7 +88,7 @@ const SignupPage: React.FC = () => {
             <img
               src="/icons/icon-512x512_bg.png"
               alt="Logo"
-              className="h-16 w-16 mx-auto rounded-xl shadow-lg border border-purple-500/20"
+              className="h-16 w-16 mx-auto rounded-xl shadow-lg border border-amber-500/20"
             />
           </Link>
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight font-heading">
@@ -125,7 +125,7 @@ const SignupPage: React.FC = () => {
             </div>
             <Link
               href="/login"
-              className="block w-full py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-center transition-all duration-200"
+              className="block w-full py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 text-center transition-all duration-200"
             >
               Proceed to Login
             </Link>
@@ -163,7 +163,7 @@ const SignupPage: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-250 text-sm"
+                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
                     placeholder="you@example.com"
                     disabled={loading}
                   />
@@ -201,7 +201,7 @@ const SignupPage: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-250 text-sm"
+                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
                     placeholder="••••••••"
                     disabled={loading}
                   />
@@ -239,7 +239,7 @@ const SignupPage: React.FC = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-250 text-sm"
+                    className="w-full p-3 pl-10 rounded-lg bg-gray-50 dark:bg-obsidian-850/50 border border-gray-300 dark:border-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-250 text-sm"
                     placeholder="••••••••"
                     disabled={loading}
                   />
@@ -269,7 +269,7 @@ const SignupPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/10 hover:shadow-purple-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
+                className="w-full py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 hover:shadow-orange-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
               >
                 {loading ? (
                   <>
@@ -342,7 +342,7 @@ const SignupPage: React.FC = () => {
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-bold transition-colors hover:underline"
+              className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-bold transition-colors hover:underline"
             >
               Log In
             </Link>

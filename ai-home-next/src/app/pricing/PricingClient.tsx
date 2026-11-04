@@ -259,7 +259,7 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
           </p>
           <button
             onClick={() => router.push("/")}
-            className="w-full max-w-xs mx-auto py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all duration-200 shadow-lg"
+            className="w-full max-w-xs mx-auto py-3.5 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 transition-all duration-200 shadow-lg"
           >
             Go to Studio
           </button>
@@ -273,10 +273,10 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
   return (
     <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="text-center mb-16 animate-fade relative z-10">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight font-heading mb-4 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 dark:from-purple-400 dark:to-pink-500 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight font-heading mb-4 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent">
           Purchase Design Credits
         </h1>
         <p className="text-base text-gray-550 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed font-semibold">
@@ -299,13 +299,13 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
               key={pack.name}
               className={`relative bg-white dark:bg-obsidian-900/95 border rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 shadow-md ${
                 pack.popular
-                  ? "border-purple-500 shadow-xl shadow-purple-500/10 scale-105 md:-translate-y-2 z-10"
+                  ? "border-amber-500 shadow-xl shadow-orange-500/10 scale-105 md:-translate-y-2 z-10"
                   : "border-gray-200 dark:border-gray-800/80 hover:border-gray-300 dark:hover:border-gray-700 hover:scale-[1.02]"
               }`}
             >
               {/* Popular Badge */}
               {pack.popular && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md">
+                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md">
                   Most Popular
                 </span>
               )}
@@ -331,7 +331,7 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
                 {/* Features List */}
                 <ul className="space-y-3.5 text-sm text-gray-600 dark:text-gray-300 mb-8 font-semibold">
                   <li className="flex items-center gap-2.5">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-50 dark:bg-purple-950/40 border border-purple-150 dark:border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                       <svg
                         className="h-3 w-3"
                         fill="none"
@@ -349,7 +349,7 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
                     <span><strong>{pack.credits}</strong> Generations</span>
                   </li>
                   <li className="flex items-center gap-2.5">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-50 dark:bg-purple-950/40 border border-purple-150 dark:border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                       <svg
                         className="h-3 w-3"
                         fill="none"
@@ -367,7 +367,7 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
                     <span>All Style Themes Included</span>
                   </li>
                   <li className="flex items-center gap-2.5">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-50 dark:bg-purple-950/40 border border-purple-150 dark:border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                       <svg
                         className="h-3 w-3"
                         fill="none"
@@ -392,7 +392,7 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
                 disabled={isProcessing || !currentUser || !scriptLoaded}
                 className={`w-full py-3 text-sm font-bold text-white rounded-xl shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
                   pack.popular
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-purple-500/10 hover:shadow-purple-500/25"
+                    ? "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 shadow-orange-500/10 hover:shadow-orange-500/25"
                     : "bg-white dark:bg-obsidian-800 hover:bg-gray-50 dark:hover:bg-obsidian-750 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-transparent hover:border-gray-400"
                 } disabled:opacity-50 disabled:scale-100 disabled:shadow-none disabled:cursor-not-allowed`}
               >
@@ -430,19 +430,19 @@ const PricingClient: React.FC<{ country: string }> = ({ country }) => {
       </div>
 
       {!currentUser && (
-        <div className="mt-12 text-center bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-500/20 p-5 rounded-2xl shadow-lg max-w-lg mx-auto animate-fade relative z-10 text-purple-700 dark:text-purple-300">
+        <div className="mt-12 text-center bg-amber-50 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-500/20 p-5 rounded-2xl shadow-lg max-w-lg mx-auto animate-fade relative z-10 text-amber-800 dark:text-amber-300">
           <p className="text-sm font-semibold">
             Please{" "}
             <Link
               href="/login"
-              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-colors"
+              className="font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline transition-colors"
             >
               Login
             </Link>{" "}
             or{" "}
             <Link
               href="/signup"
-              className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-colors"
+              className="font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline transition-colors"
             >
               Sign Up
             </Link>{" "}

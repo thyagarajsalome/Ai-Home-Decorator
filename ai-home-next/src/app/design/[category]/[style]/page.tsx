@@ -100,7 +100,7 @@ export default async function ProgrammaticSEODesignPage({
         {/* SEO Header Section */}
         <div className="mb-12 text-center max-w-4xl mx-auto animate-fade">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
               {styleObj.name}
             </span>{" "}
             {catObj.name} AI Generator
@@ -124,7 +124,7 @@ export default async function ProgrammaticSEODesignPage({
           
           <div className="space-y-6">
             <div className="border-b border-gray-800 pb-4">
-              <h3 className="text-lg font-semibold text-purple-300 mb-2">
+              <h3 className="text-lg font-semibold text-amber-300 mb-2">
                 How does the {styleObj.name} {catObj.name} generator work?
               </h3>
               <p className="text-gray-400 text-sm leading-relaxed">
@@ -133,7 +133,7 @@ export default async function ProgrammaticSEODesignPage({
             </div>
             
             <div className="border-b border-gray-800 pb-4">
-              <h3 className="text-lg font-semibold text-purple-300 mb-2">
+              <h3 className="text-lg font-semibold text-amber-300 mb-2">
                 Can I customize the {styleObj.name} design further?
               </h3>
               <p className="text-gray-400 text-sm leading-relaxed">
@@ -142,7 +142,7 @@ export default async function ProgrammaticSEODesignPage({
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-purple-300 mb-2">
+              <h3 className="text-lg font-semibold text-amber-300 mb-2">
                 How does pricing work for {styleObj.name} designs?
               </h3>
               <p className="text-gray-400 text-sm leading-relaxed">

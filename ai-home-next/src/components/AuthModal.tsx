@@ -108,7 +108,7 @@ export default function AuthModal({
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-purple-900/30 border border-purple-500/20 mb-3 text-purple-400">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-950/30 border border-amber-500/20 mb-3 text-amber-400">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
@@ -182,7 +182,7 @@ export default function AuthModal({
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
               />
             </div>
           )}
@@ -195,7 +195,7 @@ export default function AuthModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
             />
           </div>
 
@@ -208,14 +208,14 @@ export default function AuthModal({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 text-white font-bold text-sm shadow-lg shadow-orange-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -241,7 +241,7 @@ export default function AuthModal({
               <button
                 type="button"
                 onClick={() => { setMode("login"); setError(null); setMessage(null); }}
-                className="text-purple-400 font-bold hover:underline ml-1"
+                className="text-amber-400 font-bold hover:underline ml-1"
               >
                 Sign In
               </button>
@@ -252,7 +252,7 @@ export default function AuthModal({
               <button
                 type="button"
                 onClick={() => { setMode("signup"); setError(null); setMessage(null); }}
-                className="text-purple-400 font-bold hover:underline ml-1"
+                className="text-amber-400 font-bold hover:underline ml-1"
               >
                 Create Account
               </button>

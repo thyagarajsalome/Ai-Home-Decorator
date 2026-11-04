@@ -23,7 +23,7 @@ const CustomDesignInput: React.FC<CustomDesignInputProps> = ({
       }`}
     >
       <h2 className="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center gap-2">
-        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-purple-900/30 border border-purple-500/20 text-purple-400 text-sm font-bold">2</span>
+        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-950/30 border border-amber-500/20 text-amber-400 text-sm font-bold">2</span>
         Describe Your Custom Design
       </h2>
       <p className="text-xs text-gray-400 mb-4 leading-normal font-medium">
@@ -38,7 +38,7 @@ const CustomDesignInput: React.FC<CustomDesignInputProps> = ({
           maxLength={MAX_CUSTOM_PROMPT_LENGTH}
           placeholder="Describe your design vision in detail here..."
           rows={4}
-          className={`w-full p-4 rounded-xl bg-obsidian-850 border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all leading-relaxed shadow-sm ${
+          className={`w-full p-4 rounded-xl bg-obsidian-850 border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm transition-all leading-relaxed shadow-sm ${
             isTooLong ? "border-red-500 focus:ring-red-500" : "border-gray-750"
           }`}
         />

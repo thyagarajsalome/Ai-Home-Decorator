@@ -192,7 +192,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
 
   const getButtonActiveStyle = (isActive: boolean) =>
     isActive
-      ? "bg-purple-600/90 text-white font-bold ring-1 ring-purple-400/50 shadow-md shadow-purple-500/10"
+      ? "bg-amber-600/90 text-white font-bold ring-1 ring-amber-400/50 shadow-md shadow-orange-500/10"
       : "bg-obsidian-800 text-gray-400 hover:text-white hover:bg-obsidian-750 border border-gray-750";
 
   const handleExternalPurchase = () => {
@@ -214,7 +214,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
       <div className="w-full max-w-7xl mx-auto glass-card rounded-3xl p-5 md:p-8 border border-gray-800 flex flex-col space-y-8 relative overflow-hidden animate-slideUp">
         
         {/* Highlight Glow Effect Line */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-60"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 opacity-60"></div>
 
         {/* Top Studio Bar */}
         <div className="flex flex-wrap items-center justify-between pb-3 border-b border-gray-800/60 gap-3">
@@ -229,7 +229,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               {currentUser ? (
                 <>Credits: <strong className="text-white">{isAdmin ? "Admin (∞)" : credits}</strong></>
               ) : (
-                <span className="text-purple-400 font-bold">Pay As You Go</span>
+                <span className="text-amber-400 font-bold">Pay As You Go</span>
               )}
             </span>
           </div>
@@ -270,10 +270,10 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
             </div>
 
             {designMode === "custom" && !isDisabled && (
-              <div className="flex items-center gap-2 text-xs text-purple-300 bg-purple-900/10 border border-purple-500/20 p-3 rounded-xl animate-fade">
+              <div className="flex items-center gap-2 text-xs text-amber-300 bg-amber-950/10 border border-amber-500/20 p-3 rounded-xl animate-fade">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-purple-400 flex-shrink-0"
+                  className="h-4 w-4 text-amber-400 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -347,7 +347,7 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
                     setAuthModalMode("signup");
                     setIsAuthModalOpen(true);
                   }}
-                  className="px-5 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white transition-colors shadow-md shadow-purple-500/10"
+                  className="px-5 py-2 rounded-lg bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 text-white transition-colors shadow-md shadow-orange-500/10"
                 >
                   Sign Up
                 </button>
@@ -364,14 +364,14 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
             }
             className={`w-full md:w-auto px-10 py-3.5 text-base md:text-lg font-extrabold text-white rounded-xl shadow-xl transition-all duration-300 transform ${
               !currentUser
-                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] shadow-purple-500/25 active:scale-[0.98]"
+                ? "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 hover:scale-[1.02] shadow-orange-500/25 active:scale-[0.98]"
                 : !isVerified
                 ? "bg-yellow-750 text-yellow-100 cursor-not-allowed border border-yellow-700/30"
                 : isLimitReached
                 ? "bg-red-900/40 text-red-400 cursor-not-allowed border border-red-900/30"
                 : isLoading
                 ? "bg-gray-850 cursor-wait scale-[0.98] opacity-90 border border-gray-800"
-                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] hover:shadow-purple-500/20 active:scale-[0.97]"
+                : "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 hover:scale-[1.02] hover:shadow-orange-500/20 active:scale-[0.97]"
             } disabled:opacity-50 disabled:scale-100 disabled:shadow-none`}
           >
             {isLoading ? (
@@ -419,20 +419,20 @@ const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ initialCategory, init
               </p>
 
               {isLimitReached && (
-                <div className="mt-4 p-4 bg-purple-900/10 border border-purple-500/20 text-purple-300 rounded-xl text-center max-w-md shadow-md animate-pulse">
+                <div className="mt-4 p-4 bg-amber-950/10 border border-amber-500/20 text-amber-300 rounded-xl text-center max-w-md shadow-md animate-pulse">
                   <p className="font-bold text-sm mb-1 text-white">Out of Credits?</p>
                   <p className="text-xs text-gray-450 mb-3">You need more credits to process this design.</p>
                   {isAppMode ? (
                     <button
                       onClick={handleExternalPurchase}
-                      className="text-white underline hover:text-purple-300 font-bold text-xs"
+                      className="text-white underline hover:text-amber-300 font-bold text-xs"
                     >
                       Tap here to buy more credits
                     </button>
                   ) : (
                     <Link
                       href="/pricing"
-                      className="inline-block px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg transition-colors font-bold text-xs shadow-md shadow-purple-500/15"
+                      className="inline-block px-5 py-2 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:via-orange-500 hover:to-amber-600 text-white rounded-lg transition-colors font-bold text-xs shadow-md shadow-orange-500/15"
                     >
                       Buy Credit Packs
                     </Link>

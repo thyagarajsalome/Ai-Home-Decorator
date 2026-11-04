@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 items-start text-left">
           {/* Brand Column */}
           <div className="flex flex-col space-y-2">
-            <h3 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-500 bg-clip-text text-transparent">
+            <h3 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent">
               AI Home Decorator
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-xs max-w-sm font-medium">
@@ -41,19 +41,19 @@ const Footer: React.FC = () => {
               Explore Styles
             </h4>
             <div className="flex flex-col space-y-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
-              <Link href="/design/kitchen/farmhouse-kitchen" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/design/kitchen/farmhouse-kitchen" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Farmhouse Kitchens
               </Link>
-              <Link href="/design/bathroom/luxury-spa" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/design/bathroom/luxury-spa" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Luxury Spa Bathrooms
               </Link>
-              <Link href="/design/full_redesign/contemporary" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/design/full_redesign/contemporary" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Contemporary Rooms
               </Link>
-              <Link href="/design/outdoor_patio/teak-timber-decking" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/design/outdoor_patio/teak-timber-decking" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Teak Outdoor Decks
               </Link>
-              <Link href="/design/full_redesign/scandinavian" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/design/full_redesign/scandinavian" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Scandinavian Rooms
               </Link>
             </div>
@@ -65,25 +65,25 @@ const Footer: React.FC = () => {
               US Cities
             </h4>
             <div className="flex flex-col space-y-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
-              <Link href="/usa/ca/los-angeles" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/usa/ca/los-angeles" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Los Angeles, CA
               </Link>
-              <Link href="/usa/ca/san-jose" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/usa/ca/san-jose" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 San Jose, CA
               </Link>
-              <Link href="/usa/tx/houston" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/usa/tx/houston" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Houston, TX
               </Link>
-              <Link href="/usa/fl/miami" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/usa/fl/miami" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Miami, FL
               </Link>
-              <Link href="/usa/fl/tampa" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/usa/fl/tampa" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Tampa, FL
               </Link>
-              <Link href="/usa/or/portland" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+              <Link href="/usa/or/portland" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150">
                 Portland, OR
               </Link>
-              <Link href="/usa" className="text-purple-600 dark:text-purple-400 font-bold hover:underline pt-1 text-xs">
+              <Link href="/usa" className="text-amber-600 dark:text-amber-400 font-bold hover:underline pt-1 text-xs">
                 All 50 US Cities &rarr;
               </Link>
             </div>
@@ -97,31 +97,31 @@ const Footer: React.FC = () => {
             <div className="flex flex-col space-y-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
               <Link
                 href="/pricing"
-                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"
+                className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150"
               >
                 Pricing &amp; Plans
               </Link>
               <Link
                 href="/about"
-                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"
+                className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150"
               >
                 About Us
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"
+                className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150"
               >
                 Terms of Service
               </Link>
               <Link
                 href="/policy"
-                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"
+                className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150"
               >
                 Privacy Policy
               </Link>
               <Link
                 href="/disclaimer"
-                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150"
+                className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-150"
               >
                 Disclaimer
               </Link>
@@ -135,7 +135,7 @@ const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-4">
               <li>
-                <a href="mailto:contactaihomedecorator@gmail.com" className="text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center gap-2 text-sm">
+                <a href="mailto:contactaihomedecorator@gmail.com" className="text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-2 text-sm">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>

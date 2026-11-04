@@ -6,13 +6,13 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-obsidian-950">
       {/* Sleek, minimal studio intro above workspace */}
       <div className="text-center pt-8 pb-4 px-4 max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/50 border border-purple-500/30 text-purple-300 text-xs font-semibold mb-3 animate-fade">
-          <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/50 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-3 animate-fade">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
           Next-Gen AI Interior Transformation
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight font-heading">
           Redesign Your Room in{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400">
             Seconds
           </span>
         </h1>

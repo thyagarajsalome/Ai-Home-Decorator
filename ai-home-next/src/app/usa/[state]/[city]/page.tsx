@@ -104,18 +104,18 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
           <nav aria-label="Breadcrumb" className="mb-6 text-xs text-gray-500 dark:text-gray-400">
             <ol className="flex items-center space-x-2 flex-wrap">
               <li>
-                <Link href="/" className="hover:text-purple-600 dark:hover:text-purple-400">Home</Link>
+                <Link href="/" className="hover:text-amber-600 dark:hover:text-amber-400">Home</Link>
               </li>
               <li>/</li>
               <li>
-                <Link href="/usa" className="hover:text-purple-600 dark:hover:text-purple-400">USA Directory</Link>
+                <Link href="/usa" className="hover:text-amber-600 dark:hover:text-amber-400">USA Directory</Link>
               </li>
               <li>/</li>
               <li className="text-gray-900 dark:text-gray-200 font-bold">{cityData.name}, {cityData.state_name}</li>
             </ol>
           </nav>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/40 border border-purple-500/30 text-purple-300 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/40 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-4">
             <span>🇺🇸</span>
             <span>{cityData.name}, {cityData.state_name} AI Interior Makeover</span>
           </div>
@@ -149,7 +149,7 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
       <section className="max-w-4xl mx-auto px-4 py-10">
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <div className="bg-white dark:bg-obsidian-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
-            <div className="flex items-center gap-2 text-purple-500 mb-2 font-bold text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-amber-500 mb-2 font-bold text-xs uppercase tracking-wider">
               <span>🎨</span> Architectural Signature
             </div>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Local Style: {cityData.popular_style}</h2>
@@ -215,7 +215,7 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">
               Explore AI Interior Design in Other US Cities
             </h2>
-            <Link href="/usa" className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline">
+            <Link href="/usa" className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline">
               View All 50 Cities &rarr;
             </Link>
           </div>
@@ -224,7 +224,7 @@ export default async function CityDesignPage({ params }: { params: Promise<{ sta
               <Link
                 key={`${sibling.state}-${sibling.city}`}
                 href={`/usa/${sibling.state}/${sibling.city}`}
-                className="p-3 rounded-xl bg-white dark:bg-obsidian-850 hover:bg-purple-50 dark:hover:bg-purple-950/30 border border-gray-200 dark:border-gray-800 hover:border-purple-400/50 text-xs font-semibold text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-all shadow-sm flex items-center justify-between"
+                className="p-3 rounded-xl bg-white dark:bg-obsidian-850 hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-gray-200 dark:border-gray-800 hover:border-amber-400/50 text-xs font-semibold text-gray-800 dark:text-gray-200 hover:text-amber-600 dark:hover:text-amber-400 transition-all shadow-sm flex items-center justify-between"
               >
                 <span>{sibling.name}, {sibling.state.toUpperCase()}</span>
                 <span className="text-gray-400">&rarr;</span>

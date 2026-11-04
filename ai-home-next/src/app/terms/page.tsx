@@ -14,10 +14,10 @@ const TermsPage: React.FC = () => {
   return (
     <div className="relative min-h-[75vh] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 overflow-hidden">
       {/* Background radial glow */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="glass-card rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-800/80 dark:border-gray-800/50 backdrop-blur-md relative z-10 animate-fade">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
           Terms of Service
         </h1>
         <p className="text-xs text-gray-500 mb-8">Last updated: June 15, 2026</p>
@@ -123,11 +123,11 @@ const TermsPage: React.FC = () => {
             </h2>
             <p>
               By agreeing to these Terms, you also agree to our{" "}
-              <Link href="/policy" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors hover:underline">
+              <Link href="/policy" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors hover:underline">
                 Privacy Policy
               </Link>{" "}
               and{" "}
-              <Link href="/disclaimer" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors hover:underline">
+              <Link href="/disclaimer" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors hover:underline">
                 Disclaimer
               </Link>
               , which are incorporated herein by reference.

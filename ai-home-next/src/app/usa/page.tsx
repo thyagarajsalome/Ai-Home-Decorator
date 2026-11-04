@@ -56,7 +56,7 @@ export default async function USADirectoryPage() {
         <nav aria-label="Breadcrumb" className="mb-8 text-xs text-gray-500 dark:text-gray-400">
           <ol className="flex items-center space-x-2">
             <li>
-              <Link href="/" className="hover:text-purple-600 dark:hover:text-purple-400">Home</Link>
+              <Link href="/" className="hover:text-amber-600 dark:hover:text-amber-400">Home</Link>
             </li>
             <li>/</li>
             <li className="text-gray-900 dark:text-gray-200 font-bold">United States Directory</li>
@@ -114,7 +114,7 @@ export default async function USADirectoryPage() {
             {stateNames.map((stateName) => (
               <section key={stateName} className="bg-white dark:bg-obsidian-900 rounded-2xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-3">
-                  <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
                   <span>{stateName}</span>
                   <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-2">
                     ({citiesByState[stateName].length} {citiesByState[stateName].length === 1 ? "City" : "Cities"})
@@ -126,19 +126,19 @@ export default async function USADirectoryPage() {
                     <Link
                       key={`${city.state}-${city.city}`}
                       href={`/usa/${city.state}/${city.city}`}
-                      className="group p-4 rounded-xl bg-gray-50 dark:bg-obsidian-850/60 hover:bg-purple-50 dark:hover:bg-purple-950/30 border border-gray-200 dark:border-gray-800 hover:border-purple-400/50 transition-all duration-200 shadow-sm hover:shadow"
+                      className="group p-4 rounded-xl bg-gray-50 dark:bg-obsidian-850/60 hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-gray-200 dark:border-gray-800 hover:border-amber-400/50 transition-all duration-200 shadow-sm hover:shadow"
                     >
                       <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 text-sm transition-colors">
+                        <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 text-sm transition-colors">
                           {city.name}
                         </h3>
-                        <span className="text-gray-400 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all text-xs">
+                        <span className="text-gray-400 group-hover:text-amber-500 group-hover:translate-x-0.5 transition-all text-xs">
                           &rarr;
                         </span>
                       </div>
                       {city.popular_style && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Style: <span className="text-purple-500 dark:text-purple-300 font-semibold">{city.popular_style}</span>
+                          Style: <span className="text-amber-500 dark:text-amber-300 font-semibold">{city.popular_style}</span>
                         </p>
                       )}
                     </Link>

@@ -83,7 +83,7 @@ interface ShowcaseCardProps {
 
 const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ room, onApplyStyle }) => {
   return (
-    <div className="bg-obsidian-900/90 border border-gray-800/80 rounded-2xl overflow-hidden shadow-xl hover:border-purple-500/40 transition-all duration-300 flex flex-col group">
+    <div className="bg-obsidian-900/90 border border-gray-800/80 rounded-2xl overflow-hidden shadow-xl hover:border-amber-500/40 transition-all duration-300 flex flex-col group">
       {/* Clean Image Frame */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-obsidian-950">
         <SafeImage
@@ -96,7 +96,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ room, onApplyStyle }) => {
 
         {/* Floating Category Badge */}
         <div className="absolute top-3 left-3 pointer-events-none z-10">
-          <span className="bg-black/80 backdrop-blur-md text-purple-300 text-xs font-bold px-3 py-1 rounded-lg border border-purple-500/30 shadow-sm">
+          <span className="bg-black/80 backdrop-blur-md text-amber-300 text-xs font-bold px-3 py-1 rounded-lg border border-amber-500/30 shadow-sm">
             {room.roomBadge}
           </span>
         </div>
@@ -120,7 +120,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ room, onApplyStyle }) => {
             const el = document.getElementById("workspace");
             el?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full py-2.5 px-3 rounded-xl bg-obsidian-850 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 border border-gray-750 hover:border-transparent text-xs font-bold text-gray-200 hover:text-white transition-all shadow-sm flex items-center justify-center gap-1.5 group/btn"
+          className="w-full py-2.5 px-3 rounded-xl bg-obsidian-850 hover:bg-gradient-to-r hover:from-amber-600 hover:to-orange-600 border border-gray-750 hover:border-transparent text-xs font-bold text-gray-200 hover:text-white transition-all shadow-sm flex items-center justify-center gap-1.5 group/btn"
         >
           <span>Apply {room.styleName} Style</span>
           <span className="group-hover/btn:translate-x-0.5 transition-transform">⚡</span>
@@ -159,7 +159,7 @@ const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-base">🇺🇸</span>
-            <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
               AI Room Transformations
             </span>
           </div>
@@ -277,7 +277,7 @@ const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle
               onClick={() => setSelectedFilter(tab.id)}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border whitespace-nowrap ${
                 isActive
-                  ? "bg-purple-600/40 border-purple-500 text-white shadow-sm ring-1 ring-purple-500/50"
+                  ? "bg-amber-600/40 border-amber-500 text-white shadow-sm ring-1 ring-amber-500/50"
                   : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-400 hover:text-white"
               }`}
             >
