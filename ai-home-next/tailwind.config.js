@@ -12,18 +12,43 @@ export default {
         heading: ["Outfit", "sans-serif"],
       },
       colors: {
+        // Official Brand Orange Palette (from Logo & Promo graphics)
         brand: {
-          50: "#f5f3ff",
-          100: "#ede9fe",
-          200: "#ddd6fe",
-          300: "#c4b5fd",
-          400: "#a78bfa",
-          500: "#8b5cf6",
-          600: "#7c3aed",
-          700: "#6d28d9",
-          800: "#5b21b6",
-          900: "#4c1d95",
-          950: "#1e1b4b",
+          50: "#FFF8F2",
+          100: "#FEEDDF",
+          200: "#FCD7BA",
+          300: "#F8B98B",
+          400: "#F29455",
+          500: "#E87A1E", // Core Brand Orange
+          600: "#D46513",
+          700: "#B04D0D",
+          800: "#8D3D10",
+          900: "#733310",
+          950: "#3E1805",
+        },
+        // Rich Chocolate & Coffee Browns (from Logo text "Home Decorator")
+        brandBrown: {
+          50: "#F7F2EE",
+          100: "#EDE2DA",
+          200: "#D8C3B3",
+          300: "#BFA08B",
+          400: "#8B6244",
+          500: "#5C3314",
+          600: "#4A2508", // Core Brand Brown
+          700: "#3D1D06",
+          800: "#2F1504",
+          900: "#220E02",
+          950: "#140701",
+        },
+        // Warm Cream & Sand Backdrops
+        brandCream: {
+          DEFAULT: "#FFFBF7",
+          50: "#FFFFFF",
+          100: "#FFFBF7",
+          200: "#FAF4EC",
+          300: "#F3E9DD",
+          400: "#E9DAC8",
+          border: "#F1E4D5",
         },
         obsidian: {
           50: "#f4f5f6",

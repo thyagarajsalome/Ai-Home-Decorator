@@ -1,68 +1,112 @@
 @import "tailwindcss";
 @config "../../tailwind.config.js";
-/* src/index.css */
-
-
-
 
 @layer base {
   body {
-    @apply font-sans bg-obsidian-950 text-gray-100 antialiased;
+    background-color: #FFFBF7;
+    color: #382A22;
+    font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight text-white;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+    color: #4A2508;
   }
 }
 
-/* Premium Card and Panel helpers - optimized for text clarity and sharpness */
+/* Brand Warm Panels and Cards */
 .glass-panel {
-  @apply bg-obsidian-900/95 border border-gray-800/60 shadow-lg shadow-black/10;
+  background-color: #FFFFFF;
+  border: 1px solid #F1E4D5;
+  box-shadow: 0 4px 20px -2px rgba(74, 37, 8, 0.05);
 }
 
 .glass-card {
-  @apply bg-obsidian-900 border border-gray-800/80 shadow-2xl shadow-black/40;
+  background-color: #FFFFFF;
+  border: 1px solid #EEDBC9;
+  box-shadow: 0 10px 30px -4px rgba(74, 37, 8, 0.08);
 }
 
 .glass-input {
-  @apply w-full p-3 rounded-lg bg-obsidian-850 border border-gray-750 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: #FFFBF7;
+  border: 1px solid #E2CEBD;
+  color: #382A22;
+  transition: all 0.2s ease;
 }
 
-/* Premium gradient backgrounds */
-.glow-bg {
-  background: radial-gradient(circle at 50% -20%, rgba(234, 88, 12, 0.16) 0%, rgba(245, 158, 11, 0.06) 50%, transparent 100%);
+.glass-input:focus {
+  outline: none;
+  border-color: #E87A1E;
+  box-shadow: 0 0 0 3px rgba(232, 122, 30, 0.15);
 }
 
-.glow-bg-light {
-  background: radial-gradient(circle at 50% -20%, rgba(234, 88, 12, 0.08) 0%, rgba(245, 158, 11, 0.03) 50%, transparent 100%);
+/* Warm Ambient Glows */
+.glow-warm {
+  background: radial-gradient(circle at 50% 0%, rgba(232, 122, 30, 0.12) 0%, rgba(245, 158, 11, 0.05) 50%, transparent 100%);
 }
 
-/* Custom animations helper */
-.animation-delay-2000 {
-  animation-delay: 2s;
+.glow-warm-subtle {
+  background: radial-gradient(circle at 50% 0%, rgba(232, 122, 30, 0.06) 0%, transparent 80%);
 }
 
-.animation-delay-4000 {
-  animation-delay: 4s;
+/* Brand Warm Button Styles */
+.btn-brand-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E87A1E 0%, #D46513 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px 0 rgba(232, 122, 30, 0.35);
+  transition: all 0.2s ease;
 }
 
-/* Custom dark scrollbar styling */
+.btn-brand-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(232, 122, 30, 0.45);
+  background: linear-gradient(135deg, #F28C32 0%, #E87A1E 100%);
+}
+
+.btn-brand-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFF8F2;
+  color: #4A2508;
+  border: 1.5px solid #FCD7BA;
+  font-weight: 700;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.btn-brand-secondary:hover {
+  background-color: #FEEDDF;
+  border-color: #E87A1E;
+  color: #E87A1E;
+}
+
+/* Custom warm scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(16, 22, 34, 0.6);
+  background: #FAF4EC;
   border-radius: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(234, 88, 12, 0.45);
+  background: #E87A1E;
   border-radius: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(234, 88, 12, 0.75);
+  background: #D46513;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -73,26 +117,7 @@
   scrollbar-width: none;
 }
 
-/* Before/After range slider styling overrides */
-input[type="range"]::-webkit-slider-thumb {
-  pointer-events: auto;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: transparent;
-  cursor: ew-resize;
-}
-
-input[type="range"]::-moz-range-thumb {
-  pointer-events: auto;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: transparent;
-  cursor: ew-resize;
-}
-
-/* PWA Installation Toast */
+/* PWA Toast in warm style */
 .pwa-install-toast {
   display: block;
   position: fixed;
@@ -101,13 +126,12 @@ input[type="range"]::-moz-range-thumb {
   right: 1rem;
   width: auto;
   max-width: calc(100% - 2rem);
-
-  background: linear-gradient(135deg, #101622, #1b2333);
-  color: white;
-  border-radius: 16px;
-  padding: 0.875rem 1rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(234, 88, 12, 0.4);
+  background: #FFFFFF;
+  color: #4A2508;
+  border-radius: 20px;
+  padding: 0.875rem 1.25rem;
+  box-shadow: 0 16px 36px rgba(74, 37, 8, 0.18);
+  border: 1.5px solid #FCD7BA;
   z-index: 50;
   cursor: pointer;
   animation: slideUpFadeIn 0.4s ease-out;
@@ -118,7 +142,7 @@ input[type="range"]::-moz-range-thumb {
     left: auto;
     right: 1.5rem;
     bottom: 1.5rem;
-    max-width: 24rem;
+    max-width: 25rem;
   }
 }
 
@@ -131,8 +155,9 @@ input[type="range"]::-moz-range-thumb {
 .pwa-install-logo {
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: 12px;
   flex-shrink: 0;
+  border: 1px solid #FCD7BA;
 }
 
 .pwa-install-text {
@@ -140,50 +165,44 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .pwa-install-text strong {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4A2508;
 }
 
 .pwa-install-text p {
-  font-size: 0.9rem;
-  color: #d1d5db;
+  font-size: 0.8rem;
+  color: #786B63;
   margin: 0;
 }
 
-/* Install button style */
 .pwa-install-button {
   flex-shrink: 0;
   font-weight: 700;
+  font-size: 0.85rem;
   color: white;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: linear-gradient(
-    to right,
-    #8b5cf6,
-    #ec4899
-  ); /* amber-500 to orange-500 */
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #E87A1E 0%, #D46513 100%);
+  box-shadow: 0 4px 12px rgba(232, 122, 30, 0.3);
+  transition: all 0.2s ease;
 }
 
 .pwa-install-button:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(234, 88, 12, 0.4);
 }
 
-/* Close (dismiss) button */
 .pwa-install-close {
   position: absolute;
-  top: -8px; /* Position it slightly outside for a modern look */
+  top: -8px;
   right: -8px;
-  width: 28px;
-  height: 28px;
-  background: #192532;
-  color: #d1d5db;
-  border: 1px solid #293d54;
+  width: 26px;
+  height: 26px;
+  background: #FFFBF7;
+  color: #786B63;
+  border: 1px solid #E2CEBD;
   border-radius: 50%;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   line-height: 1;
   text-align: center;
   cursor: pointer;
@@ -191,7 +210,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .pwa-install-close:hover {
-  background: #293d54;
+  background: #4A2508;
   color: white;
-  transform: scale(1.1);
 }

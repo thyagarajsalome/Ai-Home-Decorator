@@ -12,126 +12,83 @@ export const metadata: Metadata = {
 
 const TermsPage: React.FC = () => {
   return (
-    <div className="relative min-h-[75vh] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 overflow-hidden">
-      {/* Background radial glow */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div className="glass-card rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-800/80 dark:border-gray-800/50 backdrop-blur-md relative z-10 animate-fade">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+    <div className="min-h-[75vh] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-[#382A22]">
+      <div className="bg-white rounded-3xl shadow-sm p-8 md:p-12 border border-[#F1E4D5]">
+        <h1 className="text-3xl md:text-4xl font-black text-[#4A2508] mb-2 font-heading">
           Terms of Service
         </h1>
-        <p className="text-xs text-gray-500 mb-8">Last updated: June 15, 2026</p>
+        <p className="text-xs text-[#7A4B27] mb-8 font-semibold">Last updated: June 15, 2026</p>
         
-        <p className="text-gray-300 mb-8 leading-relaxed text-sm md:text-base">
-          Welcome to AI Home Decorator ("Service"). By accessing or using our Service, you agree to be bound by these Terms of Service ("Terms").
+        <p className="text-[#5C3314] mb-8 leading-relaxed text-sm md:text-base">
+          Welcome to AI Home Decorator (&quot;Service&quot;). By accessing our website or downloading our mobile application, you agree to be bound by these Terms of Service (&quot;Terms&quot;).
         </p>
 
-        <div className="space-y-8 text-gray-300 leading-relaxed text-sm md:text-base">
+        <div className="space-y-8 text-[#5C3314] leading-relaxed text-sm md:text-base">
           <div>
-            <h2
-              id="accounts"
-              className="text-xl font-bold text-white mb-3"
-            >
-              1. Accounts
+            <h2 id="accounts" className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              1. Accounts &amp; Access
             </h2>
             <p>
-              You must be at least 13 years old to create an account. You are responsible for safeguarding your account and for all activities that occur under it. You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.
+              You must be at least 13 years old to use the Service. You are responsible for safeguarding your device and account, and for all activities that occur under your session.
             </p>
           </div>
 
-          <div className="border-t border-gray-800/40"></div>
+          <div className="border-t border-[#F1E4D5]"></div>
 
           <div>
-            <h2
-              id="service"
-              className="text-xl font-bold text-white mb-3"
-            >
+            <h2 id="service" className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
               2. Service Usage
             </h2>
-            <p>
-              Our Service provides AI-powered image generation ("Generations"). The Service is provided to you as a logged-in, verified user. We reserve the right to limit or terminate access for any user who violates these terms.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="content"
-              className="text-xl font-bold text-white mb-3"
-            >
-              3. User Content
-            </h2>
             <p className="mb-3">
-              You retain all ownership rights to the original images you upload to the Service ("User Content").
+              AI Home Decorator provides automated architectural and interior visualization tools. You agree not to:
             </p>
-            <p className="mb-3">
-              By uploading User Content, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, and process your content solely for the purpose of operating and providing the Service to you. We do not store your images after processing.
-            </p>
-            <p>
-              You are responsible for the content you upload and warrant that you have all necessary rights to upload it and that it does not violate any laws or third-party rights.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="conduct"
-              className="text-xl font-bold text-white mb-3"
-            >
-              4. Prohibited Conduct
-            </h2>
-            <p className="mb-3">You agree not to use the Service to:</p>
-            <ul className="list-disc list-inside space-y-2 text-gray-400 ml-2">
-              <li>Upload any content that is illegal, harmful, threatening, abusive, or otherwise objectionable.</li>
-              <li>Generate images that infringe on copyright, trademark, or intellectual property rights.</li>
-              <li>Create multiple accounts to abuse the service's credit systems.</li>
+            <ul className="list-disc list-inside space-y-1.5 pl-2 text-xs sm:text-sm">
+              <li>Use the Service for any illegal, infringing, or harmful purpose.</li>
+              <li>Upload images that violate any third-party intellectual property or privacy rights.</li>
+              <li>Attempt to reverse-engineer or disrupt the service infrastructure.</li>
             </ul>
           </div>
 
-          <div className="border-t border-gray-800/40"></div>
+          <div className="border-t border-[#F1E4D5]"></div>
 
           <div>
-            <h2
-              id="termination"
-              className="text-xl font-bold text-white mb-3"
-            >
-              6. Termination
+            <h2 id="intellectual" className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              3. Intellectual Property
             </h2>
             <p>
-              We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including if you breach these Terms.
+              You retain all ownership rights to the images you upload. You grant AI Home Decorator a limited, non-exclusive license solely to process and deliver your requested redesign outputs.
             </p>
           </div>
 
-          <div className="border-t border-gray-800/40"></div>
+          <div className="border-t border-[#F1E4D5]"></div>
 
           <div>
-            <h2 id="governing-law" className="text-xl font-bold text-white mb-3">
-              7. Governing Law & Jurisdiction (United States)
+            <h2 id="liability" className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              4. Limitation of Liability
             </h2>
             <p>
-              These Terms shall be governed by and construed in accordance with the laws of the United States, without regard to its conflict of law provisions. Any legal action or proceeding arising under these Terms will be brought exclusively in the federal or state courts located within the United States.
+              The Service and its generated visualizations are provided for aesthetic and conceptual purposes only. AI Home Decorator is not liable for contractor decisions, structural remodeling, or building permits based on generated conceptual images.
             </p>
           </div>
 
-          <div className="border-t border-gray-800/40"></div>
+          <div className="border-t border-[#F1E4D5]"></div>
 
           <div>
-            <h2 id="links" className="text-xl font-bold text-white mb-3">
-              8. Other Legal Policies
+            <h2 id="contact" className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              5. Contact Us
             </h2>
             <p>
-              By agreeing to these Terms, you also agree to our{" "}
-              <Link href="/policy" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors hover:underline">
-                Privacy Policy
-              </Link>{" "}
-              and{" "}
-              <Link href="/disclaimer" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors hover:underline">
-                Disclaimer
-              </Link>
-              , which are incorporated herein by reference.
+              If you have any questions regarding these Terms, please contact us at:{" "}
+              <a href="mailto:contactaihomedecorator@gmail.com" className="text-[#E87A1E] font-bold underline">
+                contactaihomedecorator@gmail.com
+              </a>
             </p>
+          </div>
+
+          <div className="pt-6 border-t border-[#F1E4D5]">
+            <Link href="/" className="text-xs font-bold text-[#E87A1E] hover:underline">
+              &larr; Return to Home
+            </Link>
           </div>
         </div>
       </div>

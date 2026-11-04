@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import React from "react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | AI Home Decorator",
-  description: "Privacy Policy and data protection practices for AI Home Decorator.",
+  description: "Privacy Policy and data practices for AI Home Decorator.",
   alternates: {
     canonical: "https://aihomedecorator.com/policy",
   },
@@ -11,159 +12,63 @@ export const metadata: Metadata = {
 
 const PolicyPage: React.FC = () => {
   return (
-    <div className="relative min-h-[75vh] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 overflow-hidden">
-      {/* Background radial glow */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div className="glass-card rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-800/80 dark:border-gray-800/50 backdrop-blur-md relative z-10 animate-fade">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+    <div className="min-h-[75vh] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-[#382A22]">
+      <div className="bg-white rounded-3xl shadow-sm p-8 md:p-12 border border-[#F1E4D5]">
+        <h1 className="text-3xl md:text-4xl font-black text-[#4A2508] mb-2 font-heading">
           Privacy Policy
         </h1>
-        <p className="text-xs text-gray-500 mb-8">Last updated: June 15, 2026</p>
+        <p className="text-xs text-[#7A4B27] mb-8 font-semibold">Last updated: June 15, 2026</p>
 
-        <div className="space-y-8 text-gray-300 leading-relaxed text-sm md:text-base">
-          <p>
-            Welcome to AI Home Decorator. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website and tell you about your privacy rights.
-          </p>
-
-          <div className="border-t border-gray-800/40"></div>
-
+        <div className="space-y-8 text-[#5C3314] leading-relaxed text-sm md:text-base">
           <div>
-            <h2
-              id="data-we-collect"
-              className="text-xl font-bold text-white mb-4"
-            >
-              1. The Data We Collect
-            </h2>
-            <p className="mb-4">
-              We may collect, use, and store different kinds of data about you:
-            </p>
-            <ul className="list-disc list-inside space-y-2.5 text-gray-400 ml-2">
-              <li>
-                <strong className="text-gray-300">Account Data:</strong> When you register for an account, we collect your email address. Your authentication is handled securely by our provider, Supabase.
-              </li>
-              <li>
-                <strong className="text-gray-300">User Content:</strong> We process the images you upload and the prompts you provide (e.g., "Living Room," "Japandi") to generate your redesigned image.
-              </li>
-            </ul>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="how-we-use-data"
-              className="text-xl font-bold text-white mb-4"
-            >
-              2. How Your Data Is Used
-            </h2>
-            <p className="mb-4">We use your data in the following ways:</p>
-            <ul className="list-disc list-inside space-y-2.5 text-gray-400 ml-2">
-              <li>
-                To manage your account and provide you with access to the service.
-              </li>
-              <li>
-                To process your uploaded images and prompts. Your images are sent to our secure backend and then to the Google Gemini API to generate the new design.
-              </li>
-            </ul>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="data-storage"
-              className="text-xl font-bold text-white mb-3"
-            >
-              3. Data Storage and Retention
-            </h2>
-            <p className="mb-3">
-              <strong className="text-amber-300">We do not store your uploaded or generated images.</strong> Your images are processed in memory and are not saved on our servers once the AI generation is complete.
-            </p>
-            <p>
-              Your account information (email and user ID) is stored securely in our Supabase database. We will not share your email with any third parties for marketing purposes.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="third-parties"
-              className="text-xl font-bold text-white mb-3"
-            >
-              5. Third-Party Services
-            </h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-400 ml-2">
-              <li>
-                <strong className="text-gray-300">Supabase:</strong> We use Supabase for secure user authentication and database management.
-              </li>
-              <li>
-                <strong className="text-gray-300">Google Gemini:</strong> We send your images and prompts to the Google Gemini API for processing.
-              </li>
-            </ul>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="deletion"
-              className="text-xl font-bold text-white mb-3"
-            >
-              5. Account Deletion
-            </h2>
-            <p className="mb-3">
-              If you wish to delete your account and associated personal data (your email address and user ID), please send a request to us at{" "}
-              <a
-                href="mailto:contactaihomedecorator@gmail.com"
-                className="text-amber-400 hover:text-amber-300 font-semibold transition-colors hover:underline"
-              >
-                contactaihomedecorator@gmail.com
-              </a>
-              . We will process your request and delete your account information from our database.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="ccpa"
-              className="text-xl font-bold text-white mb-3"
-            >
-              6. California Privacy Rights (CCPA)
-            </h2>
-            <p className="mb-3">
-              If you are a resident of California, USA, the California Consumer Privacy Act (CCPA) provides you with specific rights regarding your personal information, including the right to request access to and deletion of your data, and the right to opt-out of the sale of your data. We do not sell your personal data.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-800/40"></div>
-
-          <div>
-            <h2
-              id="contact"
-              className="text-xl font-bold text-white mb-3"
-            >
-              7. Contact Us
+            <h2 className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              1. Information We Collect
             </h2>
             <p>
-              If you have any questions about this privacy policy, please contact us at{" "}
-              <a
-                href="mailto:contactaihomedecorator@gmail.com"
-                className="text-amber-400 hover:text-amber-300 font-semibold transition-colors hover:underline"
-              >
-                contactaihomedecorator@gmail.com
-              </a>{" "}
-              or contact:{" "}
-              <a
-                href="mailto:contactaihomedecorator@gmail.com"
-                className="text-amber-400 hover:text-amber-300 font-semibold transition-colors hover:underline"
-              >
+              We collect information you provide directly to us when using our app, including photos you upload for room redesigns, your preferences, and anonymous analytics to improve app performance and user experience.
+            </p>
+          </div>
+
+          <div className="border-t border-[#F1E4D5]"></div>
+
+          <div>
+            <h2 className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              2. How We Use Your Information
+            </h2>
+            <p>
+              Your uploaded images are processed solely to generate the interior designs and architectural styles you request. We do not sell or rent your personal data or photos to third parties for advertising purposes.
+            </p>
+          </div>
+
+          <div className="border-t border-[#F1E4D5]"></div>
+
+          <div>
+            <h2 className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              3. Data Security
+            </h2>
+            <p>
+              We employ standard encryption protocols and secure server architectures to protect your data both in transit and at rest.
+            </p>
+          </div>
+
+          <div className="border-t border-[#F1E4D5]"></div>
+
+          <div>
+            <h2 className="text-xl font-bold text-[#4A2508] mb-3 font-heading">
+              4. Contact Privacy Team
+            </h2>
+            <p>
+              For privacy-related questions or data deletion requests, contact us at:{" "}
+              <a href="mailto:contactaihomedecorator@gmail.com" className="text-[#E87A1E] font-bold underline">
                 contactaihomedecorator@gmail.com
               </a>
             </p>
+          </div>
+
+          <div className="pt-6 border-t border-[#F1E4D5]">
+            <Link href="/" className="text-xs font-bold text-[#E87A1E] hover:underline">
+              &larr; Return to Home
+            </Link>
           </div>
         </div>
       </div>

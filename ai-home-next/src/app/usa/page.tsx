@@ -4,10 +4,13 @@ import { supabase } from "@/supabaseClient";
 
 export const revalidate = 86400;
 
+const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
+
 export const metadata: Metadata = {
   title: "AI Interior Design & Room Makeover in US Cities | AI Home Decorator",
   description:
-    "Explore AI-powered home decorating and room transformations across 50 major US cities. Find local architectural styles and redesign your space instantly.",
+    "Explore AI-powered home decorating and room transformations across 50 major US cities. Find local architectural styles and redesign your space instantly with the AI Home Decorator Android app.",
   alternates: {
     canonical: "https://aihomedecorator.com/usa",
   },
@@ -29,7 +32,7 @@ interface CityRecord {
 }
 
 export default async function USADirectoryPage() {
-  const { data: rawCities, error } = await supabase
+  const { data: rawCities } = await supabase
     .from("seo_cities")
     .select("city, state, name, state_name, popular_style, image_url")
     .order("state_name", { ascending: true })
@@ -50,104 +53,91 @@ export default async function USADirectoryPage() {
   const stateNames = Object.keys(citiesByState).sort();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-obsidian-950 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#FFFBF7] text-[#382A22] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumb" className="mb-8 text-xs text-gray-500 dark:text-gray-400">
+        <nav aria-label="Breadcrumb" className="mb-8 text-xs text-[#7A4B27]">
           <ol className="flex items-center space-x-2">
             <li>
-              <Link href="/" className="hover:text-amber-600 dark:hover:text-amber-400">Home</Link>
+              <Link href="/" className="hover:text-[#E87A1E]">Home</Link>
             </li>
             <li>/</li>
-            <li className="text-gray-900 dark:text-gray-200 font-bold">United States Directory</li>
+            <li className="text-[#4A2508] font-bold">USA Directory</li>
           </ol>
         </nav>
 
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/50 border border-blue-500/30 text-blue-300 text-xs font-semibold mb-4">
+        {/* Hero Header */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FEEDDF] border border-[#F8B98B] text-[#8D3D10] text-xs font-bold mb-4 shadow-xs">
             <span>🇺🇸</span>
-            <span>Local Architecture &amp; Room Styling</span>
+            <span>Covering 50 Major US Metros</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight font-heading">
-            AI Interior Design Across the United States
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#4A2508] tracking-tight font-heading mb-4">
+            AI Interior Design Across America
           </h1>
-          <p className="mt-4 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
-            Every American city has its own architectural heritage—from Southern Farmhouses to Pacific Northwest Modern and Florida Coastal Retreats. Select your city to see tailored room styles and redesign your home with AI.
+          <p className="text-sm sm:text-base text-[#5C3314] leading-relaxed">
+            Discover how homeowners across 50 top US metropolitan areas use AI Home Decorator to reimagine their living rooms, kitchens, bedrooms, and outdoor living areas in local architectural styles.
           </p>
         </div>
 
-        {/* HDE US Cost Calculator Cross-Promotion Banner */}
-        <div className="mb-14 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-blue-950/70 via-obsidian-900 to-indigo-950/70 border border-blue-500/30 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 text-left">
-            <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-400/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
-              🏗️
+        {/* App Download Prompt */}
+        <div className="mb-14 p-6 sm:p-8 rounded-3xl bg-white border-2 border-[#FCD7BA] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4 text-center md:text-left">
+            <div className="w-12 h-12 rounded-2xl bg-[#FEEDDF] border border-[#F8B98B] flex items-center justify-center text-2xl flex-shrink-0">
+              📱
             </div>
             <div>
-              <span className="text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
-                Planning a Real Renovation?
-              </span>
-              <h3 className="text-base sm:text-lg font-bold text-white font-heading">
-                Calculate Remodel &amp; Construction Costs by US State
-              </h3>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Get accurate line-item contractor estimates, $/sqft budgets, and material BOQ on our partner tool, Home Design English.
+              <h2 className="text-lg font-black text-[#4A2508] font-heading">
+                Get the Native Android App for Instant Room Renders
+              </h2>
+              <p className="text-xs text-[#6D5D53] mt-0.5">
+                Snap photos on your phone, test 30+ architectural styles, and save high-resolution redesigns.
               </p>
             </div>
           </div>
           <a
-            href="https://www.homedesignenglish.com/?region=US"
+            href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 hover:scale-105 flex-shrink-0"
+            className="transition-transform duration-200 hover:scale-105 inline-block flex-shrink-0"
           >
-            <span>Open US Cost Calculator</span>
-            <span>↗</span>
+            <img
+              src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+              alt="Download on Google Play"
+              className="h-12 w-auto"
+            />
           </a>
         </div>
 
-        {/* State Groups & City Directory */}
-        {error ? (
-          <p className="text-center text-red-500">Error loading cities: {error.message}</p>
-        ) : (
-          <div className="space-y-12">
-            {stateNames.map((stateName) => (
-              <section key={stateName} className="bg-white dark:bg-obsidian-900 rounded-2xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-sm">
-                <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-3">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                  <span>{stateName}</span>
-                  <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-2">
-                    ({citiesByState[stateName].length} {citiesByState[stateName].length === 1 ? "City" : "Cities"})
-                  </span>
-                </h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {citiesByState[stateName].map((city) => (
-                    <Link
-                      key={`${city.state}-${city.city}`}
-                      href={`/usa/${city.state}/${city.city}`}
-                      className="group p-4 rounded-xl bg-gray-50 dark:bg-obsidian-850/60 hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-gray-200 dark:border-gray-800 hover:border-amber-400/50 transition-all duration-200 shadow-sm hover:shadow"
-                    >
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 text-sm transition-colors">
-                          {city.name}
-                        </h3>
-                        <span className="text-gray-400 group-hover:text-amber-500 group-hover:translate-x-0.5 transition-all text-xs">
-                          &rarr;
-                        </span>
-                      </div>
-                      {city.popular_style && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Style: <span className="text-amber-500 dark:text-amber-300 font-semibold">{city.popular_style}</span>
-                        </p>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
+        {/* Directory Grouped by State */}
+        <div className="space-y-10">
+          {stateNames.map((state) => (
+            <div key={state} className="bg-white rounded-3xl p-6 sm:p-8 border border-[#F1E4D5] shadow-xs">
+              <h2 className="text-xl font-bold text-[#4A2508] mb-4 pb-3 border-b border-[#F1E4D5] flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#E87A1E]"></span>
+                {state}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {citiesByState[state].map((c) => (
+                  <Link
+                    key={`${c.state}-${c.city}`}
+                    href={`/usa/${c.state}/${c.city}`}
+                    className="p-4 rounded-2xl bg-[#FFFBF7] hover:bg-[#FEEDDF]/40 border border-[#F1E4D5] hover:border-[#E87A1E] transition-all flex flex-col group shadow-xs"
+                  >
+                    <span className="text-sm font-bold text-[#4A2508] group-hover:text-[#E87A1E] transition-colors">
+                      {c.name}
+                    </span>
+                    {c.popular_style && (
+                      <span className="text-[11px] text-[#7A4B27] mt-1 font-medium">
+                        Style: {c.popular_style}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
