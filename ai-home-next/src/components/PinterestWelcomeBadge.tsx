@@ -118,8 +118,8 @@ const PinterestWelcomeBadge: React.FC = () => {
         <div className="mt-3 p-3 rounded-xl bg-[#FEEDDF] text-center text-xs font-bold text-[#4A2508] animate-fade space-y-1.5">
           <div>🎉 Your 2026 Lookbook is ready!</div>
           <a
-            href="/downloads/2026-usa-home-design-lookbook.pdf"
-            download="2026-usa-home-design-lookbook.pdf"
+            href="/downloads/2026-USA-Home-Design-Remodel-Lookbook.pdf"
+            download="2026-USA-Home-Design-Remodel-Lookbook.pdf"
             className="block text-[#E87A1E] underline font-black"
           >
             📥 Download Lookbook PDF

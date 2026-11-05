@@ -49,8 +49,8 @@ export default function LeadCaptureSection({
       // Trigger automatic direct PDF download
       try {
         const link = document.createElement("a");
-        link.href = "/downloads/2026-usa-home-design-lookbook.pdf";
-        link.download = "2026-usa-home-design-lookbook.pdf";
+        link.href = "/downloads/2026-USA-Home-Design-Remodel-Lookbook.pdf";
+        link.download = "2026-USA-Home-Design-Remodel-Lookbook.pdf";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -141,8 +141,8 @@ export default function LeadCaptureSection({
                   </p>
                   <div className="space-y-2">
                     <a
-                      href="/downloads/2026-usa-home-design-lookbook.pdf"
-                      download="2026-usa-home-design-lookbook.pdf"
+                      href="/downloads/2026-USA-Home-Design-Remodel-Lookbook.pdf"
+                      download="2026-USA-Home-Design-Remodel-Lookbook.pdf"
                       className="btn-brand-primary w-full py-2.5 text-xs font-black inline-flex items-center justify-center gap-1.5"
                     >
                       <span>📥 Download Lookbook PDF</span>
