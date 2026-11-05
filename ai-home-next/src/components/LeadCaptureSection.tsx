@@ -44,6 +44,18 @@ export default function LeadCaptureSection({
 
       setSubmitted(true);
       setEmail("");
+
+      // Trigger automatic direct PDF download
+      try {
+        const link = document.createElement("a");
+        link.href = "/downloads/2026-usa-home-design-lookbook.pdf";
+        link.download = "2026-usa-home-design-lookbook.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (dlErr) {
+        console.error("Auto download error:", dlErr);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Something went wrong. Please try again.");
     } finally {
@@ -105,19 +117,28 @@ export default function LeadCaptureSection({
                     🎉
                   </div>
                   <h3 className="text-lg font-bold text-[#4A2508] font-heading mb-1">
-                    Lookbook Sent!
+                    Your Lookbook is Ready!
                   </h3>
                   <p className="text-xs text-[#6D5D53] leading-relaxed mb-4">
-                    Please check your inbox. We&apos;ve sent your free 2026 Lookbook and direct link to claim your bonus starter credits.
+                    Your download has started. You can also click below to save a copy or open the Android app to test the prompt recipes.
                   </p>
-                  <a
-                    href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-brand-primary w-full py-2.5 text-xs font-extrabold inline-block"
-                  >
-                    Open in Android App &rarr;
-                  </a>
+                  <div className="space-y-2">
+                    <a
+                      href="/downloads/2026-usa-home-design-lookbook.pdf"
+                      download="2026-usa-home-design-lookbook.pdf"
+                      className="btn-brand-primary w-full py-2.5 text-xs font-black inline-flex items-center justify-center gap-1.5"
+                    >
+                      <span>📥 Download Lookbook PDF</span>
+                    </a>
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-brand-secondary w-full py-2 text-xs font-bold inline-block"
+                    >
+                      Get Android App with Bonus Credits &rarr;
+                    </a>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

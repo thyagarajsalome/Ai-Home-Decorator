@@ -103,15 +103,22 @@ const PinterestWelcomeBadge: React.FC = () => {
       </p>
 
       {submitted ? (
-        <div className="mt-3 p-3 rounded-xl bg-[#FEEDDF] text-center text-xs font-bold text-[#4A2508] animate-fade">
-          🎉 Lookbook sent! Check your inbox.
+        <div className="mt-3 p-3 rounded-xl bg-[#FEEDDF] text-center text-xs font-bold text-[#4A2508] animate-fade space-y-1.5">
+          <div>🎉 Your 2026 Lookbook is ready!</div>
+          <a
+            href="/downloads/2026-usa-home-design-lookbook.pdf"
+            download="2026-usa-home-design-lookbook.pdf"
+            className="block text-[#E87A1E] underline font-black"
+          >
+            📥 Download Lookbook PDF
+          </a>
           <a
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="block mt-2 text-[#E87A1E] underline font-extrabold"
+            className="block text-[11px] text-[#4A2508] hover:underline"
           >
-            Open in Android App &rarr;
+            Or Open Android App &rarr;
           </a>
         </div>
       ) : (
