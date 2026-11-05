@@ -132,6 +132,15 @@ const Footer: React.FC = () => {
                 Disclaimer
               </Link>
               <a
+                href="https://www.pinterest.com/aihomedecorator/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#E60023] transition-colors flex items-center gap-1.5"
+              >
+                <span>📌</span>
+                <span>Follow on Pinterest</span>
+              </a>
+              <a
                 href={PLAY_STORE_URL}
                 target="_blank"
                 rel="noopener noreferrer"

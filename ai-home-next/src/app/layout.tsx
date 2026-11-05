@@ -41,6 +41,10 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+  other: {
+    "pinterest:card": "summary_large_image",
+    "article:publisher": "https://www.pinterest.com/aihomedecorator/",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

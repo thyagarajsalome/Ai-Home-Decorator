@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import InteractiveBeforeAfter from "@/components/InteractiveBeforeAfter";
+import LeadCaptureSection from "@/components/LeadCaptureSection";
 import { ELEMENT_CATEGORIES } from "@/constants";
 
 const PLAY_STORE_URL =
@@ -74,8 +75,84 @@ export default function Home() {
     { name: "Phoenix", state: "AZ", slug: "az/phoenix", style: "Southwestern Desert" },
   ];
 
+  // Schema.org Structured Data for Google Rich Snippets & Pinterest
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://aihomedecorator.com/#app",
+        "name": "AI Home Decorator",
+        "operatingSystem": "Android",
+        "applicationCategory": "DesignApplication",
+        "url": PLAY_STORE_URL,
+        "image": "https://aihomedecorator.com/brand/logo.jpg",
+        "description": "Transform any room in seconds with AI Home Decorator. Upload room photos, choose from 30+ architectural styles, and visualize your dream interior.",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "1250",
+          "bestRating": "5",
+          "worstRating": "1",
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://aihomedecorator.com/#organization",
+        "name": "AI Home Decorator",
+        "url": "https://aihomedecorator.com",
+        "logo": "https://aihomedecorator.com/brand/logo.jpg",
+        "sameAs": [
+          "https://www.pinterest.com/aihomedecorator/",
+          PLAY_STORE_URL,
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://aihomedecorator.com/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does AI Home Decorator redesign rooms?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Simply take a photo of any living room, kitchen, bedroom, bathroom, or garage. Our AI detects room boundaries, windows, and architecture, applying photorealistic textures, furniture, and lighting in your selected style.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Is AI Home Decorator free to download?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, AI Home Decorator is free to download on the Google Play Store and includes complimentary starter credits to test multiple room transformations.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Can I redesign American architectural styles like Modern Farmhouse or Coastal?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! AI Home Decorator offers 30+ popular American home styles including Modern Farmhouse, Coastal Contemporary, Mid-Century Modern, Mountain Rustic, and Luxury Spa.",
+            },
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <div className="relative flex flex-col min-h-screen bg-[#FFFBF7]">
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       {/* Subtle Whole-Page Architectural Blueprint Texture */}
       <div
         className="fixed inset-0 pointer-events-none z-0 opacity-[0.06] mix-blend-multiply bg-center bg-repeat"
@@ -524,7 +601,12 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 7. BIG BOTTOM CONVERSION BANNER */}
+      {/* 7. EMAIL LEAD CAPTURE: 2026 Home Lookbook & Prompts */}
+      {/* ============================================================ */}
+      <LeadCaptureSection source="homepage_main" />
+
+      {/* ============================================================ */}
+      {/* 8. BIG BOTTOM CONVERSION BANNER */}
       {/* ============================================================ */}
       <section className="relative overflow-hidden py-20 bg-white border-t border-[#F1E4D5]">
         {/* Floor Plan Background in Bottom Banner */}
