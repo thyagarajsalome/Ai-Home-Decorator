@@ -1,4 +1,28 @@
+# Allow all search engine crawlers
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /login
+Disallow: /signup
 
+# Priority crawler rules
+User-agent: Googlebot
+Allow: /
+Allow: /usa
+Allow: /design/
+Allow: /downloads/
+
+User-agent: Bingbot
+Allow: /
+Allow: /usa
+Allow: /design/
+Allow: /downloads/
+
+User-agent: Pinterestbot
+Allow: /
+Allow: /brand/
+Allow: /downloads/
+
+# XML Sitemap Index
 Sitemap: https://aihomedecorator.com/sitemap.xml
+Host: https://aihomedecorator.com

@@ -1,19 +1,49 @@
 import { MetadataRoute } from "next";
 import { ELEMENT_CATEGORIES } from "@/constants";
 import { supabase } from "@/supabaseClient";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aihomedecorator.com";
+  const now = new Date();
 
-  const staticRoutes = ["", "/about", "/pricing", "/terms", "/policy", "/disclaimer", "/usa"].map(
-    (route) => ({
-      url: `${baseUrl}${route}`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: route === "" ? 1 : 0.8,
-    })
-  );
+  // 1. High-Priority Primary Hubs
+  const primaryRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/usa`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/pricing`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+  ];
 
-  const designRoutes = ELEMENT_CATEGORIES.flatMap((category) =>
+  // 2. Legal / Policy Pages
+  const legalRoutes: MetadataRoute.Sitemap = ["/terms", "/policy", "/disclaimer"].map((path) => ({
+    url: `${baseUrl}${path}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.3,
+  }));
+
+  // 3. Design Styles & Rooms
+  const designRoutes: MetadataRoute.Sitemap = ELEMENT_CATEGORIES.flatMap((category) =>
     category.choices.map((choice) => {
       const styleSlug = choice.name
         .toLowerCase()
@@ -21,22 +51,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .replace(/(^-|-$)/g, "");
       return {
         url: `${baseUrl}/design/${category.id}/${styleSlug}`,
-        lastModified: new Date(),
+        lastModified: now,
         changeFrequency: "weekly" as const,
-        priority: 0.6,
+        priority: 0.75,
       };
     })
   );
 
-  // Fetch all Programmatic SEO cities from Supabase
+  // 4. Programmatic Local SEO: 50 US Metropolitan Cities
   const { data: citiesData } = await supabase.from("seo_cities").select("state, city");
-  
-  const cityRoutes = (citiesData || []).map((city) => ({
-    url: `${baseUrl}/usa/${city.state}/${city.city}`,
-    lastModified: new Date(),
+  const cityRoutes: MetadataRoute.Sitemap = (citiesData || []).map((city) => ({
+    url: `${baseUrl}/usa/${city.state.toLowerCase()}/${city.city.toLowerCase()}`,
+    lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...designRoutes, ...cityRoutes];
+  return [...primaryRoutes, ...cityRoutes, ...designRoutes, ...legalRoutes];
 }
