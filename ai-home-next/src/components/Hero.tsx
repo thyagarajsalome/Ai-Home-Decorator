@@ -66,7 +66,7 @@ const Hero: React.FC = () => {
 
           <div className="relative bg-white dark:bg-obsidian-900 rounded-2xl overflow-hidden">
             <img
-              src="/hero.png"
+              src="/hero.webp"
               alt="AI Home Decorator Showcase"
               className="w-full h-auto object-cover max-h-[500px]"
             />
@@ -74,8 +74,8 @@ const Hero: React.FC = () => {
             {/* AI badge Overlay */}
             <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6">
               <span className="bg-white/90 dark:bg-obsidian-950/80 backdrop-blur-md text-gray-800 dark:text-white text-xs font-semibold px-4 py-2 rounded-full border border-gray-200 dark:border-gray-800/50 shadow-md flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                Powered by Gemini AI
+                <span className="w-2 h-2 rounded-full bg-[#E87A1E] animate-pulse"></span>
+                Powered by AI Design Engine
               </span>
             </div>
           </div>

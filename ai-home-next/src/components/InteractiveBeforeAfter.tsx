@@ -8,8 +8,8 @@ interface Props {
 }
 
 export default function InteractiveBeforeAfter({
-  beforeImg = "/images/slider/before.png",
-  afterImg = "/images/slider/after.png",
+  beforeImg = "/images/slider/before.webp",
+  afterImg = "/images/slider/after.webp",
 }: Props) {
   const [sliderPos, setSliderPos] = useState(50);
 

@@ -7,6 +7,21 @@ import { useAuth } from "@/context/AuthContext";
 const PLAY_STORE_URL =
   "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
 
+const MapPinIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+);
+
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { currentUser, signOut } = useAuth();
@@ -28,29 +43,24 @@ const Header: React.FC = () => {
         {/* Brand Logo & Title */}
         <Link
           href="/"
-          onClick={closeMenu}
-          className="flex items-center gap-3 group transition-transform duration-200 hover:scale-[1.02]"
+          className="flex items-center gap-2.5 group cursor-pointer"
         >
-          <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden shadow-sm border border-[#FCD7BA] bg-white flex-shrink-0">
+          <div className="relative w-10 h-10 rounded-xl overflow-hidden border-2 border-[#FCD7BA] shadow-xs group-hover:scale-105 transition-transform duration-200 bg-white flex-shrink-0">
             <Image
               src="/brand/logo.jpg"
               alt="AI Home Decorator Logo"
               fill
               className="object-cover"
-              sizes="48px"
               priority
+              sizes="40px"
             />
           </div>
-          <div className="flex flex-col text-left">
-            <div className="flex items-center gap-1.5 leading-none">
-              <span className="text-xl sm:text-2xl font-black font-heading bg-gradient-to-r from-[#E87A1E] to-[#D46513] bg-clip-text text-transparent">
-                AI
-              </span>
-              <span className="text-xl sm:text-2xl font-extrabold font-heading text-[#4A2508]">
-                Home Decorator
-              </span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1 font-heading font-black text-lg sm:text-xl tracking-tight leading-none">
+              <span className="text-[#E87A1E]">AI</span>
+              <span className="text-[#4A2508]">Home Decorator</span>
             </div>
-            <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] text-[#7A4B27] uppercase mt-0.5">
+            <span className="text-[9px] font-bold tracking-widest text-[#7A4B27] uppercase mt-0.5">
               DESIGN • DECORATE • VISUALIZE
             </span>
           </div>
@@ -79,9 +89,9 @@ const Header: React.FC = () => {
             </Link>
             <Link
               href="/usa"
-              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1.5"
             >
-              <span>🇺🇸</span>
+              <MapPinIcon className="w-3.5 h-3.5 text-[#E87A1E]" />
               <span>US Cities</span>
             </Link>
             <Link
@@ -124,100 +134,84 @@ const Header: React.FC = () => {
               </div>
             )}
 
+            {/* Direct Google Play Store App CTA */}
             <a
               href={PLAY_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-brand-primary px-4 py-2 text-xs sm:text-sm font-extrabold flex items-center gap-1.5 group shadow-md"
+              className="btn-brand-primary px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#E87A1E]/20 hover:shadow-lg hover:shadow-[#E87A1E]/30"
             >
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.412 13.8533 8.125 12 8.125c-1.8533 0-3.5902.287-5.1368.8247L4.8409 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.343 14.6589 0 18.761h24c-.343-4.1021-2.6889-7.5743-6.1185-9.4396" />
+              <svg
+                className="w-3.5 h-3.5 fill-current"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M3.609 1.814L13.792 12 3.61 22.186a2.38 2.38 0 0 1-.61-1.63V3.444c0-.623.228-1.2.61-1.63zm11.237 11.24l2.42 2.42-12.02 6.94 9.6-9.36zm0-2.108L5.246 1.586l12.02 6.94-2.42 2.42zm1.472 1.054l3.523 2.033a1.59 1.59 0 0 1 0 2.766l-3.523 2.033-2.155-2.155 2.155-2.677z" />
               </svg>
-              <span>Get App</span>
+              <span>Install App</span>
             </a>
           </div>
         </div>
 
-        {/* Mobile Action & Menu Toggle */}
-        <div className="flex items-center gap-2 lg:hidden">
-          {currentUser ? (
-            <button
-              onClick={handleLogout}
-              className="text-xs font-bold text-[#8D3D10] px-2 py-1"
-            >
-              Sign Out
-            </button>
-          ) : (
-            <Link
-              href="/login"
-              className="text-xs font-bold text-[#4A2508] px-2 py-1 hover:text-[#E87A1E]"
-            >
-              Sign In
-            </Link>
-          )}
-
+        {/* Mobile Hamburger Button */}
+        <div className="lg:hidden flex items-center gap-2">
           <a
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-brand-primary px-3 py-1.5 text-xs font-bold"
+            className="btn-brand-primary px-3 py-1.5 text-xs font-bold flex items-center gap-1 shadow-xs"
           >
-            Get App
+            <svg
+              className="w-3 h-3 fill-current"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M3.609 1.814L13.792 12 3.61 22.186a2.38 2.38 0 0 1-.61-1.63V3.444c0-.623.228-1.2.61-1.63zm11.237 11.24l2.42 2.42-12.02 6.94 9.6-9.36zm0-2.108L5.246 1.586l12.02 6.94-2.42 2.42zm1.472 1.054l3.523 2.033a1.59 1.59 0 0 1 0 2.766l-3.523 2.033-2.155-2.155 2.155-2.677z" />
+            </svg>
+            <span>App</span>
           </a>
 
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-lg text-[#4A2508] hover:bg-[#FEEDDF] focus:outline-none"
-            aria-label="Toggle navigation menu"
+            className="p-2 rounded-xl text-[#4A2508] hover:bg-[#FEEDDF] focus:outline-hidden transition-colors"
+            aria-label="Toggle Menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            {isMobileMenuOpen ? (
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Dropdown Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-[#F1E4D5] px-4 pt-3 pb-6 space-y-3 shadow-lg animate-fade">
-          {currentUser ? (
-            <div className="p-3 rounded-xl bg-[#FFFBF7] border border-[#F1E4D5] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold text-[#4A2508] truncate max-w-[200px]">
-                  {currentUser.email}
-                </span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="text-xs font-bold text-[#8D3D10] hover:underline"
-              >
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-2 pb-2 border-b border-[#F1E4D5]">
-              <Link
-                href="/login"
-                onClick={closeMenu}
-                className="text-center py-2 rounded-xl border border-[#F1E4D5] bg-[#FFFBF7] text-xs font-bold text-[#4A2508]"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/signup"
-                onClick={closeMenu}
-                className="btn-brand-secondary text-center py-2 text-xs font-bold"
-              >
-                Sign Up
-              </Link>
-            </div>
-          )}
-
+        <div className="lg:hidden bg-white/98 border-b border-[#F1E4D5] px-4 pt-3 pb-6 space-y-2 shadow-xl animate-fadeIn">
           <Link
             href="/"
             onClick={closeMenu}
@@ -242,9 +236,10 @@ const Header: React.FC = () => {
           <Link
             href="/usa"
             onClick={closeMenu}
-            className="block px-3 py-2 rounded-lg text-sm font-bold text-[#4A2508] hover:bg-[#FFF8F2]"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold text-[#4A2508] hover:bg-[#FFF8F2]"
           >
-            🇺🇸 USA Cities Directory
+            <MapPinIcon className="w-4 h-4 text-[#E87A1E]" />
+            <span>US Cities Guide</span>
           </Link>
           <Link
             href="/about"
@@ -254,17 +249,37 @@ const Header: React.FC = () => {
             About AI Home Decorator
           </Link>
 
-          <div className="pt-2">
-            <a
-              href={PLAY_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={closeMenu}
-              className="btn-brand-primary w-full py-3 text-sm font-extrabold flex items-center justify-center gap-2"
-            >
-              <span>Download Free Android App</span>
-              <span>&rarr;</span>
-            </a>
+          <div className="pt-3 border-t border-[#F1E4D5] space-y-2">
+            {currentUser ? (
+              <div className="flex items-center justify-between px-3 py-2 bg-[#FEEDDF] rounded-xl border border-[#F8B98B]">
+                <span className="text-xs font-bold text-[#4A2508] truncate">
+                  {currentUser.email}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="text-xs font-bold text-[#8D3D10] hover:text-[#E87A1E]"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  onClick={closeMenu}
+                  className="text-center py-2 rounded-xl text-xs font-bold text-[#4A2508] border border-[#F1E4D5] hover:bg-[#FFF8F2]"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={closeMenu}
+                  className="text-center py-2 rounded-xl text-xs font-bold btn-brand-secondary"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
