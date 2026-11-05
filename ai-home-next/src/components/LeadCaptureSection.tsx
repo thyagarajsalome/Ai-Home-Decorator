@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface Props {
   source?: string;
@@ -84,9 +85,25 @@ export default function LeadCaptureSection({
                 Get the 2026 USA Interior Design &amp; Remodel Lookbook
               </h2>
 
-              <p className="text-xs sm:text-sm text-[#6D5D53] leading-relaxed mb-6">
+              <p className="text-xs sm:text-sm text-[#6D5D53] leading-relaxed mb-4">
                 Discover 40+ curated room makeovers, top American paint &amp; flooring palettes, and 30 copy-paste AI prompt recipes for your home.
               </p>
+
+              {/* Official Lookbook Cover Visual Preview */}
+              <div className="relative mb-5 rounded-2xl overflow-hidden border-2 border-[#FCD7BA] shadow-md group bg-[#FEEDDF]">
+                <Image
+                  src="/brand/lookbook-2026-cover.webp"
+                  alt="2026 USA Home Design & Remodel Lookbook Cover Preview"
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 600px"
+                />
+                <div className="absolute top-2.5 right-2.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-bold border border-white/20">
+                  Free Lookbook PDF
+                </div>
+              </div>
 
               {/* Checklist */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-bold text-[#4A2508] mb-6">

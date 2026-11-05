@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 const PLAY_STORE_URL =
   "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
@@ -101,6 +102,17 @@ const PinterestWelcomeBadge: React.FC = () => {
       <p className="text-xs text-[#5C3314] mt-2.5 leading-relaxed">
         Love our Pinterest designs? Get our <strong>2026 Home Lookbook PDF</strong> + bonus starter credits sent to your inbox:
       </p>
+
+      {/* Lookbook Thumbnail Preview */}
+      <div className="mt-2 mb-1 relative rounded-xl overflow-hidden border border-[#FCD7BA] shadow-xs">
+        <Image
+          src="/brand/lookbook-2026-cover.webp"
+          alt="2026 USA Lookbook"
+          width={600}
+          height={400}
+          className="w-full h-auto object-cover"
+        />
+      </div>
 
       {submitted ? (
         <div className="mt-3 p-3 rounded-xl bg-[#FEEDDF] text-center text-xs font-bold text-[#4A2508] animate-fade space-y-1.5">
