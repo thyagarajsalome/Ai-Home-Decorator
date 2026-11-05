@@ -119,6 +119,10 @@ export default async function ProgrammaticSEODesignPage({
       thumbnail: c.thumbnail,
     }));
 
+  const highResImage = styleObj.thumbnail
+    ? styleObj.thumbnail.replace(/w=\d+/, "w=1200")
+    : "/brand/promo-empty-to-extraordinary.jpg";
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FFFBF7] text-[#382A22]">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 w-full flex-grow">
@@ -165,7 +169,7 @@ export default async function ProgrammaticSEODesignPage({
           <div className="lg:col-span-6">
             <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden shadow-lg border-2 border-[#FCD7BA] bg-[#FEEDDF]">
               <Image
-                src={styleObj.thumbnail || "/brand/promo-empty-to-extraordinary.jpg"}
+                src={highResImage}
                 alt={`${styleObj.name} ${catObj.name} Render Example`}
                 fill
                 className="object-cover"
