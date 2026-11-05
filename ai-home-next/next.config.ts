@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Allow phone / local network access during development
+  allowedDevOrigins: [
+    "192.168.31.163",
+    "192.168.31.163:3000",
+    "localhost",
+    "localhost:3000",
+    "127.0.0.1",
+    "127.0.0.1:3000",
+  ],
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
