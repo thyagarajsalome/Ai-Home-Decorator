@@ -6,6 +6,7 @@ import {
   validateEmailSyntax,
   validateEmailDomainMx,
 } from "@/lib/emailValidation";
+import { sendLookbookEmail } from "@/lib/sendLookbookEmail";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -42,7 +43,18 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3. Store in Supabase Auth as a verified lead
+    // 3. Dispatch Lookbook delivery email to their actual inbox
+    try {
+      await sendLookbookEmail({
+        toEmail: cleanEmail,
+        source,
+        style,
+      });
+    } catch (mailErr) {
+      console.error("Lookbook email dispatch error:", mailErr);
+    }
+
+    // 4. Store in Supabase Auth as a verified lead
     try {
       await supabaseAdmin.auth.admin.createUser({
         email: cleanEmail,
@@ -60,7 +72,7 @@ export async function POST(req: Request) {
       console.log("Supabase lead create notice:", sbErr);
     }
 
-    // 4. Append to local leads.csv for immediate export access
+    // 5. Append to local leads.csv for immediate export access
     try {
       const csvPath = path.resolve(process.cwd(), "leads.csv");
       const dateStr = new Date().toISOString().split("T")[0];
@@ -73,8 +85,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message:
-        "Success! Your 2026 Home Design Lookbook is on its way to your inbox.",
+      message: `Your Lookbook PDF download link has been sent to ${cleanEmail}. Please check your inbox.`,
     });
   } catch (error: any) {
     console.error("Lead capture error:", error);

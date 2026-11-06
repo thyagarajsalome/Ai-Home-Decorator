@@ -10,6 +10,7 @@ const PinterestWelcomeBadge: React.FC = () => {
   const [isFromPinterest, setIsFromPinterest] = useState(false);
   const [isDismissed, setIsDismissed] = useState(true);
   const [email, setEmail] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -63,6 +64,7 @@ const PinterestWelcomeBadge: React.FC = () => {
         throw new Error(data.error || "Please enter a valid, active email address.");
       }
 
+      setSubmittedEmail(clean);
       setSubmitted(true);
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to submit. Please try again.");
@@ -128,22 +130,18 @@ const PinterestWelcomeBadge: React.FC = () => {
       </div>
 
       {submitted ? (
-        <div className="mt-3 p-3 rounded-xl bg-[#FEEDDF] text-center text-xs font-bold text-[#4A2508] animate-fade space-y-1.5">
-          <div>🎉 Your 2026 Lookbook is ready!</div>
-          <a
-            href="/downloads/2026-USA-Home-Design-Remodel-Lookbook.pdf"
-            download="2026-USA-Home-Design-Remodel-Lookbook.pdf"
-            className="block text-[#E87A1E] underline font-black"
-          >
-            📥 Download Lookbook PDF
-          </a>
+        <div className="mt-3 p-3.5 rounded-xl bg-[#FEEDDF] text-center text-xs font-bold text-[#4A2508] animate-fade space-y-2">
+          <div className="text-sm">📬 Check your inbox!</div>
+          <p className="text-[11px] font-normal text-[#5C3314] leading-tight">
+            We sent your 2026 Lookbook download link to <strong>{submittedEmail}</strong>.
+          </p>
           <a
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-[11px] text-[#4A2508] hover:underline"
+            className="block btn-brand-primary py-2 px-3 text-xs font-bold text-white text-center mt-2"
           >
-            Or Open Android App &rarr;
+            Open Android App &amp; Bonus Credits &rarr;
           </a>
         </div>
       ) : (
@@ -173,7 +171,7 @@ const PinterestWelcomeBadge: React.FC = () => {
               disabled={loading}
               className="flex-1 btn-brand-primary py-2 px-3 text-xs font-bold"
             >
-              {loading ? "Verifying..." : "Send Free Lookbook"}
+              {loading ? "Verifying..." : "Email Me Free Lookbook"}
             </button>
             <button
               type="button"

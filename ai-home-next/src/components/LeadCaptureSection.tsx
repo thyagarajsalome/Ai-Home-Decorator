@@ -13,6 +13,7 @@ export default function LeadCaptureSection({
   defaultStyle = "Modern & Farmhouse",
 }: Props) {
   const [email, setEmail] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -27,7 +28,12 @@ export default function LeadCaptureSection({
       return;
     }
 
-    if (cleanEmail.startsWith("test@") || cleanEmail.startsWith("fake@") || cleanEmail.startsWith("asdf@")) {
+    if (
+      cleanEmail.startsWith("test@") ||
+      cleanEmail.startsWith("fake@") ||
+      cleanEmail.startsWith("asdf@") ||
+      cleanEmail.startsWith("admin@")
+    ) {
       setErrorMsg("Please enter a genuine personal or work email address.");
       return;
     }
@@ -52,24 +58,20 @@ export default function LeadCaptureSection({
       }
 
       setSubmitted(true);
+      setSubmittedEmail(cleanEmail);
       setEmail("");
-
-      // Trigger automatic direct PDF download
-      try {
-        const link = document.createElement("a");
-        link.href = "/downloads/2026-USA-Home-Design-Remodel-Lookbook.pdf";
-        link.download = "2026-USA-Home-Design-Remodel-Lookbook.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (dlErr) {
-        console.error("Auto download error:", dlErr);
-      }
     } catch (err: any) {
       setErrorMsg(err.message || "Something went wrong. Please check your email and try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    setSubmitted(false);
+    setSubmittedEmail("");
+    setEmail("");
+    setErrorMsg("");
   };
 
   return (
@@ -109,7 +111,7 @@ export default function LeadCaptureSection({
                   sizes="(max-width: 1024px) 100vw, 600px"
                 />
                 <div className="absolute top-2.5 right-2.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-bold border border-white/20">
-                  Free Lookbook PDF
+                  Delivered to Your Email
                 </div>
               </div>
 
@@ -138,31 +140,39 @@ export default function LeadCaptureSection({
             <div className="lg:col-span-5 bg-[#FFFBF7] rounded-2xl p-6 sm:p-8 border border-[#F1E4D5]">
               {submitted ? (
                 <div className="text-center py-4 animate-fade">
-                  <div className="w-14 h-14 rounded-full bg-[#FEEDDF] text-[#E87A1E] flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner">
-                    🎉
+                  <div className="w-16 h-16 rounded-full bg-[#FEEDDF] text-[#E87A1E] flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner">
+                    📬
                   </div>
-                  <h3 className="text-lg font-bold text-[#4A2508] font-heading mb-1">
-                    Your Lookbook is Ready!
+                  <h3 className="text-xl font-black text-[#4A2508] font-heading mb-1.5">
+                    Check Your Inbox!
                   </h3>
-                  <p className="text-xs text-[#6D5D53] leading-relaxed mb-4">
-                    Your download has started. You can also click below to save a copy or open the Android app to test the prompt recipes.
+                  <p className="text-xs text-[#6D5D53] leading-relaxed mb-3">
+                    We sent the <strong>2026 USA Lookbook PDF</strong> download link to:
                   </p>
-                  <div className="space-y-2">
-                    <a
-                      href="/downloads/2026-USA-Home-Design-Remodel-Lookbook.pdf"
-                      download="2026-USA-Home-Design-Remodel-Lookbook.pdf"
-                      className="btn-brand-primary w-full py-2.5 text-xs font-black inline-flex items-center justify-center gap-1.5"
-                    >
-                      <span>📥 Download Lookbook PDF</span>
-                    </a>
+                  <div className="bg-white border border-[#E2CEBD] rounded-xl py-2 px-3 text-xs font-mono font-bold text-[#8D3D10] break-all mb-4">
+                    {submittedEmail}
+                  </div>
+                  <p className="text-[11px] text-[#8D7D72] leading-relaxed mb-5">
+                    Please open your email inbox to download the guide. If you don&apos;t see it within 1–2 minutes, be sure to check your spam or promotions tab.
+                  </p>
+                  
+                  <div className="space-y-2.5">
                     <a
                       href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn-brand-secondary w-full py-2 text-xs font-bold inline-block"
+                      className="btn-brand-primary w-full py-2.5 text-xs font-black inline-flex items-center justify-center gap-1.5"
                     >
-                      Get Android App with Bonus Credits &rarr;
+                      <span>📱 Get Android App &amp; Bonus Credits &rarr;</span>
                     </a>
+
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="text-[11px] text-[#8D7D72] hover:text-[#4A2508] underline block mx-auto pt-1 font-medium"
+                    >
+                      Entered the wrong email? Click to send to another address
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -172,7 +182,7 @@ export default function LeadCaptureSection({
                       htmlFor="lead-email"
                       className="block text-xs font-bold text-[#4A2508] uppercase tracking-wider mb-2"
                     >
-                      Where should we send your Lookbook?
+                      Where should we email your Lookbook?
                     </label>
                     <input
                       type="email"
@@ -183,7 +193,7 @@ export default function LeadCaptureSection({
                         if (errorMsg) setErrorMsg("");
                       }}
                       required
-                      placeholder="Enter your email address"
+                      placeholder="Enter your personal or work email"
                       className="w-full p-3.5 rounded-xl bg-white border border-[#E2CEBD] text-xs sm:text-sm text-[#382A22] placeholder-[#A69588] focus:outline-none focus:ring-2 focus:ring-[#E87A1E] transition-all"
                       disabled={loading}
                     />
@@ -207,18 +217,23 @@ export default function LeadCaptureSection({
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                         </svg>
-                        <span>Verifying &amp; Downloading...</span>
+                        <span>Verifying &amp; Sending...</span>
                       </span>
                     ) : (
                       <>
-                        <span>Get Free Lookbook PDF</span>
+                        <span>Send Free Lookbook to My Email</span>
                         <span>&rarr;</span>
                       </>
                     )}
                   </button>
 
-                  <div className="flex items-center justify-center gap-2 text-[10px] text-[#8D7D72] text-center pt-1">
-                    <span>🔒 No spam, ever. Unsubscribe with 1-click.</span>
+                  <div className="space-y-1 pt-1 text-center">
+                    <p className="text-[11px] text-[#5C3314] font-medium">
+                      📩 Download link is sent directly to your inbox.
+                    </p>
+                    <p className="text-[10px] text-[#8D7D72]">
+                      🔒 100% privacy. No spam. Unsubscribe anytime.
+                    </p>
                   </div>
                 </form>
               )}
