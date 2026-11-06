@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/supabaseClient";
 
 export const revalidate = 86400;
@@ -140,30 +141,66 @@ export default async function USADirectoryPage() {
         </div>
 
         {/* Directory Grouped by State */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {stateNames.map((state) => (
-            <div key={state} className="bg-white rounded-2xl p-5 sm:p-6 border border-[#F1E4D5] shadow-xs">
-              <h2 className="text-base sm:text-lg font-bold text-[#4A2508] mb-3 pb-2 border-b border-[#F1E4D5] flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#E87A1E]"></span>
-                {state}
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {citiesByState[state].map((c) => (
-                  <Link
-                    key={`${c.state}-${c.city}`}
-                    href={`/usa/${c.state}/${c.city}`}
-                    className="p-3 sm:p-3.5 rounded-xl bg-[#FFFBF7] hover:bg-[#FEEDDF]/40 border border-[#F1E4D5] hover:border-[#E87A1E] transition-all flex flex-col group shadow-xs"
-                  >
-                    <span className="text-xs sm:text-sm font-bold text-[#4A2508] group-hover:text-[#E87A1E] transition-colors">
-                      {c.name}
-                    </span>
-                    {c.popular_style && (
-                      <span className="text-[11px] text-[#7A4B27] mt-0.5 font-medium">
-                        Style: {c.popular_style}
-                      </span>
-                    )}
-                  </Link>
-                ))}
+            <div key={state} className="bg-white rounded-3xl p-5 sm:p-7 border border-[#F1E4D5] shadow-xs">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#F1E4D5]">
+                <h2 className="text-base sm:text-lg font-bold text-[#4A2508] flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#E87A1E]"></span>
+                  <span>{state}</span>
+                </h2>
+                <span className="text-xs font-semibold text-[#8D3D10] bg-[#FEEDDF] px-2.5 py-0.5 rounded-full border border-[#F8B98B]">
+                  {citiesByState[state].length} {citiesByState[state].length === 1 ? "City" : "Cities"}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {citiesByState[state].map((c) => {
+                  const imgUrl = c.image_url
+                    ? c.image_url.replace(/\.jpg$/, ".webp")
+                    : "/images/seo/houston.webp";
+
+                  return (
+                    <Link
+                      key={`${c.state}-${c.city}`}
+                      href={`/usa/${c.state.toLowerCase()}/${c.city.toLowerCase()}`}
+                      className="rounded-2xl bg-[#FFFBF7] hover:bg-white border border-[#F1E4D5] hover:border-[#E87A1E] transition-all overflow-hidden flex flex-col group shadow-xs hover:shadow-md"
+                    >
+                      {/* Small Image Preview */}
+                      <div className="relative w-full aspect-[16/10] bg-[#FEEDDF] overflow-hidden">
+                        <Image
+                          src={imgUrl}
+                          alt={`${c.name}, ${c.state.toUpperCase()} Interior Design`}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        />
+                        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold border border-white/20">
+                          {c.state.toUpperCase()}
+                        </div>
+                      </div>
+
+                      {/* Content Details */}
+                      <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-grow">
+                        <div>
+                          <span className="text-sm font-bold text-[#4A2508] group-hover:text-[#E87A1E] transition-colors block">
+                            {c.name}
+                          </span>
+                          {c.popular_style && (
+                            <span className="text-[11px] text-[#7A4B27] mt-0.5 font-medium block truncate">
+                              Style: <strong className="text-[#5C3314] font-semibold">{c.popular_style}</strong>
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="mt-2.5 pt-2 border-t border-[#F1E4D5]/60 flex items-center justify-between text-[11px] font-bold text-[#E87A1E]">
+                          <span>Explore Styles</span>
+                          <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ))}

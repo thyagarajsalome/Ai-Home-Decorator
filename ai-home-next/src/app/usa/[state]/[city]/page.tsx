@@ -105,7 +105,7 @@ export default async function CityLandingPage({
   // 2. Fetch sibling cities in same state for internal linking
   const { data: siblingCities } = await supabase
     .from("seo_cities")
-    .select("city, state, name")
+    .select("city, state, name, image_url, popular_style")
     .eq("state", state.toLowerCase())
     .neq("city", city.toLowerCase())
     .limit(8);
@@ -273,17 +273,34 @@ export default async function CityLandingPage({
               View All 50 Cities &rarr;
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-            {siblingCities.map((sibling) => (
-              <Link
-                key={`${sibling.state}-${sibling.city}`}
-                href={`/usa/${sibling.state}/${sibling.city}`}
-                className="p-3 rounded-xl bg-white hover:bg-[#FEEDDF]/50 border border-[#F1E4D5] hover:border-[#E87A1E] text-xs font-semibold text-[#4A2508] hover:text-[#E87A1E] transition-all shadow-xs flex items-center justify-between"
-              >
-                <span>{sibling.name}, {sibling.state.toUpperCase()}</span>
-                <span className="text-[#8D3D10]">&rarr;</span>
-              </Link>
-            ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {siblingCities.map((sibling) => {
+              const imgUrl = sibling.image_url
+                ? sibling.image_url.replace(/\.jpg$/, ".webp")
+                : "/images/seo/houston.webp";
+
+              return (
+                <Link
+                  key={`${sibling.state}-${sibling.city}`}
+                  href={`/usa/${sibling.state.toLowerCase()}/${sibling.city.toLowerCase()}`}
+                  className="rounded-xl bg-white hover:bg-[#FEEDDF]/40 border border-[#F1E4D5] hover:border-[#E87A1E] overflow-hidden flex flex-col group shadow-xs hover:shadow-md transition-all"
+                >
+                  <div className="relative w-full aspect-[16/10] bg-[#FEEDDF] overflow-hidden">
+                    <Image
+                      src={imgUrl}
+                      alt={`${sibling.name} Interior Design`}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    />
+                  </div>
+                  <div className="p-2.5 flex items-center justify-between text-xs font-bold text-[#4A2508] group-hover:text-[#E87A1E]">
+                    <span className="truncate">{sibling.name}, {sibling.state.toUpperCase()}</span>
+                    <span className="text-[#8D3D10] flex-shrink-0">&rarr;</span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
