@@ -19,8 +19,16 @@ export default function LeadCaptureSection({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes("@")) {
-      setErrorMsg("Please enter a valid email address.");
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Client-side quick check
+    if (!cleanEmail || !cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+      setErrorMsg("Please enter a valid email address (e.g. name@gmail.com).");
+      return;
+    }
+
+    if (cleanEmail.startsWith("test@") || cleanEmail.startsWith("fake@") || cleanEmail.startsWith("asdf@")) {
+      setErrorMsg("Please enter a genuine personal or work email address.");
       return;
     }
 
@@ -32,7 +40,7 @@ export default function LeadCaptureSection({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
+          email: cleanEmail,
           source,
           style: defaultStyle,
         }),
@@ -40,7 +48,7 @@ export default function LeadCaptureSection({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to submit.");
+        throw new Error(data.error || "Please enter a valid, active email address.");
       }
 
       setSubmitted(true);
@@ -58,7 +66,7 @@ export default function LeadCaptureSection({
         console.error("Auto download error:", dlErr);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "Something went wrong. Please try again.");
+      setErrorMsg(err.message || "Something went wrong. Please check your email and try again.");
     } finally {
       setLoading(false);
     }
@@ -170,7 +178,10 @@ export default function LeadCaptureSection({
                       type="email"
                       id="lead-email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errorMsg) setErrorMsg("");
+                      }}
                       required
                       placeholder="Enter your email address"
                       className="w-full p-3.5 rounded-xl bg-white border border-[#E2CEBD] text-xs sm:text-sm text-[#382A22] placeholder-[#A69588] focus:outline-none focus:ring-2 focus:ring-[#E87A1E] transition-all"
@@ -179,8 +190,9 @@ export default function LeadCaptureSection({
                   </div>
 
                   {errorMsg && (
-                    <div className="text-xs font-semibold text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200">
-                      {errorMsg}
+                    <div className="text-xs font-semibold text-red-700 bg-red-50 p-3 rounded-xl border border-red-200 flex items-start gap-2 animate-fade">
+                      <span className="text-sm leading-none mt-0.5">⚠️</span>
+                      <span className="flex-1">{errorMsg}</span>
                     </div>
                   )}
 
@@ -190,7 +202,13 @@ export default function LeadCaptureSection({
                     className="w-full btn-brand-primary py-3.5 text-xs sm:text-sm font-black shadow-md shadow-[#E87A1E]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {loading ? (
-                      <span>Sending Lookbook...</span>
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <span>Verifying &amp; Downloading...</span>
+                      </span>
                     ) : (
                       <>
                         <span>Get Free Lookbook PDF</span>

@@ -12,6 +12,7 @@ const PinterestWelcomeBadge: React.FC = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -41,18 +42,30 @@ const PinterestWelcomeBadge: React.FC = () => {
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes("@")) return;
+    const clean = email.trim().toLowerCase();
+    if (!clean || !clean.includes("@") || !clean.includes(".")) {
+      setErrorMsg("Please enter a valid email address.");
+      return;
+    }
 
     setLoading(true);
+    setErrorMsg("");
+
     try {
-      await fetch("/api/leads", {
+      const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "pinterest_welcome_badge" }),
+        body: JSON.stringify({ email: clean, source: "pinterest_welcome_badge" }),
       });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Please enter a valid, active email address.");
+      }
+
       setSubmitted(true);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to submit. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -138,19 +151,29 @@ const PinterestWelcomeBadge: React.FC = () => {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (errorMsg) setErrorMsg("");
+            }}
             required
             placeholder="Enter your email"
             className="w-full p-2.5 rounded-xl bg-[#FFFBF7] border border-[#E2CEBD] text-xs text-[#382A22] placeholder-[#A69588] focus:outline-none focus:ring-1 focus:ring-[#E87A1E]"
             disabled={loading}
           />
+
+          {errorMsg && (
+            <div className="text-[11px] text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
+              {errorMsg}
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             <button
               type="submit"
               disabled={loading}
               className="flex-1 btn-brand-primary py-2 px-3 text-xs font-bold"
             >
-              {loading ? "Sending..." : "Send Free Lookbook"}
+              {loading ? "Verifying..." : "Send Free Lookbook"}
             </button>
             <button
               type="button"
