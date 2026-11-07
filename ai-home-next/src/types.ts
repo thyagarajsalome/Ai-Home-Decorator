@@ -6,11 +6,14 @@ export interface SelectionChoice {
   thumbnail?: string;
 }
 
+export type StudioGroup = "interior" | "exterior" | "landscape" | "commercial";
+
 export interface SelectionCategory {
   id: string;
   name: string;
   icon: string;
   guardrail: string;
+  studioGroup?: StudioGroup;
   choices: SelectionChoice[];
 }
 

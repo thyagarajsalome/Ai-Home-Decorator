@@ -4,7 +4,7 @@ import SafeImage from "@/components/SafeImage";
 
 export interface ShowcaseRoom {
   id: string;
-  category: "living" | "bedroom" | "kitchen" | "bath" | "outdoor" | "walls";
+  category: "living" | "bedroom" | "kitchen" | "bath" | "facade" | "landscape" | "outdoor" | "walls";
   roomBadge: string;
   styleName: string;
   styleCategory: string;
@@ -21,7 +21,7 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     styleName: "Modern",
     styleCategory: "full_redesign",
     title: "Modern Living Hall",
-    image: "/images/showcase/living-room.jpg",
+    image: "/images/showcase/living-room.webp",
     fallbackImage: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
   },
   {
@@ -31,7 +31,7 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     styleName: "Bohemian",
     styleCategory: "full_redesign",
     title: "Bohemian Bedroom",
-    image: "/images/showcase/bedroom.jpg",
+    image: "/images/showcase/bedroom.webp",
     fallbackImage: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
   },
   {
@@ -40,8 +40,8 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     roomBadge: "Kitchen",
     styleName: "Farmhouse Kitchen",
     styleCategory: "kitchen",
-    title: "Modern Kitchen",
-    image: "/images/showcase/kitchen.jpg",
+    title: "Modern Farmhouse Kitchen",
+    image: "/images/showcase/kitchen.webp",
     fallbackImage: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
   },
   {
@@ -51,27 +51,67 @@ export const USA_SHOWCASE_ROOMS: ShowcaseRoom[] = [
     styleName: "Luxury Spa",
     styleCategory: "bathroom",
     title: "Luxury Spa Bathroom",
-    image: "/images/showcase/bathroom.jpg",
+    image: "/images/showcase/bathroom.webp",
     fallbackImage: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "house-facade",
+    category: "facade",
+    roomBadge: "Architecture & Facade",
+    styleName: "Modern Slats & Stucco",
+    styleCategory: "exterior_facade",
+    title: "Contemporary Villa Facade",
+    image: "/images/showcase/house-facade.webp",
+    fallbackImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "backyard-pool",
+    category: "landscape",
+    roomBadge: "Backyard Oasis",
+    styleName: "Tropical Pool Oasis",
+    styleCategory: "landscape_garden",
+    title: "Resort Pool & Backyard Deck",
+    image: "/images/showcase/backyard-pool.webp",
+    fallbackImage: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "architecture-villa",
+    category: "facade",
+    roomBadge: "Villas & Balconies",
+    styleName: "Rooftop Lounge & Bar",
+    styleCategory: "roof_balcony",
+    title: "Luxury Rooftop Lounge",
+    image: "/images/showcase/architecture-villa.webp",
+    fallbackImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "landscape-oasis",
+    category: "landscape",
+    roomBadge: "Landscape Design",
+    styleName: "Outdoor Kitchen & Pergola",
+    styleCategory: "landscape_garden",
+    title: "Outdoor Kitchen & Pergola Lawn",
+    image: "/images/showcase/landscape-oasis.webp",
+    fallbackImage: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=80",
   },
   {
     id: "patio",
     category: "outdoor",
-    roomBadge: "Patio",
+    roomBadge: "Patio Decking",
     styleName: "Teak Timber Decking",
     styleCategory: "outdoor_patio",
-    title: "Outdoor Patio & Deck",
-    image: "/images/showcase/patio.jpg",
+    title: "Outdoor Patio & Firepit Deck",
+    image: "/images/showcase/patio.webp",
     fallbackImage: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
   },
   {
     id: "wall-paints",
     category: "walls",
-    roomBadge: "Wall Paints",
+    roomBadge: "Wall Finishes",
     styleName: "Navy Blue Accent",
     styleCategory: "wall_paint",
     title: "Navy Blue Accent Wall",
-    image: "/images/showcase/wall-paint.jpg",
+    image: "/images/showcase/wall-paint.webp",
     fallbackImage: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1200&q=80",
   },
 ];
@@ -138,10 +178,10 @@ const CATEGORY_TABS = [
   { id: "all", label: "All Spaces" },
   { id: "living", label: "Living Hall" },
   { id: "bedroom", label: "Bedroom" },
-  { id: "kitchen", label: "Kitchen" },
-  { id: "bath", label: "Bathroom" },
-  { id: "outdoor", label: "Patio" },
-  { id: "walls", label: "Wall Paints" },
+  { id: "kitchen", label: "Kitchen & Bath" },
+  { id: "facade", label: "Architecture & Facades 🏡" },
+  { id: "landscape", label: "Backyard, Pools & Patios 🌿" },
+  { id: "walls", label: "Wall Paints & Finishes" },
 ];
 
 const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle }) => {
@@ -149,6 +189,12 @@ const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle
 
   const filteredRooms = useMemo(() => {
     if (selectedFilter === "all") return USA_SHOWCASE_ROOMS;
+    if (selectedFilter === "kitchen") {
+      return USA_SHOWCASE_ROOMS.filter((r) => r.category === "kitchen" || r.category === "bath");
+    }
+    if (selectedFilter === "landscape") {
+      return USA_SHOWCASE_ROOMS.filter((r) => r.category === "landscape" || r.category === "outdoor");
+    }
     return USA_SHOWCASE_ROOMS.filter((r) => r.category === selectedFilter);
   }, [selectedFilter]);
 
@@ -160,14 +206,14 @@ const USAHomeShowcase: React.FC<USAHomeShowcaseProps> = ({ onSelectShowcaseStyle
           <div className="flex items-center gap-2 mb-2">
             <span className="text-base">🇺🇸</span>
             <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-              AI Room Transformations
+              AI Room, Architecture &amp; Landscape Transformations
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading tracking-tight">
-            Complete Room & Element Transformations
+            Interior, Exterior &amp; Landscape Design Showcase
           </h2>
           <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl leading-relaxed">
-            Explore curated room designs across Living Hall, Bedroom, Kitchen, Bathroom, Patio, and Wall Paints. Tap any design to style your room instantly.
+            Explore curated transformations across Living Halls, Bedrooms, Kitchens, House Facades, Resort Pools, and Landscaping. Tap any style to design your photo instantly.
           </p>
         </div>
       </div>

@@ -10,14 +10,21 @@ export const ROOM_TYPES: string[] = [
   "Basement",
   "Kids Room",
   "Guest Room",
-  "Patio"
+  "Patio",
+  "House Facade",
+  "Backyard & Garden",
+  "Commercial Space"
 ];
 
 export const ELEMENT_CATEGORIES: SelectionCategory[] = [
+  // ==========================================
+  // 🛋️ INTERIORS
+  // ==========================================
   {
     id: "full_redesign",
     name: "Full Room Design",
-    icon: "🌍",
+    icon: "🛋️",
+    studioGroup: "interior",
     guardrail: "CRITICAL: Completely replace the stylistic visual identity, furniture, decor details, and layout theme of the entire room. Maintain only the core outer door and window frame limits.",
     choices: [
       { name: "Modern", promptSuffix: "sleek modern design space with clean lines, geometric furniture, a neutral color palette, and statement lighting", thumbnail: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80" },
@@ -41,6 +48,7 @@ export const ELEMENT_CATEGORIES: SelectionCategory[] = [
     id: "kitchen",
     name: "Kitchen Design",
     icon: "🍳",
+    studioGroup: "interior",
     guardrail: "CRITICAL: Isolate the incoming space and dynamically replace the complete interior architecture, millwork layouts, plumbing fixtures, and countertop styling to transform the room functionality.",
     choices: [
       { name: "Farmhouse Kitchen", promptSuffix: "complete kitchen remodel featuring classic white shaker cabinets, white quartz countertops, apron-front farmhouse sink, and black hardware accents", thumbnail: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80" },
@@ -53,17 +61,19 @@ export const ELEMENT_CATEGORIES: SelectionCategory[] = [
     id: "bathroom",
     name: "Bathroom Design",
     icon: "🛁",
+    studioGroup: "interior",
     guardrail: "CRITICAL: Isolate the incoming space and dynamically replace the plumbing fixtures, shower screens, wall tiles, and vanity styling.",
     choices: [
       { name: "Luxury Spa", promptSuffix: "high-end wellness master bathroom with a deep freestanding soaking tub, floating light oak vanities, and floor-to-ceiling natural stone wall slabs", thumbnail: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80" },
-      { name: "Monochromatic", promptSuffix: "high-contrast bathroom layout showing matte black plumbing fixtures, clean floating geometric white porcelain basins, and dark gray tiled walk-in rain showers", thumbnail: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80" },
+      { name: "Monochromatic Slate", promptSuffix: "high-contrast bathroom layout showing matte black plumbing fixtures, clean floating geometric white porcelain basins, and dark gray tiled walk-in rain showers", thumbnail: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80" },
       { name: "Bright & Airy", promptSuffix: "light white tiled bathroom with brass hardware accents, natural sunlight, and hanging green plants", thumbnail: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80" }
     ]
   },
   {
     id: "flooring",
-    name: "Flooring",
+    name: "Flooring Materials",
     icon: "🪵",
+    studioGroup: "interior",
     guardrail: "CRITICAL: Maintain the exact placement, perspective, geometry, and materials of all furniture, walls, ceiling, windows, and decorative items. Change ONLY the floor surface finish and material texture.",
     choices: [
       { name: "Hardwood Floor - Oak", promptSuffix: "premium light natural white oak hardwood planks with subtle grain details", thumbnail: "https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&w=800&q=80" },
@@ -90,8 +100,9 @@ export const ELEMENT_CATEGORIES: SelectionCategory[] = [
   },
   {
     id: "wall_paint",
-    name: "Wall Paint",
+    name: "Wall Paint & Finishes",
     icon: "🎨",
+    studioGroup: "interior",
     guardrail: "CRITICAL: Retain complete structural perspective, furniture assets, floor styling, lighting fixtures, and window placement. Modify ONLY the surface finish, paint color, or wallpaper materials of the vertical walls.",
     choices: [
       { name: "Alabaster White", promptSuffix: "flat matte architectural alabaster white premium wall interior paint", thumbnail: "https://images.unsplash.com/photo-1618221381711-42ca8ab6e908?auto=format&fit=crop&w=800&q=80" },
@@ -107,8 +118,9 @@ export const ELEMENT_CATEGORIES: SelectionCategory[] = [
   },
   {
     id: "lighting_mood",
-    name: "Lighting",
+    name: "Lighting & Atmosphere",
     icon: "💡",
+    studioGroup: "interior",
     guardrail: "CRITICAL: Maintain all furniture positions, object colors, flooring, and materials completely static. Do not add or subtract physical objects. Modify ONLY the ambient light intensity, shadows, color temperature, and light source glow paths.",
     choices: [
       { name: "Golden Hour", promptSuffix: "warm directional sunlight streaming through windows creating dramatic elongated shadows and golden hour atmosphere", thumbnail: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=800&q=80" },
@@ -124,6 +136,7 @@ export const ELEMENT_CATEGORIES: SelectionCategory[] = [
     id: "windows_blinds",
     name: "Window & Blinds",
     icon: "🪟",
+    studioGroup: "interior",
     guardrail: "CRITICAL: Keep the core architecture, color palette, flooring, and room furniture configuration entirely unedited. Modify ONLY the windows, glass framing, blind assemblies, and window dressing materials.",
     choices: [
       { name: "Roman Shades", promptSuffix: "tailored textured natural linen Roman shades clean-folded inside the window framework", thumbnail: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" },
@@ -140,10 +153,61 @@ export const ELEMENT_CATEGORIES: SelectionCategory[] = [
       { name: "White Timber Frame", promptSuffix: "traditional thick profiled solid white painted wood window framing assembly", thumbnail: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" }
     ]
   },
+
+  // ==========================================
+  // 🏡 ARCHITECTURE & EXTERIORS
+  // ==========================================
+  {
+    id: "exterior_facade",
+    name: "House Facades & Villas",
+    icon: "🏡",
+    studioGroup: "exterior",
+    guardrail: "CRITICAL: Maintain the outer structural volume, roof silhouette, and property orientation of the building. Redesign the exterior facade materials, siding, windows, and architectural accents.",
+    choices: [
+      { name: "Modern Slats & Stucco", promptSuffix: "luxury contemporary architectural house facade featuring blackened vertical cedar timber slats, smooth warm off-white stucco, slim black metal window frames, and integrated exterior LED lighting", thumbnail: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" },
+      { name: "Mediterranean Villa", promptSuffix: "whitewashed Mediterranean architectural villa with arched doorways, hand-plastered walls, terracotta clay barrel roof tiles, wrought iron balconies, and natural bougainvillea flowering", thumbnail: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80" },
+      { name: "Contemporary Glass & Steel", promptSuffix: "striking contemporary architectural home exterior with floor-to-ceiling glass curtain walls, cantilevered structural steel beams, and polished limestone cladding", thumbnail: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80" },
+      { name: "Nordic Dark Timber", promptSuffix: "dramatic Scandinavian Nordic architectural exterior clad in charred Yakisugi blackened wood siding, large viewing windows, and sharp minimalist gables", thumbnail: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=800&q=80" },
+      { name: "Modern Farmhouse Exterior", promptSuffix: "refined modern farmhouse exterior with crisp white vertical board-and-batten siding, standing seam black metal roof, wraparound porch with timber posts, and lantern sconces", thumbnail: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80" },
+      { name: "Concrete & Limestone", promptSuffix: "minimalist architectural villa with board-formed architectural concrete panels, honed French limestone blocks, and flush concealed garage entry", thumbnail: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" }
+    ]
+  },
+  {
+    id: "roof_balcony",
+    name: "Roofs & Balconies",
+    icon: "🪜",
+    studioGroup: "exterior",
+    guardrail: "CRITICAL: Maintain the building facade. Transform the rooftop or balcony into a luxury architectural living space.",
+    choices: [
+      { name: "Rooftop Lounge & Bar", promptSuffix: "ultra-luxury rooftop outdoor lounge with timber decking, glass balustrades, outdoor sectional seating, built-in ambient planter lights, and a sleek wet bar", thumbnail: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80" },
+      { name: "Cantilevered Glass Balcony", promptSuffix: "seamless frameless structural glass balcony railing with minimalist recessed LED floor wash lights", thumbnail: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80" },
+      { name: "Timber Pergola Porch", promptSuffix: "architectural stained Douglas fir pergola over front porch with slatted shade canopy and climbing green wisteria", thumbnail: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80" }
+    ]
+  },
+
+  // ==========================================
+  // 🌿 LANDSCAPES & OUTDOORS
+  // ==========================================
+  {
+    id: "landscape_garden",
+    name: "Backyards & Landscapes",
+    icon: "🌿",
+    studioGroup: "landscape",
+    guardrail: "CRITICAL: Maintain the core house boundaries and exterior walls. Completely redesign the yard, lawn, patio, and landscape grounds.",
+    choices: [
+      { name: "Tropical Pool Oasis", promptSuffix: "luxury backyard oasis featuring an inground resort-style swimming pool, light travertine pool coping, sunken poolside baja shelf with loungers, lush tropical palms, and ambient water features", thumbnail: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80" },
+      { name: "Firepit Patio & Deck", promptSuffix: "modern outdoor entertainment patio with large-format flagstone pavers, built-in curved concrete bench seating surrounding a natural gas stone firepit, and warm string festoon lighting", thumbnail: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80" },
+      { name: "Japanese Zen Garden", promptSuffix: "tranquil Japanese dry landscape Zen garden with meticulously raked white granite gravel waves, sculpted mossy granite boulders, weeping Japanese maple, and bamboo fountain feature", thumbnail: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80" },
+      { name: "Outdoor Kitchen & Pergola", promptSuffix: "luxury backyard outdoor culinary kitchen with stainless steel built-in BBQ grill, concrete countertops, barstool counter seating under an automated louvered aluminum pergola", thumbnail: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80" },
+      { name: "English Cottage Lawn", promptSuffix: "picturesque English cottage landscape with curved flagstone walking path, overflowing perennial flowering borders, manicured emerald lawn, and wooden arbor", thumbnail: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80" },
+      { name: "Modern Desert Xeriscape", promptSuffix: "architectural drought-tolerant desert landscape with warm decomposed granite groundcover, architectural agave, golden barrel cactus, and sculptural corten steel planter boxes", thumbnail: "https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=800&q=80" }
+    ]
+  },
   {
     id: "outdoor_patio",
     name: "Outdoor & Patio",
-    icon: "🏡",
+    icon: "⛱️",
+    studioGroup: "landscape",
     guardrail: "CRITICAL: Maintain the external building perimeter structure, house siding, and background natural horizons. Transform the immediate floor deck area and outdoor living furniture setup completely.",
     choices: [
       { name: "Teak Timber Decking", promptSuffix: "weather-treated rich natural teak timber wood plank outdoor decking layout", thumbnail: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80" },
@@ -152,6 +216,35 @@ export const ELEMENT_CATEGORIES: SelectionCategory[] = [
       { name: "Boho Chic Oasis", promptSuffix: "relaxed bohemian exterior terrace with layered outdoor rugs, woven rattan seating, and hanging macrame string lights", thumbnail: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" },
       { name: "Modern Minimalist Deck", promptSuffix: "upscale architectural outdoor patio area featuring streamlined low-profile linear metal furniture and built-in concrete fire pits", thumbnail: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80" },
       { name: "Mediterranean Terrace", promptSuffix: "sun-bleached white stucco walls, terracotta floor pavers, olive trees in clay planters, and wrought iron seating arrangements", thumbnail: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80" }
+    ]
+  },
+
+  // ==========================================
+  // 🏢 COMMERCIAL & VIRTUAL STAGING
+  // ==========================================
+  {
+    id: "commercial_spaces",
+    name: "Commercial & Cafes",
+    icon: "🏢",
+    studioGroup: "commercial",
+    guardrail: "CRITICAL: Maintain the commercial room boundary and structural support columns. Transform the space into a commercial hospitality or retail environment.",
+    choices: [
+      { name: "Boutique Coffee Bar", promptSuffix: "high-end artisan coffee shop interior with custom terrazzo serving counter, commercial espresso bar setup, fluted oak menu backdrop, globe pendant lighting, and warm banquette seating", thumbnail: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80" },
+      { name: "Luxury Fashion Boutique", promptSuffix: "minimalist luxury designer clothing boutique featuring brushed brass hanging racks, backlit floating shelving, central marble display podiums, and plush velvet fitting lounge", thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80" },
+      { name: "Modern Co-Working Office", promptSuffix: "contemporary open-concept creative office space with oak shared workbench tables, ergonomic chairs, acoustic felt ceiling baffles, living moss wall feature, and glass conference room", thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" },
+      { name: "Party Lounge", promptSuffix: "stylish upscale party lounge and event space featuring ambient neon and warm LED cove lighting, plush modular sectional seating, dance-floor-ready layout, custom DJ booth console, and modern party bar setup", thumbnail: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80" }
+    ]
+  },
+  {
+    id: "virtual_staging",
+    name: "Real Estate Virtual Staging",
+    icon: "🛋️",
+    studioGroup: "commercial",
+    guardrail: "CRITICAL: Isolate the vacant room. Detect the empty floor space and virtually stage photorealistic designer furniture perfectly suited for a top-tier real estate MLS listing photo.",
+    choices: [
+      { name: "Stage Modern Living Room", promptSuffix: "photorealistic virtual staging of an empty room with a tailored modern ivory sectional sofa, sculptural round oak coffee table, textured wool area rug, gallery wall art, and olive tree in ceramic planter", thumbnail: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80" },
+      { name: "Stage Luxury Master Suite", promptSuffix: "photorealistic virtual staging of an empty bedroom with an upholstered linen king bed, crisp layered hotel bedding, matching dark oak nightstands with ceramic lamps, and woven bench at bed foot", thumbnail: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80" },
+      { name: "Stage Executive Home Office", promptSuffix: "photorealistic virtual staging of an empty room as a luxury home executive office with a solid walnut writing desk, leather executive chair, brass task lamp, and geometric area rug", thumbnail: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80" }
     ]
   }
 ];

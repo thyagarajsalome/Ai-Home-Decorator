@@ -1,13 +1,21 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { ELEMENT_CATEGORIES } from "../constants";
-import type { SelectionChoice } from "../types";
+import type { SelectionChoice, StudioGroup } from "../types";
 
 interface StyleSelectorProps {
   onStyleSelect: (style: SelectionChoice | null) => void;
   selectedStyle: SelectionChoice | null;
   disabled: boolean;
 }
+
+const STUDIO_TABS: { id: "all" | StudioGroup; label: string; icon: string }[] = [
+  { id: "all", label: "All Studios", icon: "✨" },
+  { id: "interior", label: "Interiors", icon: "🛋️" },
+  { id: "exterior", label: "Architecture", icon: "🏡" },
+  { id: "landscape", label: "Landscapes", icon: "🌿" },
+  { id: "commercial", label: "Commercial", icon: "🏢" },
+];
 
 const StyleSelector: React.FC<StyleSelectorProps> = ({
   onStyleSelect,
@@ -24,6 +32,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
   }, [selectedStyle]);
 
   const [activeCategoryId, setActiveCategoryId] = useState<string>(initialCategory);
+  const [selectedStudio, setSelectedStudio] = useState<"all" | StudioGroup>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const activeCategory = useMemo(() => {
@@ -32,6 +41,12 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
       ELEMENT_CATEGORIES[0]
     );
   }, [activeCategoryId]);
+
+  // Categories filtered by the active studio tab
+  const visibleCategories = useMemo(() => {
+    if (selectedStudio === "all") return ELEMENT_CATEGORIES;
+    return ELEMENT_CATEGORIES.filter((c) => c.studioGroup === selectedStudio);
+  }, [selectedStudio]);
 
   // Filter styles if user searches
   const filteredChoices = useMemo(() => {
@@ -66,11 +81,43 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
         )}
       </div>
 
+      {/* Studio Category Group Tabs */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-2.5 no-scrollbar">
+        {STUDIO_TABS.map((tab) => {
+          const isActive = selectedStudio === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => {
+                setSelectedStudio(tab.id);
+                setSearchQuery("");
+                if (tab.id !== "all") {
+                  const firstInGroup = ELEMENT_CATEGORIES.find((c) => c.studioGroup === tab.id);
+                  if (firstInGroup && activeCategory.studioGroup !== tab.id) {
+                    setActiveCategoryId(firstInGroup.id);
+                  }
+                }
+              }}
+              disabled={disabled}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border whitespace-nowrap flex items-center gap-1.5 ${
+                isActive
+                  ? "bg-amber-600 border-amber-500 text-white shadow-sm"
+                  : "bg-obsidian-850 hover:bg-obsidian-800 border-gray-750 text-gray-300 hover:text-white"
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Category Dropdown & Quick Selector Bar */}
       <div className="flex flex-col gap-2 mb-3">
         <div className="flex items-center justify-between gap-2">
           <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">
-            Category
+            Sub-Category
           </label>
           <span className="text-[10px] text-amber-400 font-semibold">
             {activeCategory.choices.length} Styles Available
@@ -88,7 +135,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
             disabled={disabled}
             className="w-full appearance-none px-3.5 py-2.5 rounded-xl bg-obsidian-850 hover:bg-obsidian-800 border border-amber-500/30 text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-md transition-all pr-10"
           >
-            {ELEMENT_CATEGORIES.map((cat) => (
+            {visibleCategories.map((cat) => (
               <option key={cat.id} value={cat.id} className="bg-obsidian-900 text-white font-semibold py-1">
                 {cat.icon} {cat.name} ({cat.choices.length} styles)
               </option>
@@ -102,9 +149,9 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
           </div>
         </div>
 
-        {/* Quick Popular Category Pills (Wrapped & clear, not hidden) */}
+        {/* Quick Category Pills */}
         <div className="flex flex-wrap gap-1.5 pt-1">
-          {ELEMENT_CATEGORIES.map((category) => {
+          {visibleCategories.map((category) => {
             const isActive = activeCategoryId === category.id;
             return (
               <button
