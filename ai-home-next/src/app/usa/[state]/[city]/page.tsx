@@ -3,6 +3,8 @@ import { supabase } from "@/supabaseClient";
 import Link from "next/link";
 import Image from "next/image";
 import InteractiveBeforeAfter from "@/components/InteractiveBeforeAfter";
+import CityRegionalShowcase from "@/components/CityRegionalShowcase";
+import LeadCaptureSection from "@/components/LeadCaptureSection";
 
 export const revalidate = 86400;
 
@@ -111,6 +113,9 @@ export default async function CityLandingPage({
     .limit(8);
 
   const pageUrl = `https://aihomedecorator.com/usa/${state.toLowerCase()}/${city.toLowerCase()}`;
+  const cityHeroImage = cityData.image_url
+    ? cityData.image_url.replace(/\.jpg$/, ".webp")
+    : `/images/seo/${city.toLowerCase()}.webp`;
 
   // Structured Data (BreadcrumbList)
   const jsonLdBreadcrumb = {
@@ -179,11 +184,11 @@ export default async function CityLandingPage({
       </header>
 
       {/* City Hero Image */}
-      {cityData.image_url && (
+      {cityHeroImage && (
         <div className="max-w-5xl mx-auto px-4 mt-6">
           <div className="relative w-full h-[280px] sm:h-[380px] md:h-[420px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 border-[#FCD7BA] bg-[#FEEDDF]">
             <Image 
-              src={cityData.image_url} 
+              src={cityHeroImage} 
               alt={`${cityData.popular_style} interior design in ${cityData.name}, ${cityData.state_name}`}
               fill
               className="object-cover"
@@ -218,20 +223,38 @@ export default async function CityLandingPage({
           </div>
         </div>
 
+        {/* Regional Visual Showcase & Local Color Swatches */}
+        <CityRegionalShowcase
+          city={cityData.city}
+          cityName={cityData.name}
+          state={cityData.state}
+          stateName={cityData.state_name}
+          popularStyle={cityData.popular_style}
+          challenge={cityData.challenge}
+        />
+
         {/* CTA: Redesign in App */}
         <div className="text-center mb-6">
           <h2 className="text-xl sm:text-2xl font-black text-[#4A2508] tracking-tight font-heading mb-1.5">
             Redesign Your {cityData.name} Space Instantly
           </h2>
           <p className="text-xs sm:text-sm text-[#6D5D53] max-w-xl mx-auto">
-            Install the free AI Home Decorator Android app to snap your room and preview stunning local {cityData.popular_style} designs in seconds.
+            Snap any room in your {cityData.name} home or apartment to preview stunning {cityData.popular_style} designs in seconds.
           </p>
         </div>
       </section>
 
       {/* Interactive Simulator */}
-      <div className="max-w-5xl mx-auto px-4 mb-8">
+      <div className="max-w-5xl mx-auto px-4 mb-10">
         <InteractiveBeforeAfter />
+      </div>
+
+      {/* Free 2026 Lookbook Lead Capture tailored to this city */}
+      <div className="mb-10">
+        <LeadCaptureSection
+          source={`city_page_${cityData.city}`}
+          defaultStyle={`${cityData.name} ${cityData.popular_style}`}
+        />
       </div>
 
       {/* Big Download Card for this City */}
