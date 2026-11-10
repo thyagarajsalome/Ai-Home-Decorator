@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { ELEMENT_CATEGORIES } from "@/constants";
 import { supabase } from "@/supabaseClient";
+import { ROOMS, STYLES } from "@/lib/seoData";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aihomedecorator.com";
@@ -13,6 +14,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "daily",
       priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/ideas`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/guide`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/usa`,
@@ -42,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.3,
   }));
 
-  // 3. Design Styles & Rooms
+  // 3. Design Category & Style Pages (Existing 98 Studio Routes)
   const designRoutes: MetadataRoute.Sitemap = ELEMENT_CATEGORIES.flatMap((category) =>
     category.choices.map((choice) => {
       const styleSlug = choice.name
@@ -67,5 +80,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...primaryRoutes, ...cityRoutes, ...designRoutes, ...legalRoutes];
+  // 5. Programmatic SEO: 15 Definitive Style Guides
+  const styleGuideRoutes: MetadataRoute.Sitemap = STYLES.map((style) => ({
+    url: `${baseUrl}/guide/${style.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
+  }));
+
+  // 6. Programmatic SEO: 120 Room × Style Idea Pages (8 rooms × 15 styles)
+  const roomIdeaRoutes: MetadataRoute.Sitemap = ROOMS.flatMap((room) =>
+    STYLES.map((style) => ({
+      url: `${baseUrl}/ideas/${room.slug}/${style.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }))
+  );
+
+  return [
+    ...primaryRoutes,
+    ...cityRoutes,
+    ...styleGuideRoutes,
+    ...roomIdeaRoutes,
+    ...designRoutes,
+    ...legalRoutes,
+  ];
 }

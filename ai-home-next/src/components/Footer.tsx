@@ -65,23 +65,23 @@ const Footer: React.FC = () => {
               Room &amp; Style Guides
             </h4>
             <div className="flex flex-col space-y-2 text-xs font-semibold text-[#6D5D53]">
-              <Link href="/design/kitchen/farmhouse-kitchen" className="hover:text-[#E87A1E] transition-colors">
-                Farmhouse Kitchens
+              <Link href="/ideas" className="hover:text-[#E87A1E] transition-colors font-bold text-[#E87A1E]">
+                All Room Ideas &rarr;
               </Link>
-              <Link href="/design/bathroom/luxury-spa" className="hover:text-[#E87A1E] transition-colors">
-                Luxury Spa Bathrooms
+              <Link href="/guide" className="hover:text-[#E87A1E] transition-colors font-bold text-[#4A2508]">
+                15 Style Guides &rarr;
               </Link>
-              <Link href="/design/full_redesign/contemporary" className="hover:text-[#E87A1E] transition-colors">
-                Contemporary Living Rooms
+              <Link href="/ideas/living-room/japandi" className="hover:text-[#E87A1E] transition-colors">
+                Japandi Living Rooms
               </Link>
-              <Link href="/design/full_redesign/scandinavian" className="hover:text-[#E87A1E] transition-colors">
-                Scandinavian Interiors
+              <Link href="/ideas/bedroom/scandinavian" className="hover:text-[#E87A1E] transition-colors">
+                Scandinavian Bedrooms
               </Link>
-              <Link href="/design/outdoor_patio/teak-timber-decking" className="hover:text-[#E87A1E] transition-colors">
-                Outdoor Decks &amp; Patios
+              <Link href="/ideas/kitchen/modern-farmhouse" className="hover:text-[#E87A1E] transition-colors">
+                Modern Farmhouse Kitchens
               </Link>
-              <Link href="/#styles" className="text-[#E87A1E] font-bold hover:underline pt-1">
-                Explore All 30+ Styles &rarr;
+              <Link href="/guide/mid-century-modern" className="hover:text-[#E87A1E] transition-colors">
+                Mid-Century Modern Guide
               </Link>
             </div>
           </div>

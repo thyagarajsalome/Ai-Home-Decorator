@@ -76,16 +76,16 @@ const Header: React.FC = () => {
               Home
             </Link>
             <Link
-              href="/#rooms"
+              href="/ideas"
               className="hover:text-[#E87A1E] transition-colors duration-150"
             >
               Room Ideas
             </Link>
             <Link
-              href="/#styles"
+              href="/guide"
               className="hover:text-[#E87A1E] transition-colors duration-150"
             >
-              Design Styles
+              Style Guides
             </Link>
             <Link
               href="/usa"
@@ -220,18 +220,18 @@ const Header: React.FC = () => {
             Home
           </Link>
           <Link
-            href="/#rooms"
+            href="/ideas"
             onClick={closeMenu}
             className="block px-3 py-2 rounded-lg text-sm font-bold text-[#4A2508] hover:bg-[#FFF8F2]"
           >
             Room Ideas
           </Link>
           <Link
-            href="/#styles"
+            href="/guide"
             onClick={closeMenu}
             className="block px-3 py-2 rounded-lg text-sm font-bold text-[#4A2508] hover:bg-[#FFF8F2]"
           >
-            Design Styles
+            Style Guides
           </Link>
           <Link
             href="/usa"

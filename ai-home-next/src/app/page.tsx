@@ -401,6 +401,7 @@ export default function Home() {
                   src="/brand/promo-rooms.jpg"
                   alt="Design Every Room - Kitchen, Bedroom, Living Room"
                   fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -431,6 +432,7 @@ export default function Home() {
                   src="/brand/promo-bathroom.jpg"
                   alt="Design Your Dream Bathroom"
                   fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -461,6 +463,7 @@ export default function Home() {
                   src="/brand/promo-garage.jpg"
                   alt="Design Your Ideal Garage"
                   fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -530,6 +533,7 @@ export default function Home() {
                     src={item.img}
                     alt={`${item.styleName} - AI Home Decorator`}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-xs text-[10px] font-black text-[#4A2508] uppercase">
@@ -626,6 +630,7 @@ export default function Home() {
               src="/brand/logo.jpg"
               alt="AI Home Decorator"
               fill
+              sizes="64px"
               className="object-cover"
             />
           </div>
