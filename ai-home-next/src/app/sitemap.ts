@@ -86,7 +86,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.85,
-    images: [style.thumbnail],
   }));
 
   // 6. Programmatic SEO: 120 Room × Style Idea Pages (8 rooms × 15 styles)
@@ -96,7 +95,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.8,
-      images: [style.thumbnail, ...style.images.map((img) => img.src)],
     }))
   );
 
