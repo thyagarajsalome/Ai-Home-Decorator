@@ -8,18 +8,24 @@ Disallow: /signup
 # Priority crawler rules
 User-agent: Googlebot
 Allow: /
-Allow: /usa
+Allow: /ideas/
+Allow: /guide/
+Allow: /usa/
 Allow: /design/
 Allow: /downloads/
 
 User-agent: Bingbot
 Allow: /
-Allow: /usa
+Allow: /ideas/
+Allow: /guide/
+Allow: /usa/
 Allow: /design/
 Allow: /downloads/
 
 User-agent: Pinterestbot
 Allow: /
+Allow: /ideas/
+Allow: /guide/
 Allow: /brand/
 Allow: /downloads/
 

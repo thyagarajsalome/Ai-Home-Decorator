@@ -921,6 +921,65 @@ export const STYLES: StyleData[] = [
       },
     ],
   },
+  {
+    slug: "traditional",
+    name: "Traditional",
+    tagline: "Timeless elegance, rich woodwork, and symmetrical harmony.",
+    origin: "Rooted in 18th and 19th-century European and American heritage homes, prioritizing classical proportions and detailed craftsmanship.",
+    description:
+      "Traditional interior design embodies timeless comfort, orderly symmetry, and refined sophistication. Rich mahogany timbers, crown moldings, plush upholstery, and classic architectural details create an inviting, enduring sanctuary.",
+    palette: [
+      { name: "Deep Mahogany", hex: "#4A2508" },
+      { name: "Warm Cream", hex: "#F5ECD7" },
+      { name: "Sage Olive", hex: "#6E7D63" },
+      { name: "Antique Gold", hex: "#C8A155" },
+      { name: "Navy Heritage", hex: "#1B2D4F" },
+    ],
+    characteristics: [
+      "Symmetrical furniture layouts and balanced architectural details",
+      "Rich crown moldings, wainscoting, and coffered ceilings",
+      "Classic dark wood furniture with carved accents and turned legs",
+      "Sumptuous fabrics: damask, velvet, linen, and brocade",
+      "Warm layered lighting with crystal chandeliers and wall sconces",
+      "Curated heirloom artwork and portraits in gilded frames",
+    ],
+    bestRooms: ["Living Room", "Dining Room", "Bedroom", "Home Office"],
+    keyFurniture: [
+      "Upholstered roll-arm or Chesterfield sofa",
+      "Solid mahogany dining table with carved chairs",
+      "Classic wingback armchair with nailhead trim",
+      "Formal bookcase with fluted wood trim",
+      "Carved marble or wood fireplace mantel",
+    ],
+    dos: [
+      "Maintain symmetry in furniture arrangements around focal points",
+      "Incorporate rich architectural millwork like crown molding",
+      "Use warm wood tones like mahogany, walnut, and cherry",
+      "Layer luxurious textiles with subtle classic patterns",
+    ],
+    donts: [
+      "Avoid stark, cold ultra-minimalist furniture",
+      "Don't use raw industrial concrete or exposed metal pipes",
+      "Avoid mismatched asymmetric furniture clusters",
+      "Don't skimp on quality drapery and window treatments",
+    ],
+    thumbnail:
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&w=800&q=80",
+    images: [
+      {
+        src: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&w=800&q=80",
+        alt: "Traditional living room with classic moldings and warm wood",
+      },
+      {
+        src: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80",
+        alt: "Traditional master bedroom with rich wood bed and warm textiles",
+      },
+      {
+        src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+        alt: "Traditional dining room with mahogany table and chandelier",
+      },
+    ],
+  },
 ];
 
 // ============================================================
@@ -1034,6 +1093,13 @@ export function getRoomStyleContent(
         "Choose one unifying color thread — repeat it in 3–5 spots across the room.",
         "Display collected objects: travel finds, vintage books, and artisan ceramics together.",
       ],
+      traditional: [
+        "Anchor the room with a tailored roll-arm sofa flanked by a pair of matching wingback chairs.",
+        "Install formal crown molding and wainscoting painted in warm antique white.",
+        "Arrange furniture symmetrically around the fireplace mantel as the central focal axis.",
+        "Layer an authentic Persian or oriental wool area rug over rich dark hardwood flooring.",
+        "Hang an antique gold-framed oil painting above the mantel for refined heritage character.",
+      ],
     },
     bedroom: {
       japandi: [
@@ -1133,6 +1199,13 @@ export function getRoomStyleContent(
         "Create an eclectic gallery wall of mixed frames above the headboard.",
         "Layer bedding from different textile traditions: Indian kantha, Turkish kilim, French linen.",
         "Add one dramatic, oversized ceiling light that doesn't match anything — perfectly.",
+      ],
+      traditional: [
+        "Choose a carved four-poster or upholstered camelback bed in mahogany or dark walnut.",
+        "Layer crisp 600-thread-count Egyptian cotton bedding with a tailored damask coverlet.",
+        "Flank the bed with matching dark wood nightstands topped with fluted brass lamps for perfect symmetry.",
+        "Install floor-to-ceiling pinch-pleat silk or velvet draperies with tailored rope tiebacks.",
+        "Place an upholstered tufted storage bench at the foot of the bed for classic comfort.",
       ],
     },
   };
