@@ -170,11 +170,18 @@ export default function StorefrontClient({
                     <span className="font-bold text-[#E87A1E] uppercase tracking-wider text-[11px]">
                       {product.categoryName}
                     </span>
-                    <div className="flex items-center gap-1 text-amber-500">
-                      <span>★</span>
-                      <span className="font-bold text-[#4A2508]">{product.rating}</span>
-                      <span className="text-[#9B8272] text-[11px]">({product.reviewsCount})</span>
-                    </div>
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1.5 text-xs bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 px-2.5 py-0.5 rounded-full font-bold transition-colors cursor-pointer"
+                      title="4.6★ Rated on Google Play Store"
+                    >
+                      <span className="text-amber-500 text-sm leading-none">★</span>
+                      <span>4.6</span>
+                      <span className="text-[10px] text-amber-800/70 font-semibold">• Google Play</span>
+                    </a>
                   </div>
 
                   <h3 className="font-heading font-bold text-lg text-[#4A2508] mb-2 group-hover:text-[#E87A1E] transition-colors leading-snug">

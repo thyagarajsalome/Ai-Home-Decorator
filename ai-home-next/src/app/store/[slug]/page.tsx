@@ -70,12 +70,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
       "@type": "Brand",
       name: "AI Home Decorator",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: product.rating.toString(),
-      reviewCount: product.reviewsCount.toString(),
-      bestRating: "5",
-      worstRating: "1",
+    publisher: {
+      "@type": "Organization",
+      name: "AI Home Decorator",
+      url: "https://aihomedecorator.com",
     },
     offers: {
       "@type": "Offer",
@@ -166,17 +164,23 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   {product.subtitle}
                 </p>
 
-                {/* Rating Bar */}
-                <div className="flex items-center gap-2 text-xs font-bold text-[#4A2508] pb-6 border-b border-[#F0E8D8]">
-                  <div className="flex text-amber-500 text-sm">
-                    {"★★★★★".slice(0, Math.round(product.rating))}
-                  </div>
-                  <span>{product.rating}</span>
-                  <span className="text-[#9B8272]">
-                    ({product.reviewsCount} verified homeowner ratings)
+                {/* Official Mobile App Rating & Trust Bar */}
+                <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-[#4A2508] pb-6 border-b border-[#F0E8D8]">
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold transition-colors cursor-pointer"
+                    title="View AI Home Decorator on Google Play Store"
+                  >
+                    <span className="text-amber-500 text-sm leading-none">★★★★★</span>
+                    <span>4.6 / 5.0 Rating</span>
+                    <span className="text-[#8D5D30] font-normal text-[11px]">• Google Play Verified App</span>
+                  </a>
+                  <span className="text-[11px] text-[#7A5C3A]">
+                    Official Homeowner Companion Playbook
                   </span>
-                  <span className="mx-2 text-[#F0E8D8]">•</span>
-                  <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-sm">
+                  <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md text-[11px] border border-emerald-200">
                     Verified Digital Download
                   </span>
                 </div>
