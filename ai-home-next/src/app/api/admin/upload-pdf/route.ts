@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           error:
-            "Cloudflare R2 credentials are not configured yet. Please add R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY to your .env.local file.",
+            "Cloudflare R2 credentials are not configured yet. Please add R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY to your Netlify Environment Variables (Site configuration -> Environment variables).",
         },
         { status: 500 }
       );
