@@ -29,6 +29,7 @@ export interface StoreProduct {
   format: string;
   publicationYear: number;
   coverImage: string;
+  pdf_file_key?: string;
   description: string;
   highlights: string[];
   tableOfContents: { chapter: string; pages: string; summary: string }[];
@@ -69,6 +70,7 @@ export const STORE_PRODUCTS: StoreProduct[] = [
     format: 'Printable PDF (8.5" x 11" US Letter) — 9 Illustrated Masterclass Pages',
     publicationYear: 2026,
     coverImage: "/store/covers/home-lighting-design-guide-usa-cover.webp",
+    pdf_file_key: "Home-Lighting-Design-Guide-USA.pdf",
     description:
       "Transform your home's atmosphere with professional lighting design principles. Written specifically for American homes, this practical guide walks you through the 3 layers of light (ambient, task, accent), color temperature (Kelvin sweet spot 2700-3000K), lumen sizing per square foot, recessed can spacing geometry, and room-by-room floor plans.",
     highlights: [

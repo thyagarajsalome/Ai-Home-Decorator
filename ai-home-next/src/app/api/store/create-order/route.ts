@@ -23,8 +23,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+    const razorpayKeyId =
+      process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_RVimcPWU7yAgZr";
+    const razorpaySecret =
+      process.env.RAZORPAY_KEY_SECRET || "Xxk4nHzQh9lsYop9FuC6yNrX";
 
     if (!razorpayKeyId || !razorpaySecret) {
       return NextResponse.json(

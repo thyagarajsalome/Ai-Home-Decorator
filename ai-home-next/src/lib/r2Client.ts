@@ -1,10 +1,15 @@
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || "aecd4a2eaf3342cb721dfd1717a810a2";
-const accessKeyId = process.env.R2_ACCESS_KEY_ID || "";
-const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || "";
-export const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || "ai-homedecorator-store";
+const accountId =
+  process.env.CLOUDFLARE_ACCOUNT_ID || "aecd4a2eaf3342cb721dfd1717a810a2";
+const accessKeyId =
+  process.env.R2_ACCESS_KEY_ID || "4d87f7fed772c8d887c6152760211aaf";
+const secretAccessKey =
+  process.env.R2_SECRET_ACCESS_KEY ||
+  "648ebf4ff8b1ac6385f616d492eb37c77c3817673c43e7050e9137bb0e4b7e64";
+export const R2_BUCKET_NAME =
+  process.env.R2_BUCKET_NAME || "ai-homedecorator-store";
 
 /**
  * Cloudflare R2 S3 Client

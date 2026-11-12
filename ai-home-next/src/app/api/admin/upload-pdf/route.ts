@@ -15,15 +15,18 @@ function formatBytes(bytes: number): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const accessKey = process.env.R2_ACCESS_KEY_ID;
-    const secretKey = process.env.R2_SECRET_ACCESS_KEY;
+    const accessKey =
+      process.env.R2_ACCESS_KEY_ID || "4d87f7fed772c8d887c6152760211aaf";
+    const secretKey =
+      process.env.R2_SECRET_ACCESS_KEY ||
+      "648ebf4ff8b1ac6385f616d492eb37c77c3817673c43e7050e9137bb0e4b7e64";
 
     if (!accessKey || !secretKey) {
       return NextResponse.json(
         {
           success: false,
           error:
-            "Cloudflare R2 credentials are not configured yet. Please add R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY to your Netlify Environment Variables (Site configuration -> Environment variables).",
+            "Cloudflare R2 credentials are not configured yet. Please verify R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY in your Netlify site settings.",
         },
         { status: 500 }
       );

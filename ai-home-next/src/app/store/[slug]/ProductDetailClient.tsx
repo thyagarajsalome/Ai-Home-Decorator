@@ -120,13 +120,20 @@ export function ProductPurchaseCard({ product }: { product: StoreProduct }) {
               <span className="text-3xl sm:text-4xl font-black text-[#4A2508]">
                 ${product.price.toFixed(2)}
               </span>
-              <span className="text-sm text-[#9B8272] line-through font-semibold">
-                ${product.originalPrice.toFixed(2)}
+              <span className="text-xs sm:text-sm font-bold text-[#8D5D30] uppercase">
+                USD
               </span>
+              {product.originalPrice > product.price && (
+                <span className="text-sm text-[#9B8272] line-through font-semibold">
+                  ${product.originalPrice.toFixed(2)}
+                </span>
+              )}
             </div>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md inline-block mt-1">
-              50% Launch Discount • US Edition
-            </span>
+            {product.originalPrice > product.price && (
+              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md inline-block mt-1">
+                {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% Launch Discount • US Edition
+              </span>
+            )}
           </div>
 
           <div className="text-right">

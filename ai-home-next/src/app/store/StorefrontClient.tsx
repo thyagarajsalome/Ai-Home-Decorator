@@ -190,16 +190,23 @@ export default function StorefrontClient({
                 {/* Pricing & Actions */}
                 <div className="pt-4 border-t border-[#F0E8D8]">
                   <div className="flex items-baseline justify-between mb-4">
-                    <div className="flex items-baseline gap-2">
+                    <div className="flex items-baseline gap-1.5">
                       <span className="text-2xl font-black text-[#4A2508]">
                         ${product.price.toFixed(2)}
                       </span>
-                      <span className="text-xs text-[#9B8272] line-through font-semibold">
-                        ${product.originalPrice.toFixed(2)}
+                      <span className="text-[11px] font-bold text-[#8D5D30] uppercase">
+                        USD
                       </span>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-sm">
-                        50% OFF
-                      </span>
+                      {product.originalPrice > product.price && (
+                        <span className="text-xs text-[#9B8272] line-through font-semibold ml-1">
+                          ${product.originalPrice.toFixed(2)}
+                        </span>
+                      )}
+                      {product.originalPrice > product.price && (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-sm ml-1">
+                          {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                        </span>
+                      )}
                     </div>
                     <span className="text-[10px] text-[#7A5C3A] font-semibold">
                       Instant Download
@@ -310,14 +317,19 @@ export default function StorefrontClient({
 
             {/* Modal Footer / Purchase Action */}
             <div className="p-4 sm:p-5 border-t border-[#F0E8D8] bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-black text-[#4A2508]">
                   ${previewProduct.price.toFixed(2)}
                 </span>
-                <span className="text-xs text-[#9B8272] line-through">
-                  ${previewProduct.originalPrice.toFixed(2)}
+                <span className="text-xs font-bold text-[#8D5D30] uppercase">
+                  USD
                 </span>
-                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-sm">
+                {previewProduct.originalPrice > previewProduct.price && (
+                  <span className="text-xs text-[#9B8272] line-through ml-1">
+                    ${previewProduct.originalPrice.toFixed(2)}
+                  </span>
+                )}
+                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-sm ml-1">
                   Instant PDF Access
                 </span>
               </div>

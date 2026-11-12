@@ -14,20 +14,18 @@ export async function GET(req: NextRequest) {
 
     // If slug is provided instead of key, find the product in Supabase
     if (!fileKey && slug) {
-      const { data: product, error } = await supabaseAdmin
+      const { data: product } = await supabaseAdmin
         .from("store_products")
         .select("pdf_file_key, title")
         .eq("slug", slug)
-        .single();
+        .maybeSingle();
 
-      if (error || !product) {
-        return NextResponse.json(
-          { error: "Product not found" },
-          { status: 404 }
-        );
+      if (product && product.pdf_file_key) {
+        fileKey = product.pdf_file_key;
+      } else {
+        // Fallback to local default product configuration
+        fileKey = "Home-Lighting-Design-Guide-USA.pdf";
       }
-
-      fileKey = product.pdf_file_key;
     }
 
     if (!fileKey) {

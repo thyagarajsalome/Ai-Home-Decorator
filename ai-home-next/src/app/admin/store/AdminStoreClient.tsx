@@ -523,12 +523,19 @@ export default function AdminStoreClient() {
 
                     {/* Price */}
                     <td className="py-4 px-4">
-                      <div className="font-black text-sm text-[#4A2508]">
-                        ${item.price.toFixed(2)}
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-black text-sm text-[#4A2508]">
+                          ${item.price.toFixed(2)}
+                        </span>
+                        <span className="text-[10px] font-bold text-[#8D5D30] uppercase">
+                          USD
+                        </span>
                       </div>
-                      <span className="text-[11px] text-[#9B8272] line-through">
-                        ${item.original_price?.toFixed(2)}
-                      </span>
+                      {item.original_price && item.original_price > item.price && (
+                        <span className="text-[11px] text-[#9B8272] line-through block">
+                          ${item.original_price?.toFixed(2)}
+                        </span>
+                      )}
                     </td>
 
                     {/* Specs */}
@@ -696,7 +703,7 @@ export default function AdminStoreClient() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-[#4A2508] mb-1">
-                      Sale Price ($) *
+                      Sale Price ($ USD) *
                     </label>
                     <input
                       type="number"
@@ -709,7 +716,7 @@ export default function AdminStoreClient() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-[#4A2508] mb-1">
-                      Original Price ($)
+                      Original / List Price ($ USD)
                     </label>
                     <input
                       type="number"
