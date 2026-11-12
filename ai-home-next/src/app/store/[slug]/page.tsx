@@ -5,15 +5,11 @@ import { notFound } from "next/navigation";
 import { getPublishedStoreProducts, getStoreProductBySlug } from "@/lib/storeService";
 import { ProductPurchaseCard, ProductPreviewViewer } from "./ProductDetailClient";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  const products = await getPublishedStoreProducts();
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -186,33 +182,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </div>
 
                 {/* 3D Cover Mockup & Description */}
-                <div className="pt-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div className="pt-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                   <div className="md:col-span-5 flex justify-center">
-                    <div className="relative w-48 h-64 rounded-r-2xl overflow-hidden shadow-2xl border-r-2 border-b-2 border-black/20 bg-[#2B1504]">
+                    <div className="relative w-52 h-72 rounded-r-2xl overflow-hidden shadow-2xl border-r-2 border-b-2 border-black/15 bg-white flex items-center justify-center p-1">
                       <Image
                         src={product.coverImage}
                         alt={product.title}
                         fill
-                        sizes="192px"
-                        className="object-cover opacity-90"
+                        sizes="208px"
+                        className="object-contain"
                         priority
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-4 flex flex-col justify-between text-white">
-                        <span className="text-[9px] font-black tracking-widest text-[#FCD7BA] uppercase">
-                          AI HOME DECORATOR
-                        </span>
-                        <div>
-                          <span className="text-[10px] text-[#E87A1E] font-bold uppercase block">
-                            {product.categoryName}
-                          </span>
-                          <h2 className="text-xs font-black leading-tight">
-                            {product.title}
-                          </h2>
-                          <span className="text-[9px] text-gray-300 block mt-1">
-                            {product.pagesCount} Pages • Printable PDF
-                          </span>
-                        </div>
-                      </div>
                     </div>
                   </div>
 

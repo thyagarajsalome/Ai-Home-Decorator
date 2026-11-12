@@ -133,31 +133,16 @@ export default function StorefrontClient({
                   {/* Book Spine Shadow */}
                   <div className="absolute inset-0 bg-black/20 rounded-r-xl blur-md translate-y-3 translate-x-2" />
                   
-                  {/* Book Cover */}
-                  <div className="relative w-full h-full rounded-r-xl rounded-l-xs overflow-hidden border-r-2 border-b-2 border-black/20 shadow-2xl bg-[#2B1504]">
+                  {/* Real PDF Book Cover */}
+                  <div className="relative w-full h-full rounded-r-xl rounded-l-xs overflow-hidden border-r-2 border-b-2 border-black/15 shadow-2xl bg-white flex items-center justify-center">
                     <Image
                       src={product.coverImage}
                       alt={product.title}
                       fill
                       sizes="176px"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 flex flex-col justify-between text-white">
-                      <div className="flex items-center gap-1 text-[9px] font-bold tracking-widest uppercase text-[#FCD7BA]">
-                        <span>AI HOME DECORATOR</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-[#E87A1E] tracking-wider block">
-                          {product.categoryName}
-                        </span>
-                        <h4 className="text-xs font-black leading-tight drop-shadow-md">
-                          {product.title}
-                        </h4>
-                        <span className="text-[9px] text-gray-200 mt-1 block">
-                          {product.publicationYear} US Edition
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

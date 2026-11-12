@@ -3,6 +3,9 @@ import Link from "next/link";
 import StorefrontClient from "./StorefrontClient";
 import { getPublishedStoreProducts } from "@/lib/storeService";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Design Store — American Home Improvement & Renovation PDF Playbooks (2026)",
   description:
