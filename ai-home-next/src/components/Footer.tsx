@@ -116,9 +116,13 @@ const Footer: React.FC = () => {
           {/* Quick & Legal Links */}
           <div className="flex flex-col space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-[#4A2508]">
-              Information
+              Design Store &amp; Info
             </h4>
             <div className="flex flex-col space-y-2 text-xs font-semibold text-[#6D5D53]">
+              <Link href="/store" className="text-[#E87A1E] font-bold hover:underline flex items-center gap-1">
+                <span>📚</span>
+                <span>Design Store (PDF Books) &rarr;</span>
+              </Link>
               <Link href="/about" className="hover:text-[#E87A1E] transition-colors">
                 About Our App
               </Link>
