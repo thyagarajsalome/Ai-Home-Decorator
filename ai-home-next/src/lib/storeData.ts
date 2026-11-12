@@ -1,21 +1,16 @@
-// ============================================================
-// AI Home Decorator — Design Store Data Layer
-// 9 US-Targeted Home Improvement & Design Digital PDF Books
-// ============================================================
-
-export interface StoreCategory {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-}
-
 export interface BookPreviewPage {
   title: string;
   subtitle: string;
   pageNumber: number;
   highlightText: string;
   imageUrl: string;
+}
+
+export interface StoreCategory {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
 }
 
 export interface StoreProduct {
@@ -31,7 +26,7 @@ export interface StoreProduct {
   reviewsCount: number;
   pagesCount: number;
   fileSize: string;
-  format: string; // e.g., "Printable PDF (8.5\" x 11\" US Letter) + Mobile ePub"
+  format: string;
   publicationYear: number;
   coverImage: string;
   description: string;
@@ -53,53 +48,74 @@ export const STORE_CATEGORIES: StoreCategory[] = [
     id: "home-improvements",
     name: "Home Improvements",
     icon: "🔨",
-    description: "General renovation playbooks, contractor hiring contracts, permits, and ROI breakdowns.",
+    description: "General renovation playbooks, lighting guides, contractor hiring contracts, and blueprints.",
   },
 ];
 
 export const STORE_PRODUCTS: StoreProduct[] = [
   {
-    slug: "american-home-remodeling-playbook",
-    title: "The 2026 American Home Remodeling Playbook",
-    subtitle: "The Complete Contractor, Permit, Budgeting & High-ROI Renovation Blueprint for US Homeowners",
+    slug: "home-lighting-design-guide-usa",
+    title: "The Home Lighting Design Guide (USA Edition)",
+    subtitle: "Layer, balance and control light in every room with the same principles professionals use.",
     categoryId: "home-improvements",
     categoryName: "Home Improvements",
-    price: 19.99,
-    originalPrice: 39.99,
-    badge: "Featured Test PDF",
+    price: 14.99,
+    originalPrice: 29.99,
+    badge: "Official USA Guide",
     rating: 4.6,
     reviewsCount: 0,
-    pagesCount: 84,
-    fileSize: "18.4 MB",
-    format: "Printable PDF (8.5\" x 11\" US Letter) + Interactive Digital Checklist",
+    pagesCount: 9,
+    fileSize: "105 KB",
+    format: 'Printable PDF (8.5" x 11" US Letter) — 9 Illustrated Masterclass Pages',
     publicationYear: 2026,
-    coverImage: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
+    coverImage: "/store/covers/home-lighting-design-guide-usa-cover.webp",
     description:
-      "Avoid costly remodel mistakes with the ultimate US homeowner's renovation blueprint. Written for American homeowners and investors, this playbook walks you through hiring licensed general contractors, decoding city permits, managing draw schedules, and prioritizing projects with the highest return on appraisal value.",
+      "Transform your home's atmosphere with professional lighting design principles. Written specifically for American homes, this practical guide walks you through the 3 layers of light (ambient, task, accent), color temperature (Kelvin sweet spot 2700-3000K), lumen sizing per square foot, recessed can spacing geometry, and room-by-room floor plans.",
     highlights: [
-      "City Building Permit Guide: When you legally need a permit and how to pull it without project delays.",
-      "Contractor Hiring Cheat Sheet with 21 non-negotiable questions to ask before signing.",
-      "Room-by-Room Cost Breakdown: National US averages per square foot across all 50 states.",
-      "Escrow & Draw Payment Schedule template to protect your money against contractor default.",
-      "2026 High-ROI Renovation Checklist: Which projects recoup 80%+ at appraisal.",
+      "The Three Layers of Light: How to blend ambient, task, and accent lighting to eliminate dark corners.",
+      "Kelvin & CRI Demystified: Exactly which 2700K-3000K warm white bulbs make interiors look high-end.",
+      "Recessed Can Light Placement Geometry: Spacing formulas based on ceiling height and beam spread.",
+      "Lumens Per Square Foot Calculator: Target lumen benchmarks for living rooms, kitchens, and baths.",
+      "Room-by-Room Illustrated Plans: Practical layouts with pendant, sconce, and under-cabinet dimming control.",
     ],
     tableOfContents: [
-      { chapter: "Chapter 1: Pre-Remodel Assessment & Budget Sizing", pages: "pp. 4–16", summary: "Establishing your contingency reserve (15-20%) and prioritizing structural over cosmetic updates." },
-      { chapter: "Chapter 2: US Building Permits & Municipal Codes", pages: "pp. 17–28", summary: "Navigating IRC codes, historic districts, HOA architectural review boards, and inspections." },
-      { chapter: "Chapter 3: Vetting & Hiring Licensed Contractors", pages: "pp. 29–45", summary: "Contract templates, lien waivers, workers' comp verification, and milestone billing." },
-      { chapter: "Chapter 4: Room-by-Room Cost & ROI Benchmarks", pages: "pp. 46–68", summary: "Detailed square-foot price models for kitchens, bathrooms, additions, and basements." },
-      { chapter: "Chapter 5: Final Punch List & Closing Protocols", pages: "pp. 69–84", summary: "The 50-point inspection before final payment release." },
+      { chapter: "Page 1: Design with Light, Not Just Fixtures", pages: "p. 1", summary: "Creating emotional warmth and functional zoning before fixture shopping." },
+      { chapter: "Page 2: The Three Layers of Light", pages: "p. 2", summary: "Ambient ceiling wash, task reading lights, and architectural accent focus." },
+      { chapter: "Page 3: Color, Quality and Brightness", pages: "p. 3", summary: "Kelvin color temperature (2700K-3000K) and CRI 90+ standards." },
+      { chapter: "Page 4: Placement Geometry & Ceiling Spacing", pages: "p. 4", summary: "Recessed fixture spacing, beam overlap formulas, and hanging heights." },
+      { chapter: "Page 5: How Bright? Sizing Your Lumens", pages: "p. 5", summary: "Target lumens per square foot benchmarks across all room types." },
+      { chapter: "Pages 6-7: Room-by-Room Floor Plans", pages: "pp. 6–7", summary: "Detailed living room and kitchen layouts with dimming controls." },
+      { chapter: "Page 8: Exterior, Landscape & Safety Lighting", pages: "p. 8", summary: "Tree uplighting, wall washes, path shielding, and motion security." },
+      { chapter: "Page 9: Your Master Lighting Plan Checklist", pages: "p. 9", summary: "Final 7-point pre-wiring checklist before buying bulbs and fixtures." },
     ],
     previewPages: [
-      { title: "Permit vs. No-Permit Matrix", subtitle: "Clear guidelines for IRC municipal requirements", pageNumber: 18, highlightText: "Never let a contractor pull permits under your personal name as owner-builder without understanding the liability risks.", imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80" },
-      { title: "Contractor Bid Comparison Sheet", subtitle: "Apple-to-apples bid evaluation formula", pageNumber: 34, highlightText: "Line-item bids must separate labor hours, allowance allocations, and subcontractor margins.", imageUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80" },
-      { title: "National Renovation Cost Breakdown", subtitle: "Square foot price benchmarks across US regions", pageNumber: 52, highlightText: "Average mid-range kitchen remodel in 2026: $150 to $275 per sq. ft. depending on state labor rates.", imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80" },
+      {
+        pageNumber: 1,
+        title: "Design with Light, Not Just Fixtures",
+        subtitle: "How each space should feel and functional zoning",
+        highlightText: "Lighting designers do not start by shopping for fixtures. They decide how each space should feel and what people will do there, then build light in layers to match.",
+        imageUrl: "/store/covers/home-lighting-sample-page-1.webp",
+      },
+      {
+        pageNumber: 2,
+        title: "The Three Layers of Light",
+        subtitle: "Ambient, Task & Accent Lighting Rules",
+        highlightText: "Every well-lit room blends three layers. Ambient light fills the room, task light helps you work, and accent light adds depth and focus. Skip a layer and the room feels flat or harsh.",
+        imageUrl: "/store/covers/home-lighting-sample-page-2.webp",
+      },
+      {
+        pageNumber: 3,
+        title: "Color, Quality and Brightness",
+        subtitle: "Kelvin Temperature, CRI 90+ & Lumens",
+        highlightText: "Three numbers on every bulb box decide how a room feels: color temperature (Kelvin), color accuracy (CRI) and brightness (lumens). Choose them on purpose.",
+        imageUrl: "/store/covers/home-lighting-sample-page-3.webp",
+      },
     ],
     usSpecifics: [
-      "Compliant with International Residential Code (IRC) standards.",
-      "US Dollar ($) pricing benchmarks based on nationwide contractor indices.",
-      "Standard US building material specifications (2x4 / 2x6 framing, drywall gauges, Romex wire).",
+      "Standard US 120V electrical fixtures and recessed can dimensions.",
+      "Compliant with US building codes and Title 24 energy standards.",
+      "Bulb specifications tailored to US retail brands (GE, Philips, Lutron, Cree).",
     ],
-    targetAudience: "US Homeowners planning a major renovation, real estate investors, and DIYers managing subcontractors.",
+    targetAudience: "US Homeowners, interior design enthusiasts, and renovators looking for warm, professional lighting.",
   },
 ];

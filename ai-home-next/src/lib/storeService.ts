@@ -56,14 +56,18 @@ export async function getStoreProductBySlug(slug: string): Promise<StoreProduct 
       .single();
 
     if (error || !data) {
-      const fallback = STORE_PRODUCTS.find((p) => p.slug === slug);
+      const fallback =
+        STORE_PRODUCTS.find((p) => p.slug === slug) ||
+        (slug === "american-home-remodeling-playbook" ? STORE_PRODUCTS[0] : null);
       return fallback || null;
     }
 
     return mapDbToStoreProduct(data);
   } catch (err) {
     console.error("Error fetching store_product by slug from Supabase:", err);
-    const fallback = STORE_PRODUCTS.find((p) => p.slug === slug);
+    const fallback =
+      STORE_PRODUCTS.find((p) => p.slug === slug) ||
+      (slug === "american-home-remodeling-playbook" ? STORE_PRODUCTS[0] : null);
     return fallback || null;
   }
 }
