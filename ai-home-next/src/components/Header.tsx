@@ -43,9 +43,9 @@ const Header: React.FC = () => {
         {/* Brand Logo & Title */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 group cursor-pointer"
+          className="flex items-center gap-2 sm:gap-2.5 group cursor-pointer flex-shrink-0"
         >
-          <div className="relative w-10 h-10 rounded-xl overflow-hidden border-2 border-[#FCD7BA] shadow-xs group-hover:scale-105 transition-transform duration-200 bg-white flex-shrink-0">
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border-2 border-[#FCD7BA] shadow-xs group-hover:scale-105 transition-transform duration-200 bg-white flex-shrink-0">
             <Image
               src="/brand/logo.jpg"
               alt="AI Home Decorator Logo"
@@ -56,47 +56,47 @@ const Header: React.FC = () => {
             />
           </div>
           <div className="flex flex-col">
-            <div className="flex items-center gap-1 font-heading font-black text-lg sm:text-xl tracking-tight leading-none">
+            <div className="flex items-center gap-1 font-heading font-black text-base sm:text-lg xl:text-xl tracking-tight leading-none">
               <span className="text-[#E87A1E]">AI</span>
               <span className="text-[#4A2508]">Home Decorator</span>
             </div>
-            <span className="text-[9px] font-bold tracking-widest text-[#7A4B27] uppercase mt-0.5">
+            <span className="hidden xl:block text-[9px] font-bold tracking-widest text-[#7A4B27] uppercase mt-0.5">
               DESIGN • DECORATE • VISUALIZE
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-6">
-          <nav className="flex items-center gap-5 text-sm font-bold text-[#5C3314]">
+        <div className="hidden lg:flex items-center gap-3 xl:gap-5">
+          <nav className="flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-bold text-[#5C3314]">
             <Link
               href="/"
-              className="hover:text-[#E87A1E] transition-colors duration-150"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
             >
               Home
             </Link>
             <Link
               href="/ideas"
-              className="hover:text-[#E87A1E] transition-colors duration-150"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
             >
               Room Ideas
             </Link>
             <Link
               href="/guide"
-              className="hover:text-[#E87A1E] transition-colors duration-150"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
             >
               Style Guides
             </Link>
             <Link
               href="/usa"
-              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1.5"
+              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1 py-1"
             >
               <MapPinIcon className="w-3.5 h-3.5 text-[#E87A1E]" />
               <span>US Cities</span>
             </Link>
             <Link
               href="/store"
-              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1.5 text-[#E87A1E]"
+              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1.5 text-[#E87A1E] py-1"
             >
               <span>Design Store</span>
               <span className="text-[9px] bg-[#FEEDDF] border border-[#F8B98B] text-[#8D3D10] px-1.5 py-0.5 rounded-md font-black uppercase tracking-wider">
@@ -104,49 +104,60 @@ const Header: React.FC = () => {
               </span>
             </Link>
             <Link
-              href="/admin/store"
-              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1 text-xs font-bold text-[#8D3D10] bg-[#FEEDDF]/70 hover:bg-[#FEEDDF] border border-[#F8B98B]/80 px-2.5 py-1 rounded-lg shadow-2xs"
-              title="Store Admin Access (CRUD & PDF Uploader)"
-            >
-              <span>⚙️</span>
-              <span>Admin</span>
-            </Link>
-            <Link
               href="/about"
-              className="hover:text-[#E87A1E] transition-colors duration-150"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
             >
               About
             </Link>
           </nav>
 
           {/* Auth State & Primary Actions */}
-          <div className="flex items-center gap-3 border-l border-[#F1E4D5] pl-5">
+          <div className="flex items-center gap-2 xl:gap-3 border-l border-[#F1E4D5] pl-3 xl:pl-4">
             {currentUser ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEEDDF] border border-[#F8B98B] text-xs font-bold text-[#4A2508]">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="max-w-[130px] truncate">{currentUser.email}</span>
+              <div className="flex items-center gap-2">
+                {/* Admin Quick-Access Button */}
+                <Link
+                  href="/admin/store"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors shadow-2xs"
+                  title="Store Admin Dashboard"
+                >
+                  <span>⚙️</span>
+                  <span>Admin</span>
+                </Link>
+
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FEEDDF]/60 border border-[#F8B98B]/60 text-xs font-medium text-[#4A2508]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                  <span className="max-w-[95px] xl:max-w-[130px] truncate">{currentUser.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="text-xs font-bold text-[#8D3D10] hover:text-[#E87A1E] transition-colors cursor-pointer"
+                  className="text-xs font-bold text-[#8D3D10] hover:text-[#E87A1E] transition-colors cursor-pointer px-1 py-1"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="text-xs sm:text-sm font-bold text-[#4A2508] hover:text-[#E87A1E] transition-colors px-2 py-1"
+                  className="text-xs font-bold text-[#4A2508] hover:text-[#E87A1E] transition-colors px-2 py-1"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
-                  className="btn-brand-secondary px-3.5 py-1.5 text-xs font-bold"
+                  className="btn-brand-secondary px-3 py-1.5 text-xs font-bold"
                 >
                   Sign Up
+                </Link>
+                {/* Discrete Admin Link for logged-out view */}
+                <Link
+                  href="/admin/store"
+                  className="p-1.5 rounded-lg text-[#8D3D10] hover:bg-[#FEEDDF] transition-colors"
+                  title="Admin Store Panel"
+                  aria-label="Admin Store Panel"
+                >
+                  <span className="text-sm">⚙️</span>
                 </Link>
               </div>
             )}
@@ -156,7 +167,7 @@ const Header: React.FC = () => {
               href={PLAY_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-brand-primary px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#E87A1E]/20 hover:shadow-lg hover:shadow-[#E87A1E]/30"
+              className="btn-brand-primary px-3 xl:px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#E87A1E]/20 hover:shadow-lg hover:shadow-[#E87A1E]/30 flex-shrink-0"
             >
               <svg
                 className="w-3.5 h-3.5 fill-current"
@@ -165,7 +176,8 @@ const Header: React.FC = () => {
               >
                 <path d="M3.609 1.814L13.792 12 3.61 22.186a2.38 2.38 0 0 1-.61-1.63V3.444c0-.623.228-1.2.61-1.63zm11.237 11.24l2.42 2.42-12.02 6.94 9.6-9.36zm0-2.108L5.246 1.586l12.02 6.94-2.42 2.42zm1.472 1.054l3.523 2.033a1.59 1.59 0 0 1 0 2.766l-3.523 2.033-2.155-2.155 2.155-2.677z" />
               </svg>
-              <span>Install App</span>
+              <span className="hidden xl:inline">Install App</span>
+              <span className="xl:hidden">App</span>
             </a>
           </div>
         </div>
@@ -265,20 +277,7 @@ const Header: React.FC = () => {
           >
             <span>Design Store (PDF Books)</span>
             <span className="text-[10px] bg-[#FEEDDF] border border-[#F8B98B] text-[#8D3D10] px-2 py-0.5 rounded-full font-black">
-              NEW
-            </span>
-          </Link>
-          <Link
-            href="/admin/store"
-            onClick={closeMenu}
-            className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-bold text-[#8D3D10] bg-[#FEEDDF]/60 hover:bg-[#FEEDDF]"
-          >
-            <span className="flex items-center gap-1.5">
-              <span>⚙️</span>
-              <span>Store Admin Panel</span>
-            </span>
-            <span className="text-[10px] bg-[#E87A1E] text-white px-2 py-0.5 rounded-full font-black">
-              ADMIN
+              PDF
             </span>
           </Link>
           <Link
@@ -291,32 +290,57 @@ const Header: React.FC = () => {
 
           <div className="pt-3 border-t border-[#F1E4D5] space-y-2">
             {currentUser ? (
-              <div className="flex items-center justify-between px-3 py-2 bg-[#FEEDDF] rounded-xl border border-[#F8B98B]">
-                <span className="text-xs font-bold text-[#4A2508] truncate">
-                  {currentUser.email}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="text-xs font-bold text-[#8D3D10] hover:text-[#E87A1E]"
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-3 py-2 bg-[#FEEDDF]/60 rounded-xl border border-[#F8B98B]/60">
+                  <span className="text-xs font-bold text-[#4A2508] truncate">
+                    {currentUser.email}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-xs font-bold text-[#8D3D10] hover:text-[#E87A1E]"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+                {/* Admin Quick Link */}
+                <Link
+                  href="/admin/store"
+                  onClick={closeMenu}
+                  className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors"
                 >
-                  Sign Out
-                </button>
+                  <span className="flex items-center gap-2">
+                    <span>⚙️</span>
+                    <span>Store Admin Dashboard</span>
+                  </span>
+                  <span className="text-[10px] bg-[#E87A1E] text-white px-2 py-0.5 rounded-md font-black">
+                    ADMIN
+                  </span>
+                </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href="/login"
+                    onClick={closeMenu}
+                    className="text-center py-2 rounded-xl text-xs font-bold text-[#4A2508] border border-[#F1E4D5] hover:bg-[#FFF8F2]"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={closeMenu}
+                    className="text-center py-2 rounded-xl text-xs font-bold btn-brand-secondary"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
                 <Link
-                  href="/login"
+                  href="/admin/store"
                   onClick={closeMenu}
-                  className="text-center py-2 rounded-xl text-xs font-bold text-[#4A2508] border border-[#F1E4D5] hover:bg-[#FFF8F2]"
+                  className="block text-center py-1.5 text-[11px] font-bold text-[#8D3D10] hover:underline"
                 >
-                  Sign In
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={closeMenu}
-                  className="text-center py-2 rounded-xl text-xs font-bold btn-brand-secondary"
-                >
-                  Sign Up
+                  ⚙️ Admin Store Access
                 </Link>
               </div>
             )}
