@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { STORE_PRODUCTS } from "@/lib/storeData";
+import { getPublishedStoreProducts, getStoreProductBySlug } from "@/lib/storeService";
 import { ProductPurchaseCard, ProductPreviewViewer } from "./ProductDetailClient";
 
 interface PageProps {
@@ -10,14 +10,15 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return STORE_PRODUCTS.map((product) => ({
+  const products = await getPublishedStoreProducts();
+  return products.map((product) => ({
     slug: product.slug,
   }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = STORE_PRODUCTS.find((p) => p.slug === slug);
+  const product = await getStoreProductBySlug(slug);
 
   if (!product) return {};
 
@@ -47,12 +48,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const product = STORE_PRODUCTS.find((p) => p.slug === slug);
+  const product = await getStoreProductBySlug(slug);
 
   if (!product) notFound();
 
   // Related products from other categories
-  const relatedProducts = STORE_PRODUCTS.filter((p) => p.slug !== product.slug).slice(0, 3);
+  const allProducts = await getPublishedStoreProducts();
+  const relatedProducts = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
 
   // Combined Product + Book JSON-LD schema for Google Rich Results
   const productJsonLd = {
@@ -110,20 +112,29 @@ export default async function ProductDetailPage({ params }: PageProps) {
       />
 
       <main className="min-h-screen bg-[#FFFBF7] pb-20">
-        {/* ── Breadcrumbs ── */}
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4 text-xs sm:text-sm text-[#7A5C3A]">
-          <Link href="/" className="hover:text-[#E87A1E]">
-            Home
+        {/* ── Top Navigation & Admin Link ── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4 flex items-center justify-between text-xs sm:text-sm">
+          <nav className="text-[#7A5C3A] flex items-center flex-wrap gap-1">
+            <Link href="/" className="hover:text-[#E87A1E]">
+              Home
+            </Link>
+            <span>›</span>
+            <Link href="/store" className="hover:text-[#E87A1E]">
+              Design Store
+            </Link>
+            <span>›</span>
+            <span className="font-semibold text-[#4A2508] truncate max-w-[200px] sm:max-w-xs inline-block">
+              {product.title}
+            </span>
+          </nav>
+          <Link
+            href="/admin/store"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E0D0C0] hover:border-[#E87A1E] text-xs font-bold text-[#5C3314] hover:text-[#E87A1E] shadow-2xs hover:shadow-xs transition-all flex-shrink-0"
+          >
+            <span>⚙️</span>
+            <span>Admin Panel</span>
           </Link>
-          <span className="mx-2">›</span>
-          <Link href="/store" className="hover:text-[#E87A1E]">
-            Design Store
-          </Link>
-          <span className="mx-2">›</span>
-          <span className="font-semibold text-[#4A2508] truncate max-w-xs inline-block align-bottom">
-            {product.title}
-          </span>
-        </nav>
+        </div>
 
         {/* ── Main Two-Column Layout ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
@@ -299,65 +310,67 @@ export default async function ProductDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* ── Related Guides ── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h3 className="text-2xl font-black text-[#4A2508] font-heading">
-                Explore More Renovation Playbooks
-              </h3>
-              <p className="text-xs text-[#7A5C3A]">
-                Check out other specialized guides in our digital library
-              </p>
-            </div>
-            <Link
-              href="/store"
-              className="text-xs font-bold text-[#E87A1E] hover:underline"
-            >
-              View All 9 Guides →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {relatedProducts.map((rel) => (
+        {/* ── Related Guides (Shown when more products are added) ── */}
+        {relatedProducts.length > 0 && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-black text-[#4A2508] font-heading">
+                  Explore More Renovation Playbooks
+                </h3>
+                <p className="text-xs text-[#7A5C3A]">
+                  Check out other specialized guides in our digital library
+                </p>
+              </div>
               <Link
-                key={rel.slug}
-                href={`/store/${rel.slug}`}
-                className="bg-white rounded-2xl p-5 border border-[#F0E8D8] hover:border-[#E87A1E] hover:shadow-lg transition-all group flex flex-col justify-between"
+                href="/store"
+                className="text-xs font-bold text-[#E87A1E] hover:underline"
               >
-                <div>
-                  <div className="relative h-40 w-full rounded-xl overflow-hidden mb-3 bg-[#2B1504]">
-                    <Image
-                      src={rel.coverImage}
-                      alt={rel.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 300px"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                    />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#E87A1E] text-white text-[10px] font-black uppercase">
-                      {rel.categoryName}
-                    </div>
-                  </div>
-                  <h4 className="font-heading font-bold text-sm text-[#4A2508] group-hover:text-[#E87A1E] transition-colors line-clamp-2 mb-1">
-                    {rel.title}
-                  </h4>
-                  <p className="text-[11px] text-[#7A5C3A] line-clamp-2 mb-3">
-                    {rel.subtitle}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-[#F0E8D8] flex items-center justify-between">
-                  <span className="text-base font-black text-[#4A2508]">
-                    ${rel.price.toFixed(2)}
-                  </span>
-                  <span className="text-xs font-bold text-[#E87A1E]">
-                    View Guide →
-                  </span>
-                </div>
+                View All Guides →
               </Link>
-            ))}
-          </div>
-        </section>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {relatedProducts.map((rel) => (
+                <Link
+                  key={rel.slug}
+                  href={`/store/${rel.slug}`}
+                  className="bg-white rounded-2xl p-5 border border-[#F0E8D8] hover:border-[#E87A1E] hover:shadow-lg transition-all group flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="relative h-40 w-full rounded-xl overflow-hidden mb-3 bg-[#2B1504]">
+                      <Image
+                        src={rel.coverImage}
+                        alt={rel.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 300px"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                      />
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#E87A1E] text-white text-[10px] font-black uppercase">
+                        {rel.categoryName}
+                      </div>
+                    </div>
+                    <h4 className="font-heading font-bold text-sm text-[#4A2508] group-hover:text-[#E87A1E] transition-colors line-clamp-2 mb-1">
+                      {rel.title}
+                    </h4>
+                    <p className="text-[11px] text-[#7A5C3A] line-clamp-2 mb-3">
+                      {rel.subtitle}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#F0E8D8] flex items-center justify-between">
+                    <span className="text-base font-black text-[#4A2508]">
+                      ${rel.price.toFixed(2)}
+                    </span>
+                    <span className="text-xs font-bold text-[#E87A1E]">
+                      View Guide →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </>
   );

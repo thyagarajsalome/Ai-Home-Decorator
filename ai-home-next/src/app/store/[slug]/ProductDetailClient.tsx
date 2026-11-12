@@ -127,7 +127,7 @@ export function ProductPurchaseCard({ product }: { product: StoreProduct }) {
                 </p>
                 <div className="space-y-3">
                   <a
-                    href="/downloads/2026-USA-Home-Design-Remodel-Lookbook.pdf"
+                    href={`/api/store/download?slug=${product.slug}`}
                     download
                     className="block w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold text-center transition-colors"
                   >

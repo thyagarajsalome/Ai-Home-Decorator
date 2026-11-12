@@ -104,6 +104,14 @@ const Header: React.FC = () => {
               </span>
             </Link>
             <Link
+              href="/admin/store"
+              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1 text-xs font-bold text-[#8D3D10] bg-[#FEEDDF]/70 hover:bg-[#FEEDDF] border border-[#F8B98B]/80 px-2.5 py-1 rounded-lg shadow-2xs"
+              title="Store Admin Access (CRUD & PDF Uploader)"
+            >
+              <span>⚙️</span>
+              <span>Admin</span>
+            </Link>
+            <Link
               href="/about"
               className="hover:text-[#E87A1E] transition-colors duration-150"
             >
@@ -258,6 +266,19 @@ const Header: React.FC = () => {
             <span>Design Store (PDF Books)</span>
             <span className="text-[10px] bg-[#FEEDDF] border border-[#F8B98B] text-[#8D3D10] px-2 py-0.5 rounded-full font-black">
               NEW
+            </span>
+          </Link>
+          <Link
+            href="/admin/store"
+            onClick={closeMenu}
+            className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-bold text-[#8D3D10] bg-[#FEEDDF]/60 hover:bg-[#FEEDDF]"
+          >
+            <span className="flex items-center gap-1.5">
+              <span>⚙️</span>
+              <span>Store Admin Panel</span>
+            </span>
+            <span className="text-[10px] bg-[#E87A1E] text-white px-2 py-0.5 rounded-full font-black">
+              ADMIN
             </span>
           </Link>
           <Link

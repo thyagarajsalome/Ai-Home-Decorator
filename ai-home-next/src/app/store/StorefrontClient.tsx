@@ -5,13 +5,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { STORE_CATEGORIES, STORE_PRODUCTS, StoreProduct } from "@/lib/storeData";
 
-export default function StorefrontClient() {
+export default function StorefrontClient({
+  initialProducts = STORE_PRODUCTS,
+}: {
+  initialProducts?: StoreProduct[];
+}) {
+  const [products] = useState<StoreProduct[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [previewProduct, setPreviewProduct] = useState<StoreProduct | null>(null);
   const [activePreviewIndex, setActivePreviewIndex] = useState<number>(0);
 
-  const filteredProducts = STORE_PRODUCTS.filter((product) => {
+  // Only show category pills that actually have published products
+  const activeCategoryIds = new Set(products.map((p) => p.categoryId));
+  const availableCategories = STORE_CATEGORIES.filter(
+    (c) => c.id === "all" || activeCategoryIds.has(c.id)
+  );
+
+  const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategory === "all" || product.categoryId === selectedCategory;
     const matchesSearch =
@@ -36,7 +47,7 @@ export default function StorefrontClient() {
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
         {/* Category Pill Scroll */}
         <div className="w-full md:w-auto flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {STORE_CATEGORIES.map((cat) => {
+          {availableCategories.map((cat) => {
             const isActive = selectedCategory === cat.id;
             return (
               <button
@@ -225,45 +236,6 @@ export default function StorefrontClient() {
           ))}
         </div>
       )}
-
-      {/* ── All-Access Bundle Banner ── */}
-      <section className="mt-16 bg-gradient-to-br from-[#4A2508] via-[#381B04] to-[#200E02] text-white rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden border border-[#FCD7BA]/20">
-        <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-[#E87A1E]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E87A1E] text-white text-xs font-black uppercase tracking-wider mb-4">
-            <span>⭐</span>
-            <span>All-In-One Ultimate Bundle</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight mb-3">
-            The Complete 2026 American Home Improvement Library
-          </h2>
-          <p className="text-sm sm:text-base text-[#FCD7BA] mb-6 leading-relaxed">
-            Get instant access to all 9 comprehensive PDF playbooks (Kitchen, Bathroom, Flooring, Painting, Interior, Exterior, Landscape, Patio & Contractor Permits). Over 600+ pages of professional checklists, dimension blueprints, and paint codes.
-          </p>
-
-          <div className="flex flex-wrap items-baseline gap-3 mb-6">
-            <span className="text-3xl sm:text-5xl font-black text-white">$49.00</span>
-            <span className="text-lg text-gray-400 line-through">$134.91</span>
-            <span className="text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-1 rounded-lg">
-              Save 64% Complete Package
-            </span>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            <a
-              href="https://apps.apple.com/app/ai-home-decorator/id6743444857"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3.5 rounded-xl bg-[#E87A1E] hover:bg-[#D66A12] text-white text-sm font-bold text-center shadow-lg transition-all"
-            >
-              Get All 9 Guides for $49 →
-            </a>
-            <span className="text-xs text-gray-300 text-center sm:text-left">
-              🔒 30-Day Money-Back Guarantee • Instant PDF Download
-            </span>
-          </div>
-        </div>
-      </section>
 
       {/* ── Interactive "Look Inside" Preview Modal ── */}
       {previewProduct && (

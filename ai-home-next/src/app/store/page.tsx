@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import StorefrontClient from "./StorefrontClient";
-import { STORE_PRODUCTS } from "@/lib/storeData";
+import { getPublishedStoreProducts } from "@/lib/storeService";
 
 export const metadata: Metadata = {
   title: "Design Store — American Home Improvement & Renovation PDF Playbooks (2026)",
@@ -27,14 +27,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StorePage() {
+export default async function StorePage() {
+  const products = await getPublishedStoreProducts();
+
   // Structured Data: ItemList of Products
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "AI Home Decorator Digital Design Store",
     description: "Curated digital home improvement and interior design PDF playbooks for US homeowners.",
-    itemListElement: STORE_PRODUCTS.map((product, idx) => ({
+    itemListElement: products.map((product, idx) => ({
       "@type": "ListItem",
       position: idx + 1,
       item: {
@@ -64,14 +66,23 @@ export default function StorePage() {
       />
 
       <main className="min-h-screen bg-[#FFFBF7]">
-        {/* ── Breadcrumbs ── */}
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-sm text-[#7A5C3A]">
-          <Link href="/" className="hover:text-[#E87A1E]">
-            Home
+        {/* ── Top Bar (Breadcrumbs + Admin Access) ── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 flex items-center justify-between">
+          <nav className="text-sm text-[#7A5C3A]">
+            <Link href="/" className="hover:text-[#E87A1E]">
+              Home
+            </Link>
+            <span className="mx-2">›</span>
+            <span className="font-medium text-[#4A2508]">Design Store</span>
+          </nav>
+          <Link
+            href="/admin/store"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white border border-[#E0D0C0] hover:border-[#E87A1E] text-xs font-bold text-[#5C3314] hover:text-[#E87A1E] shadow-2xs hover:shadow-xs transition-all"
+          >
+            <span>⚙️</span>
+            <span>Admin Store Panel</span>
           </Link>
-          <span className="mx-2">›</span>
-          <span className="font-medium text-[#4A2508]">Design Store</span>
-        </nav>
+        </div>
 
         {/* ── Hero Header ── */}
         <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-center">
@@ -108,7 +119,7 @@ export default function StorePage() {
         </header>
 
         {/* ── Storefront Interactive Section ── */}
-        <StorefrontClient />
+        <StorefrontClient initialProducts={products} />
 
         {/* ── Why Our Guides Section ── */}
         <section className="bg-white py-16 border-t border-[#F0E8D8] mt-16">
