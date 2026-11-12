@@ -2,7 +2,6 @@ import { MetadataRoute } from "next";
 import { ELEMENT_CATEGORIES } from "@/constants";
 import { supabase } from "@/supabaseClient";
 import { ROOMS, STYLES } from "@/lib/seoData";
-import { STORE_PRODUCTS } from "@/lib/storeData";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aihomedecorator.com";
@@ -15,12 +14,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "daily",
       priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/store`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.95,
     },
     {
       url: `${baseUrl}/ideas`,
@@ -105,20 +98,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  // 7. Design Store: 9 Digital PDF Books & Renovation Playbooks
-  const storeProductRoutes: MetadataRoute.Sitemap = STORE_PRODUCTS.map((prod) => ({
-    url: `${baseUrl}/store/${prod.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.85,
-  }));
-
   return [
     ...primaryRoutes,
     ...cityRoutes,
     ...styleGuideRoutes,
     ...roomIdeaRoutes,
-    ...storeProductRoutes,
     ...designRoutes,
     ...legalRoutes,
   ];
