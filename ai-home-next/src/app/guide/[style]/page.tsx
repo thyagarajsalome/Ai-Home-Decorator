@@ -319,7 +319,7 @@ export default async function StyleGuidePage({ params }: PageProps) {
               Snap or upload any photo of your room. Our AI decorator redesigns it with authentic {style.name} furniture, textures, and lighting automatically.
             </p>
             <a
-              href="https://apps.apple.com/app/ai-home-decorator/id6743444857"
+              href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#E87A1E] hover:bg-[#D66A12] text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition-colors text-sm"

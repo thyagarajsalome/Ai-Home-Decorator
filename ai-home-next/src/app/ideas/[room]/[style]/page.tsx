@@ -140,7 +140,7 @@ export default async function IdeasPage({ params }: PageProps) {
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
-                  href="https://apps.apple.com/app/ai-home-decorator/id6743444857"
+                  href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
                   className="bg-[#E87A1E] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#C86010] transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -325,7 +325,7 @@ export default async function IdeasPage({ params }: PageProps) {
               Upload a photo of your {room.name.toLowerCase()} and see it transformed into {style.name} style in seconds — completely free.
             </p>
             <a
-              href="https://apps.apple.com/app/ai-home-decorator/id6743444857"
+              href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
               className="inline-block bg-[#E87A1E] text-white px-10 py-4 rounded-xl text-lg font-bold hover:bg-[#C86010] transition-colors"
               target="_blank"
               rel="noopener noreferrer"
