@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { verifyAdminAuth } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await verifyAdminAuth(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ success: false, error: auth.error || "Unauthorized" }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const slug = (formData.get("slug") as string | null) || "guide";

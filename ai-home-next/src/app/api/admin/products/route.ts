@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { verifyAdminAuth } from "@/lib/adminAuth";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -20,8 +21,13 @@ function slugify(text: string): string {
 }
 
 // ── GET: Read all products (Published & Drafts) ──
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const auth = await verifyAdminAuth(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: 401 });
+    }
+
     const { data, error } = await supabaseAdmin
       .from("store_products")
       .select("*")
@@ -43,6 +49,11 @@ export async function GET() {
 // ── POST: Create a new product ──
 export async function POST(req: Request) {
   try {
+    const auth = await verifyAdminAuth(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
 
     const title = body.title?.trim();
@@ -108,6 +119,11 @@ export async function POST(req: Request) {
 // ── PUT: Update an existing product ──
 export async function PUT(req: Request) {
   try {
+    const auth = await verifyAdminAuth(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const id = body.id;
 
@@ -182,6 +198,11 @@ export async function PUT(req: Request) {
 // ── DELETE: Delete a product ──
 export async function DELETE(req: Request) {
   try {
+    const auth = await verifyAdminAuth(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 

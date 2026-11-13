@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getStoreProductBySlug } from "@/lib/storeService";
+import { generateDownloadToken } from "@/lib/downloadAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -65,10 +66,24 @@ export async function POST(req: NextRequest) {
       console.warn("Could not insert purchase row into Supabase:", dbErr);
     }
 
+    // Generate cryptographic download token valid for 24 hours
+    const { token, expires } = generateDownloadToken(
+      slug,
+      razorpay_payment_id,
+      email,
+      24
+    );
+
+    const downloadUrl = `/api/store/download?slug=${encodeURIComponent(
+      slug
+    )}&payment_id=${encodeURIComponent(
+      razorpay_payment_id
+    )}&token=${token}&expires=${expires}&email=${encodeURIComponent(email)}`;
+
     return NextResponse.json({
       success: true,
       message: "Payment verified successfully!",
-      downloadUrl: `/api/store/download?slug=${slug}`,
+      downloadUrl,
     });
   } catch (error: any) {
     console.error("Payment verification error:", error);

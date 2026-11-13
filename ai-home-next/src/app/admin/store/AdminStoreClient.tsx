@@ -6,11 +6,8 @@ import Link from "next/link";
 import { STORE_CATEGORIES } from "@/lib/storeData";
 import { useAuth } from "@/context/AuthContext";
 import { extractPdfPagesToWebp } from "@/lib/pdfCoverExtractor";
-
-export const ADMIN_EMAILS = [
-  "thyagaraja1983@gmail.com",
-  "thyagarajsalome@gmail.com",
-];
+import { ADMIN_EMAILS } from "@/lib/adminAuth";
+import { supabase } from "@/supabaseClient";
 
 interface DbProduct {
   id: string;
@@ -130,10 +127,27 @@ export default function AdminStoreClient() {
     preview_pages: [],
   });
 
+  const getAuthHeaders = async (): Promise<Record<string, string>> => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        return { Authorization: `Bearer ${session.access_token}` };
+      }
+    } catch (e) {
+      console.warn("Could not retrieve auth session token:", e);
+    }
+    return {};
+  };
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/products");
+      const authHeaders = await getAuthHeaders();
+      const res = await fetch("/api/admin/products", {
+        headers: authHeaders,
+      });
       const json = await res.json();
       if (json.products) {
         setProducts(json.products);
@@ -229,6 +243,8 @@ export default function AdminStoreClient() {
 
       setUploadMessage(`Step 2/3: Uploading front cover WebP image (${numPages} pages detected)...`);
 
+      const authHeaders = await getAuthHeaders();
+
       // 2. Upload WebP Cover to Supabase Storage CDN
       const coverFormData = new FormData();
       coverFormData.append("file", coverBlob, `${cleanSlug}-cover.webp`);
@@ -237,6 +253,7 @@ export default function AdminStoreClient() {
 
       const coverRes = await fetch("/api/admin/upload-cover", {
         method: "POST",
+        headers: authHeaders,
         body: coverFormData,
       });
       const coverJson = await coverRes.json();
@@ -255,6 +272,7 @@ export default function AdminStoreClient() {
 
         const sRes = await fetch("/api/admin/upload-cover", {
           method: "POST",
+          headers: authHeaders,
           body: sFormData,
         });
         const sJson = await sRes.json();
@@ -278,6 +296,7 @@ export default function AdminStoreClient() {
 
       const res = await fetch("/api/admin/upload-pdf", {
         method: "POST",
+        headers: authHeaders,
         body: data,
       });
 
@@ -333,10 +352,11 @@ export default function AdminStoreClient() {
         highlights,
       };
 
+      const authHeaders = await getAuthHeaders();
       const method = isEditing ? "PUT" : "POST";
       const res = await fetch("/api/admin/products", {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify(payload),
       });
 
@@ -356,9 +376,10 @@ export default function AdminStoreClient() {
 
   const handleTogglePublish = async (p: DbProduct) => {
     try {
+      const authHeaders = await getAuthHeaders();
       const res = await fetch("/api/admin/products", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify({
           id: p.id,
           is_published: !p.is_published,
@@ -378,8 +399,10 @@ export default function AdminStoreClient() {
 
   const handleDelete = async (id: string) => {
     try {
+      const authHeaders = await getAuthHeaders();
       const res = await fetch(`/api/admin/products?id=${id}`, {
         method: "DELETE",
+        headers: authHeaders,
       });
       if (res.ok) {
         setProducts((prev) => prev.filter((p) => p.id !== id));

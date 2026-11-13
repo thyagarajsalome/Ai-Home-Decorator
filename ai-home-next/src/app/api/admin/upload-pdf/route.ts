@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uploadToR2 } from "@/lib/r2Client";
+import { verifyAdminAuth } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
 // Support larger PDF book files
@@ -15,6 +16,11 @@ function formatBytes(bytes: number): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await verifyAdminAuth(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ success: false, error: auth.error || "Unauthorized" }, { status: 401 });
+    }
+
     const accessKey =
       process.env.R2_ACCESS_KEY_ID || "4d87f7fed772c8d887c6152760211aaf";
     const secretKey =

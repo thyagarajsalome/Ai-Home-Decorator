@@ -24,6 +24,7 @@ export function ProductPurchaseCard({ product }: { product: StoreProduct }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState<boolean>(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const handleInstantBuy = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,6 +77,9 @@ export function ProductPurchaseCard({ product }: { product: StoreProduct }) {
             const verifyData = await verifyRes.json();
             if (!verifyRes.ok || verifyData.error) {
               throw new Error(verifyData.error || "Payment verification failed");
+            }
+            if (verifyData.downloadUrl) {
+              setDownloadUrl(verifyData.downloadUrl);
             }
             setPurchaseSuccess(true);
           } catch (vErr: any) {
@@ -228,7 +232,7 @@ export function ProductPurchaseCard({ product }: { product: StoreProduct }) {
                 </p>
                 <div className="space-y-3">
                   <a
-                    href={`/api/store/download?slug=${product.slug}`}
+                    href={downloadUrl || `/api/store/download?slug=${product.slug}`}
                     download
                     className="block w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold text-center transition-colors shadow-md"
                   >
