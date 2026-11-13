@@ -149,8 +149,8 @@ export const STYLES: StyleData[] = [
         alt: "Japandi bedroom with neutral linen bedding",
       },
       {
-        src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-        alt: "Japandi home office with minimal desk setup",
+        src: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80",
+        alt: "Japandi minimalist wooden interior with natural light",
       },
     ],
   },
@@ -385,8 +385,8 @@ export const STYLES: StyleData[] = [
         alt: "Minimalist living room with single accent chair",
       },
       {
-        src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-        alt: "Minimalist home office with floating desk",
+        src: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=800&q=80",
+        alt: "Minimalist home workspace with clean lines",
       },
     ],
   },
@@ -562,8 +562,8 @@ export const STYLES: StyleData[] = [
         alt: "Mid-century modern dining room with tulip table",
       },
       {
-        src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-        alt: "Mid-century modern home office with walnut desk",
+        src: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80",
+        alt: "Mid-century modern room with organic wooden furniture",
       },
     ],
   },
@@ -916,8 +916,8 @@ export const STYLES: StyleData[] = [
         alt: "Eclectic bedroom with gallery wall and layered textiles",
       },
       {
-        src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-        alt: "Eclectic home office with mixed chairs and bold art",
+        src: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
+        alt: "Eclectic interior corner with statement armchair",
       },
     ],
   },
