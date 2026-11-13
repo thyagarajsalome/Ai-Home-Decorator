@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { STORE_CATEGORIES } from "@/lib/storeData";
 import { useAuth } from "@/context/AuthContext";
+import { extractPdfPagesToWebp } from "@/lib/pdfCoverExtractor";
 
 export const ADMIN_EMAILS = [
   "thyagaraja1983@gmail.com",
@@ -100,25 +101,33 @@ export default function AdminStoreClient() {
     highlightsText: string;
     target_audience: string;
     is_published: boolean;
+    preview_pages?: {
+      title: string;
+      subtitle: string;
+      pageNumber: number;
+      highlightText: string;
+      imageUrl: string;
+    }[];
   }>({
     title: "",
     slug: "",
     subtitle: "",
     category_id: "home-improvements",
     category_name: "Home Improvements",
-    price: "19.99",
-    original_price: "39.99",
-    badge: "Bestseller",
-    pages_count: "84",
-    file_size: "18.4 MB",
+    price: "14.99",
+    original_price: "29.99",
+    badge: "Official USA Guide",
+    pages_count: "9",
+    file_size: "105 KB",
     format: 'Printable PDF (8.5" x 11" US Letter)',
     publication_year: "2026",
-    cover_image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
+    cover_image: "",
     pdf_file_key: "",
     description: "",
     highlightsText: "",
     target_audience: "US Homeowners planning a home renovation.",
     is_published: true,
+    preview_pages: [],
   });
 
   const fetchProducts = async () => {
@@ -150,19 +159,20 @@ export default function AdminStoreClient() {
       subtitle: "",
       category_id: "home-improvements",
       category_name: "Home Improvements",
-      price: "19.99",
-      original_price: "39.99",
-      badge: "Bestseller",
-      pages_count: "60",
-      file_size: "15.0 MB",
+      price: "14.99",
+      original_price: "29.99",
+      badge: "Official USA Guide",
+      pages_count: "",
+      file_size: "",
       format: 'Printable PDF (8.5" x 11" US Letter)',
       publication_year: "2026",
-      cover_image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
+      cover_image: "",
       pdf_file_key: "",
       description: "",
-      highlightsText: "Comprehensive contractor checklist\nStandard US dimensions and clearances\nHigh-ROI renovation formulas",
+      highlightsText: "The Three Layers of Light: Ambient, Task & Accent\nKelvin Temperature & CRI 90+ Standards\nRecessed Can Placement & Spacing Geometry",
       target_audience: "US Homeowners, real estate investors, and DIYers.",
       is_published: true,
+      preview_pages: [],
     });
     setIsModalOpen(true);
   };
@@ -191,6 +201,7 @@ export default function AdminStoreClient() {
       highlightsText: Array.isArray(p.highlights) ? p.highlights.join("\n") : "",
       target_audience: p.target_audience || "",
       is_published: p.is_published,
+      preview_pages: p.preview_pages || [],
     });
     setIsModalOpen(true);
   };
@@ -206,12 +217,64 @@ export default function AdminStoreClient() {
 
     setUploadingPdf(true);
     setUploadError(null);
-    setUploadMessage(`Uploading "${file.name}" directly to Cloudflare R2...`);
+    setUploadMessage("Step 1/3: Reading PDF and extracting front cover page as WebP...");
 
     try {
+      const cleanSlug = (formData.slug || file.name.replace(/\.pdf$/i, ""))
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, "-");
+
+      // 1. Client-Side: Extract Front Cover & Sample Pages to WebP
+      const { numPages, coverBlob, sampleBlobs } = await extractPdfPagesToWebp(file);
+
+      setUploadMessage(`Step 2/3: Uploading front cover WebP image (${numPages} pages detected)...`);
+
+      // 2. Upload WebP Cover to Supabase Storage CDN
+      const coverFormData = new FormData();
+      coverFormData.append("file", coverBlob, `${cleanSlug}-cover.webp`);
+      coverFormData.append("slug", cleanSlug);
+      coverFormData.append("type", "cover");
+
+      const coverRes = await fetch("/api/admin/upload-cover", {
+        method: "POST",
+        body: coverFormData,
+      });
+      const coverJson = await coverRes.json();
+      if (!coverRes.ok || !coverJson.success) {
+        throw new Error(coverJson.error || "Failed to upload WebP cover image");
+      }
+
+      // 3. Upload Sample Pages if any
+      const uploadedSamples: { title: string; subtitle: string; pageNumber: number; highlightText: string; imageUrl: string }[] = [];
+      for (let i = 0; i < sampleBlobs.length; i++) {
+        const s = sampleBlobs[i];
+        const sFormData = new FormData();
+        sFormData.append("file", s.blob, `${cleanSlug}-sample-page-${s.pageNumber}.webp`);
+        sFormData.append("slug", cleanSlug);
+        sFormData.append("type", `sample-${s.pageNumber}`);
+
+        const sRes = await fetch("/api/admin/upload-cover", {
+          method: "POST",
+          body: sFormData,
+        });
+        const sJson = await sRes.json();
+        if (sRes.ok && sJson.success) {
+          uploadedSamples.push({
+            pageNumber: s.pageNumber,
+            title: `Sample Page #${s.pageNumber}`,
+            subtitle: "Architectural blueprint layout",
+            highlightText: "Masterclass specification and practical reference.",
+            imageUrl: sJson.url,
+          });
+        }
+      }
+
+      setUploadMessage("Step 3/3: Uploading PDF playbook to Cloudflare R2...");
+
+      // 4. Upload original PDF to Cloudflare R2
       const data = new FormData();
       data.append("file", file);
-      data.append("slug", formData.slug || "guide");
+      data.append("slug", cleanSlug);
 
       const res = await fetch("/api/admin/upload-pdf", {
         method: "POST",
@@ -223,18 +286,22 @@ export default function AdminStoreClient() {
         throw new Error(json.error || "Failed to upload file to Cloudflare R2");
       }
 
+      // 5. Automatically populate form fields with extracted data!
       setFormData((prev) => ({
         ...prev,
         pdf_file_key: json.fileKey,
         file_size: json.fileSize || prev.file_size,
+        pages_count: numPages.toString(),
+        cover_image: coverJson.url,
+        preview_pages: uploadedSamples.length > 0 ? uploadedSamples : prev.preview_pages,
       }));
 
       setUploadMessage(
-        `✅ Successfully uploaded "${json.fileName}" to Cloudflare R2 (${json.fileSize})! Key: ${json.fileKey}`
+        `✅ Success! Front cover page extracted as WebP (${numPages} total pages) and PDF saved to Cloudflare R2!`
       );
     } catch (err: any) {
-      console.error(err);
-      setUploadError(err.message || "Failed to upload file to Cloudflare R2");
+      console.error("PDF upload error:", err);
+      setUploadError(err.message || "Failed to extract and upload PDF");
       setUploadMessage(null);
     } finally {
       setUploadingPdf(false);
@@ -827,16 +894,47 @@ export default function AdminStoreClient() {
                 </h4>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#4A2508] mb-1">
-                      Cover Image URL *
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-[#4A2508]">
+                        Cover Image URL (WebP) *
+                      </label>
+                      <span className="text-[10px] text-[#7A5C3A]">
+                        Auto-extracted from PDF Page 1
+                      </span>
+                    </div>
                     <input
                       type="url"
                       required
                       value={formData.cover_image}
                       onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })}
+                      placeholder="Upload a PDF below to auto-extract the front cover page as WebP"
                       className="w-full px-4 py-2.5 rounded-xl border border-[#F0E8D8] text-xs focus:border-[#E87A1E] focus:outline-hidden"
                     />
+
+                    {formData.cover_image && (
+                      <div className="mt-3 flex items-center gap-3 p-3 bg-[#FFFBF7] rounded-xl border border-[#FEEDDF]">
+                        <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-white shadow-xs border border-[#F0E8D8] shrink-0">
+                          <Image
+                            src={formData.cover_image}
+                            alt="PDF Front Cover Preview"
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                          />
+                        </div>
+                        <div className="overflow-hidden">
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full uppercase inline-block mb-1">
+                            ✓ PDF Page 1 WebP Cover
+                          </span>
+                          <p className="text-xs text-[#5C3314] font-medium truncate max-w-sm">
+                            {formData.cover_image}
+                          </p>
+                          <span className="text-[10px] text-[#9B8272] block mt-0.5">
+                            Optimized for ultra-fast loading across all devices
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Direct Cloudflare R2 PDF File Uploader */}
