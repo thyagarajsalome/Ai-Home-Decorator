@@ -164,15 +164,6 @@ const Header: React.FC = () => {
                 >
                   Sign Up
                 </Link>
-                {/* Discrete Admin Link for logged-out view */}
-                <Link
-                  href="/admin/store"
-                  className="p-1.5 rounded-lg text-[#8D3D10] hover:bg-[#FEEDDF] transition-colors"
-                  title="Admin Store Panel"
-                  aria-label="Admin Store Panel"
-                >
-                  <span className="text-sm">⚙️</span>
-                </Link>
               </div>
             )}
 

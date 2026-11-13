@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { STORE_CATEGORIES } from "@/lib/storeData";
 import { useAuth } from "@/context/AuthContext";
 import { extractPdfPagesToWebp } from "@/lib/pdfCoverExtractor";
@@ -51,6 +52,7 @@ const CATEGORY_CHOICES = [
 ];
 
 export default function AdminStoreClient() {
+  const router = useRouter();
   const { currentUser, currentUserRole, loading: authLoading } = useAuth();
 
   const isAdmin = Boolean(
@@ -59,6 +61,17 @@ export default function AdminStoreClient() {
         (currentUser.email &&
           ADMIN_EMAILS.includes(currentUser.email.toLowerCase())))
   );
+
+  // Instantly redirect non-admin visitors away without revealing admin UI or emails
+  useEffect(() => {
+    if (!authLoading && !isAdmin) {
+      if (!currentUser) {
+        router.replace("/login?redirect=/admin/store");
+      } else {
+        router.replace("/store");
+      }
+    }
+  }, [authLoading, isAdmin, currentUser, router]);
 
   const [products, setProducts] = useState<DbProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -438,52 +451,13 @@ export default function AdminStoreClient() {
   const publishedCount = products.filter((p) => p.is_published).length;
   const draftCount = products.filter((p) => !p.is_published).length;
 
-  if (authLoading) {
+  if (authLoading || !isAdmin) {
     return (
       <div className="max-w-md mx-auto px-4 py-28 text-center">
         <div className="inline-block animate-spin w-8 h-8 border-3 border-[#E87A1E] border-t-transparent rounded-full mb-3" />
         <p className="text-xs font-bold text-[#7A5C3A]">
-          Verifying Admin Credentials...
+          Verifying access...
         </p>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-28 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 text-3xl flex items-center justify-center mx-auto mb-4 border border-amber-200">
-          🔒
-        </div>
-        <h2 className="text-2xl font-black text-[#4A2508] mb-2 font-heading">
-          Developer &amp; Admin Access Required
-        </h2>
-        <p className="text-xs sm:text-sm text-[#7A5C3A] leading-relaxed mb-6">
-          This portal is restricted to authorized developer accounts (<strong className="text-[#4A2508]">thyagaraja1983@gmail.com</strong>).
-          {currentUser ? (
-            <span className="block mt-2 text-red-600 font-semibold">
-              Currently signed in as: {currentUser.email} (Non-admin account)
-            </span>
-          ) : (
-            <span className="block mt-2">
-              Please sign in with your developer administrator email to upload PDF playbooks and manage books.
-            </span>
-          )}
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link
-            href="/login"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#E87A1E] text-white text-xs font-bold hover:bg-[#D66A12] transition-colors shadow-sm"
-          >
-            {currentUser ? "Switch to Admin Account" : "Sign In to Admin"}
-          </Link>
-          <Link
-            href="/store"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-[#F0E8D8] text-xs font-bold text-[#4A2508] hover:bg-white transition-colors"
-          >
-            Return to Store
-          </Link>
-        </div>
       </div>
     );
   }
