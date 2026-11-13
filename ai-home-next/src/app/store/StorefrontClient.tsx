@@ -110,49 +110,52 @@ export default function StorefrontClient({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
             <article
               key={product.slug}
-              className="bg-white rounded-3xl overflow-hidden border border-[#F0E8D8] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group"
+              className="bg-white rounded-2xl overflow-hidden border border-[#F0E8D8] shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group max-w-sm mx-auto w-full"
             >
-              {/* Top Banner & 3D Cover Mockup */}
-              <div className="relative bg-gradient-to-b from-[#FEEDDF]/60 to-[#FAF4EC] p-6 pb-4 flex items-center justify-center">
+              {/* Top Banner & 3D Cover Mockup (Compact & 0 Gap) */}
+              <div className="relative bg-gradient-to-b from-[#FEEDDF]/50 to-[#FAF4EC] px-4 pt-4 pb-3 flex items-center justify-center">
                 {/* Badge */}
                 {product.badge && (
-                  <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-[#E87A1E] text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
+                  <div className="absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full bg-[#E87A1E] text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
                     {product.badge}
                   </div>
                 )}
-                <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-xs text-[10px] font-bold text-[#4A2508] border border-[#F0E8D8]">
+                <div className="absolute top-3 right-3 z-10 px-2 py-0.5 rounded-md bg-white/95 backdrop-blur-xs text-[10px] font-bold text-[#4A2508] border border-[#F0E8D8] shadow-2xs">
                   {product.pagesCount} Pages • PDF
                 </div>
 
-                {/* 3D Book Cover Visual Container */}
-                <div className="relative w-44 h-60 my-2 transition-transform duration-300 group-hover:-translate-y-2 group-hover:rotate-1">
+                {/* 3D Book Cover Visual Container (US Letter 8.5:11 aspect ratio) */}
+                <div className="relative w-36 h-[184px] aspect-[17/22] my-1 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:rotate-1">
                   {/* Book Spine Shadow */}
-                  <div className="absolute inset-0 bg-black/20 rounded-r-xl blur-md translate-y-3 translate-x-2" />
-                  
-                  {/* Real PDF Book Cover */}
-                  <div className="relative w-full h-full rounded-r-xl rounded-l-xs overflow-hidden border-r-2 border-b-2 border-black/15 shadow-2xl bg-white flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/25 rounded-r-lg blur-md translate-y-2 translate-x-2" />
+
+                  {/* Real PDF Book Cover (Edge-to-Edge with Spine Fold) */}
+                  <div className="relative w-full h-full rounded-r-lg rounded-l-xs overflow-hidden border-r-2 border-b-2 border-black/20 shadow-xl bg-[#2D1B0D]">
+                    {/* Spine gradient shadow for 3D realism */}
+                    <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/35 via-white/10 to-transparent pointer-events-none z-10" />
+
                     <Image
                       src={product.coverImage}
                       alt={product.title}
                       fill
-                      sizes="176px"
-                      className="object-contain group-hover:scale-105 transition-transform duration-500"
+                      sizes="144px"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                       priority
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Card Body */}
-              <div className="p-6 flex-1 flex flex-col justify-between">
+              {/* Card Body (Streamlined & Proportional) */}
+              <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                 <div>
                   {/* Category & Rating */}
-                  <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="font-bold text-[#E87A1E] uppercase tracking-wider text-[11px]">
+                  <div className="flex items-center justify-between text-xs mb-1.5">
+                    <span className="font-bold text-[#E87A1E] uppercase tracking-wider text-[10px]">
                       {product.categoryName}
                     </span>
                     <a
@@ -160,41 +163,31 @@ export default function StorefrontClient({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1.5 text-xs bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 px-2.5 py-0.5 rounded-full font-bold transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 px-2 py-0.5 rounded-full font-bold transition-colors cursor-pointer"
                       title="4.6★ Rated on Google Play Store"
                     >
-                      <span className="text-amber-500 text-sm leading-none">★</span>
+                      <span className="text-amber-500 text-xs leading-none">★</span>
                       <span>4.6</span>
-                      <span className="text-[10px] text-amber-800/70 font-semibold">• Google Play</span>
+                      <span className="text-[9px] text-amber-800/70 font-semibold">• Play Store</span>
                     </a>
                   </div>
 
-                  <h3 className="font-heading font-bold text-lg text-[#4A2508] mb-2 group-hover:text-[#E87A1E] transition-colors leading-snug">
+                  <h3 className="font-heading font-bold text-base text-[#4A2508] mb-1 group-hover:text-[#E87A1E] transition-colors leading-snug line-clamp-2">
                     <Link href={`/store/${product.slug}`}>{product.title}</Link>
                   </h3>
-                  <p className="text-xs text-[#7A5C3A] leading-relaxed mb-4 line-clamp-2">
+                  <p className="text-xs text-[#7A5C3A] leading-relaxed line-clamp-2 mb-3">
                     {product.subtitle}
                   </p>
-
-                  {/* Highlights Bullet List (2 points) */}
-                  <ul className="space-y-1.5 mb-5">
-                    {product.highlights.slice(0, 2).map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-[#5C3314]">
-                        <span className="text-emerald-600 font-bold shrink-0">✓</span>
-                        <span className="line-clamp-1">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
 
                 {/* Pricing & Actions */}
-                <div className="pt-4 border-t border-[#F0E8D8]">
-                  <div className="flex items-baseline justify-between mb-4">
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-2xl font-black text-[#4A2508]">
+                <div className="pt-3 border-t border-[#F0E8D8]">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl font-black text-[#4A2508]">
                         ${product.price.toFixed(2)}
                       </span>
-                      <span className="text-[11px] font-bold text-[#8D5D30] uppercase">
+                      <span className="text-[10px] font-bold text-[#8D5D30] uppercase">
                         USD
                       </span>
                       {product.originalPrice > product.price && (
@@ -209,21 +202,21 @@ export default function StorefrontClient({
                       )}
                     </div>
                     <span className="text-[10px] text-[#7A5C3A] font-semibold">
-                      Instant Download
+                      Instant PDF
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => openPreview(product)}
-                      className="w-full py-2.5 px-3 rounded-xl border border-[#F0E8D8] text-xs font-bold text-[#4A2508] hover:bg-[#FFFBF7] hover:border-[#E87A1E] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full py-2 px-2.5 rounded-xl border border-[#F0E8D8] text-xs font-bold text-[#4A2508] hover:bg-[#FFFBF7] hover:border-[#E87A1E] transition-colors flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <span>👁️</span>
                       <span>Look Inside</span>
                     </button>
                     <Link
                       href={`/store/${product.slug}`}
-                      className="w-full py-2.5 px-3 rounded-xl bg-[#E87A1E] hover:bg-[#D66A12] text-white text-xs font-bold text-center transition-colors shadow-xs flex items-center justify-center gap-1"
+                      className="w-full py-2 px-2.5 rounded-xl bg-[#E87A1E] hover:bg-[#D66A12] text-white text-xs font-bold text-center transition-colors shadow-2xs flex items-center justify-center gap-1"
                     >
                       <span>Get Guide</span>
                       <span>&rarr;</span>

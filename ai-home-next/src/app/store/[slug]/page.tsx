@@ -177,13 +177,15 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 {/* 3D Cover Mockup & Description */}
                 <div className="pt-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                   <div className="md:col-span-5 flex justify-center">
-                    <div className="relative w-52 h-72 rounded-r-2xl overflow-hidden shadow-2xl border-r-2 border-b-2 border-black/15 bg-white flex items-center justify-center p-1">
+                    <div className="relative w-48 h-[248px] aspect-[17/22] rounded-r-xl rounded-l-xs overflow-hidden shadow-2xl border-r-2 border-b-2 border-black/25 bg-[#2D1B0D]">
+                      {/* 3D Spine Fold Gradient */}
+                      <div className="absolute inset-y-0 left-0 w-3.5 bg-gradient-to-r from-black/40 via-white/10 to-transparent pointer-events-none z-10" />
                       <Image
                         src={product.coverImage}
                         alt={product.title}
                         fill
-                        sizes="208px"
-                        className="object-contain"
+                        sizes="192px"
+                        className="object-cover"
                         priority
                       />
                     </div>
