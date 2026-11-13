@@ -205,37 +205,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Complete Table of Contents */}
-              <div className="bg-white rounded-3xl p-6 sm:p-10 border border-[#F0E8D8] shadow-sm">
-                <h3 className="text-xl font-black text-[#4A2508] font-heading mb-6 flex items-center justify-between">
-                  <span>Complete Table of Contents</span>
-                  <span className="text-xs font-bold text-[#E87A1E] bg-[#E87A1E]/10 px-2.5 py-1 rounded-lg">
-                    {product.pagesCount} Total Pages
-                  </span>
-                </h3>
-
-                <div className="space-y-4">
-                  {product.tableOfContents.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-2xl border border-[#F0E8D8] bg-[#FFFBF7] hover:border-[#E87A1E] transition-colors"
-                    >
-                      <div className="flex items-baseline justify-between mb-1">
-                        <h4 className="font-bold text-sm text-[#4A2508]">
-                          {item.chapter}
-                        </h4>
-                        <span className="text-xs font-mono font-bold text-[#E87A1E]">
-                          {item.pages}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#7A5C3A] leading-relaxed">
-                        {item.summary}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* Interactive Sample Preview Gallery */}
               <ProductPreviewViewer product={product} />
 
