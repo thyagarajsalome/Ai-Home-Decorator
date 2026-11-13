@@ -4,6 +4,12 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { STORE_CATEGORIES } from "@/lib/storeData";
+import { useAuth } from "@/context/AuthContext";
+
+export const ADMIN_EMAILS = [
+  "thyagaraja1983@gmail.com",
+  "thyagarajsalome@gmail.com",
+];
 
 interface DbProduct {
   id: string;
@@ -47,6 +53,15 @@ const CATEGORY_CHOICES = [
 ];
 
 export default function AdminStoreClient() {
+  const { currentUser, currentUserRole, loading: authLoading } = useAuth();
+
+  const isAdmin = Boolean(
+    currentUser &&
+      (currentUserRole === "admin" ||
+        (currentUser.email &&
+          ADMIN_EMAILS.includes(currentUser.email.toLowerCase())))
+  );
+
   const [products, setProducts] = useState<DbProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -330,15 +345,68 @@ export default function AdminStoreClient() {
   const publishedCount = products.filter((p) => p.is_published).length;
   const draftCount = products.filter((p) => !p.is_published).length;
 
+  if (authLoading) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-28 text-center">
+        <div className="inline-block animate-spin w-8 h-8 border-3 border-[#E87A1E] border-t-transparent rounded-full mb-3" />
+        <p className="text-xs font-bold text-[#7A5C3A]">
+          Verifying Admin Credentials...
+        </p>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-28 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 text-3xl flex items-center justify-center mx-auto mb-4 border border-amber-200">
+          🔒
+        </div>
+        <h2 className="text-2xl font-black text-[#4A2508] mb-2 font-heading">
+          Developer &amp; Admin Access Required
+        </h2>
+        <p className="text-xs sm:text-sm text-[#7A5C3A] leading-relaxed mb-6">
+          This portal is restricted to authorized developer accounts (<strong className="text-[#4A2508]">thyagaraja1983@gmail.com</strong>).
+          {currentUser ? (
+            <span className="block mt-2 text-red-600 font-semibold">
+              Currently signed in as: {currentUser.email} (Non-admin account)
+            </span>
+          ) : (
+            <span className="block mt-2">
+              Please sign in with your developer administrator email to upload PDF playbooks and manage books.
+            </span>
+          )}
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/login"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#E87A1E] text-white text-xs font-bold hover:bg-[#D66A12] transition-colors shadow-sm"
+          >
+            {currentUser ? "Switch to Admin Account" : "Sign In to Admin"}
+          </Link>
+          <Link
+            href="/store"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-[#F0E8D8] text-xs font-bold text-[#4A2508] hover:bg-white transition-colors"
+          >
+            Return to Store
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* ── Top Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-[#F0E8D8]">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="text-xl">🛠️</span>
             <span className="text-xs font-black uppercase tracking-wider text-[#E87A1E]">
               Admin Control Center
+            </span>
+            <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold px-2 py-0.5 rounded-full">
+              Logged in: {currentUser?.email}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black font-heading text-[#4A2508]">

@@ -69,8 +69,8 @@ export default async function StorePage() {
       />
 
       <main className="min-h-screen bg-[#FFFBF7]">
-        {/* ── Top Bar (Breadcrumbs + Admin Access) ── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 flex items-center justify-between">
+        {/* ── Top Bar (Breadcrumbs) ── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
           <nav className="text-sm text-[#7A5C3A]">
             <Link href="/" className="hover:text-[#E87A1E]">
               Home
@@ -78,13 +78,6 @@ export default async function StorePage() {
             <span className="mx-2">›</span>
             <span className="font-medium text-[#4A2508]">Design Store</span>
           </nav>
-          <Link
-            href="/admin/store"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white border border-[#E0D0C0] hover:border-[#E87A1E] text-xs font-bold text-[#5C3314] hover:text-[#E87A1E] shadow-2xs hover:shadow-xs transition-all"
-          >
-            <span>⚙️</span>
-            <span>Admin Store Panel</span>
-          </Link>
         </div>
 
         {/* ── Hero Header ── */}

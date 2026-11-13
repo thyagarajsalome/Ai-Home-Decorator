@@ -24,7 +24,19 @@ const MapPinIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { currentUser, signOut } = useAuth();
+  const { currentUser, currentUserRole, signOut } = useAuth();
+
+  const ADMIN_EMAILS = [
+    "thyagaraja1983@gmail.com",
+    "thyagarajsalome@gmail.com",
+  ];
+
+  const isAdminUser = Boolean(
+    currentUser &&
+      (currentUserRole === "admin" ||
+        (currentUser.email &&
+          ADMIN_EMAILS.includes(currentUser.email.toLowerCase())))
+  );
 
   const closeMenu = () => setIsMobileMenuOpen(false);
 
@@ -115,15 +127,17 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-2 xl:gap-3 border-l border-[#F1E4D5] pl-3 xl:pl-4">
             {currentUser ? (
               <div className="flex items-center gap-2">
-                {/* Admin Quick-Access Button */}
-                <Link
-                  href="/admin/store"
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors shadow-2xs"
-                  title="Store Admin Dashboard"
-                >
-                  <span>⚙️</span>
-                  <span>Admin</span>
-                </Link>
+                {/* Admin Quick-Access Button (Exclusive to Admin Users) */}
+                {isAdminUser && (
+                  <Link
+                    href="/admin/store"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors shadow-2xs"
+                    title="Store Admin Dashboard"
+                  >
+                    <span>⚙️</span>
+                    <span>Admin</span>
+                  </Link>
+                )}
 
                 <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FEEDDF]/60 border border-[#F8B98B]/60 text-xs font-medium text-[#4A2508]">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
@@ -302,20 +316,22 @@ const Header: React.FC = () => {
                     Sign Out
                   </button>
                 </div>
-                {/* Admin Quick Link */}
-                <Link
-                  href="/admin/store"
-                  onClick={closeMenu}
-                  className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <span>⚙️</span>
-                    <span>Store Admin Dashboard</span>
-                  </span>
-                  <span className="text-[10px] bg-[#E87A1E] text-white px-2 py-0.5 rounded-md font-black">
-                    ADMIN
-                  </span>
-                </Link>
+                {/* Admin Quick Link (Exclusive to Admin Users) */}
+                {isAdminUser && (
+                  <Link
+                    href="/admin/store"
+                    onClick={closeMenu}
+                    className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>⚙️</span>
+                      <span>Store Admin Dashboard</span>
+                    </span>
+                    <span className="text-[10px] bg-[#E87A1E] text-white px-2 py-0.5 rounded-md font-black">
+                      ADMIN
+                    </span>
+                  </Link>
+                )}
               </div>
             ) : (
               <div className="space-y-2">
@@ -335,13 +351,6 @@ const Header: React.FC = () => {
                     Sign Up
                   </Link>
                 </div>
-                <Link
-                  href="/admin/store"
-                  onClick={closeMenu}
-                  className="block text-center py-1.5 text-[11px] font-bold text-[#8D3D10] hover:underline"
-                >
-                  ⚙️ Admin Store Access
-                </Link>
               </div>
             )}
           </div>

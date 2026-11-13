@@ -106,8 +106,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
       />
 
       <main className="min-h-screen bg-[#FFFBF7] pb-20">
-        {/* ── Top Navigation & Admin Link ── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4 flex items-center justify-between text-xs sm:text-sm">
+        {/* ── Top Navigation (Breadcrumbs) ── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4 text-xs sm:text-sm">
           <nav className="text-[#7A5C3A] flex items-center flex-wrap gap-1">
             <Link href="/" className="hover:text-[#E87A1E]">
               Home
@@ -121,13 +121,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
               {product.title}
             </span>
           </nav>
-          <Link
-            href="/admin/store"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E0D0C0] hover:border-[#E87A1E] text-xs font-bold text-[#5C3314] hover:text-[#E87A1E] shadow-2xs hover:shadow-xs transition-all flex-shrink-0"
-          >
-            <span>⚙️</span>
-            <span>Admin Panel</span>
-          </Link>
         </div>
 
         {/* ── Main Two-Column Layout ── */}
