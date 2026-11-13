@@ -205,46 +205,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* What's Inside & Key Highlights */}
-              <div className="bg-white rounded-3xl p-6 sm:p-10 border border-[#F0E8D8] shadow-sm">
-                <h3 className="text-xl font-black text-[#4A2508] font-heading mb-6 flex items-center gap-2">
-                  <span className="text-[#E87A1E]">✦</span>
-                  <span>What You Get Inside This Guide</span>
-                </h3>
-
-                <div className="grid grid-cols-1 gap-3.5 mb-8">
-                  {product.highlights.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-2xl bg-[#FFFBF7] border border-[#F0E8D8] flex items-start gap-3.5"
-                    >
-                      <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                        ✓
-                      </span>
-                      <p className="text-xs sm:text-sm text-[#4A2508] font-medium leading-relaxed">
-                        {item}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* US Specifics Callout Box */}
-                <div className="p-5 rounded-2xl bg-[#FEEDDF]/40 border border-[#F8B98B] mb-2">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-[#8D3D10] mb-2 flex items-center gap-1.5">
-                    <span>🇺🇸</span>
-                    <span>100% Tailored for American Homes</span>
-                  </h4>
-                  <ul className="space-y-1.5 text-xs text-[#5C3314]">
-                    {product.usSpecifics.map((spec, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <span className="text-[#E87A1E] font-bold">•</span>
-                        <span>{spec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
               {/* Complete Table of Contents */}
               <div className="bg-white rounded-3xl p-6 sm:p-10 border border-[#F0E8D8] shadow-sm">
                 <h3 className="text-xl font-black text-[#4A2508] font-heading mb-6 flex items-center justify-between">
