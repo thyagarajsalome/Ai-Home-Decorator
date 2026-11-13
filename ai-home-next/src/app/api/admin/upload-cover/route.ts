@@ -25,8 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9_-]/g, "-");
-    const timestamp = Date.now();
-    const fileName = `${cleanSlug}-${type}-${timestamp}.webp`;
+    const fileName = `${cleanSlug}-${type}.webp`;
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);

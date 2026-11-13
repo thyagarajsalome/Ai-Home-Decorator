@@ -293,6 +293,9 @@ export default function AdminStoreClient() {
       const data = new FormData();
       data.append("file", file);
       data.append("slug", cleanSlug);
+      if (formData.pdf_file_key) {
+        data.append("previousFileKey", formData.pdf_file_key);
+      }
 
       const res = await fetch("/api/admin/upload-pdf", {
         method: "POST",

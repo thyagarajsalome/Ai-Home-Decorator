@@ -31,13 +31,18 @@ export async function GET(req: NextRequest) {
       if (product && product.pdf_file_key) {
         fileKey = product.pdf_file_key;
       } else {
-        // Fallback to local default product configuration
-        fileKey = "Home-Lighting-Design-Guide-USA.pdf";
+        // Fallback to canonical product PDF path
+        fileKey = "books/Home-Lighting-Design-Guide-USA.pdf";
       }
     }
 
+    // Ensure books/ prefix if not provided
+    if (fileKey && !fileKey.startsWith("books/")) {
+      fileKey = `books/${fileKey}`;
+    }
+
     if (!targetSlug && fileKey) {
-      targetSlug = fileKey.replace(/\.pdf$/i, "");
+      targetSlug = fileKey.replace(/^books\//i, "").replace(/\.pdf$/i, "");
     }
 
     // Verify Authorization: MUST have valid HMAC token, verified store purchase, or admin session

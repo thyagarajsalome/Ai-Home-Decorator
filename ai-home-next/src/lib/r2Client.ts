@@ -1,4 +1,10 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  ListObjectsV2Command,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const accountId =
@@ -42,7 +48,7 @@ export async function getSignedDownloadUrl(fileKey: string, expiresInSeconds = 9
 }
 
 /**
- * Upload a file buffer directly to Cloudflare R2
+ * Upload a file buffer directly to Cloudflare R2 (overwrites if key exists)
  */
 export async function uploadToR2(
   fileKey: string,
@@ -64,4 +70,22 @@ export async function uploadToR2(
     bucket: R2_BUCKET_NAME,
     size: buffer.length,
   };
+}
+
+/**
+ * Delete an object from Cloudflare R2
+ */
+export async function deleteFromR2(fileKey: string): Promise<boolean> {
+  try {
+    const client = getR2Client();
+    const command = new DeleteObjectCommand({
+      Bucket: R2_BUCKET_NAME,
+      Key: fileKey,
+    });
+    await client.send(command);
+    return true;
+  } catch (err) {
+    console.warn(`Failed to delete key "${fileKey}" from R2:`, err);
+    return false;
+  }
 }

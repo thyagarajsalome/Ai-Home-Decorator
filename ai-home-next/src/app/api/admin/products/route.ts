@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { verifyAdminAuth } from "@/lib/adminAuth";
+import { deleteFromR2 } from "@/lib/r2Client";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -211,6 +212,33 @@ export async function DELETE(req: Request) {
         { error: "Product ID is required for deletion" },
         { status: 400 }
       );
+    }
+
+    // Look up product first to purge its files from R2 and Supabase storage
+    const { data: existingProduct } = await supabaseAdmin
+      .from("store_products")
+      .select("pdf_file_key, cover_image, slug")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (existingProduct?.pdf_file_key) {
+      await deleteFromR2(existingProduct.pdf_file_key);
+    }
+
+    // Also attempt cleanup of any cover WebP image
+    if (existingProduct?.slug) {
+      try {
+        await supabaseAdmin.storage
+          .from("store_covers")
+          .remove([
+            `${existingProduct.slug}-cover.webp`,
+            `${existingProduct.slug}-sample-1.webp`,
+            `${existingProduct.slug}-sample-2.webp`,
+            `${existingProduct.slug}-sample-3.webp`,
+          ]);
+      } catch (storageErr) {
+        console.warn("Could not remove cover images from Supabase storage:", storageErr);
+      }
     }
 
     const { error } = await supabaseAdmin

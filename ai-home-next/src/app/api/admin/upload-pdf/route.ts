@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadToR2 } from "@/lib/r2Client";
+import { uploadToR2, deleteFromR2 } from "@/lib/r2Client";
 import { verifyAdminAuth } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const slug = (formData.get("slug") as string | null) || "guide";
+    const previousFileKey = formData.get("previousFileKey") as string | null;
 
     if (!file) {
       return NextResponse.json(
@@ -61,13 +62,17 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Clean filename
+    // Canonical, clean file key (no timestamps) so updates overwrite in place without creating duplicates
     const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9_-]/g, "-");
-    const timestamp = Date.now();
-    const fileKey = `books/${cleanSlug}-${timestamp}.pdf`;
+    const fileKey = `books/${cleanSlug}.pdf`;
 
-    // Upload to Cloudflare R2
+    // Upload to Cloudflare R2 (overwrites fileKey in place)
     const result = await uploadToR2(fileKey, buffer, "application/pdf");
+
+    // If an older file key existed under a different name, delete it to keep storage 100% clean
+    if (previousFileKey && previousFileKey !== fileKey) {
+      await deleteFromR2(previousFileKey);
+    }
 
     const sizeFormatted = formatBytes(result.size);
 
