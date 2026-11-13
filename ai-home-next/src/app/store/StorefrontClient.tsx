@@ -118,12 +118,6 @@ export default function StorefrontClient({
             >
               {/* Top Banner & 3D Cover Mockup (Compact & 0 Gap) */}
               <div className="relative bg-gradient-to-b from-[#FEEDDF]/50 to-[#FAF4EC] px-4 pt-4 pb-3 flex items-center justify-center">
-                {/* Badge */}
-                {product.badge && (
-                  <div className="absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full bg-[#E87A1E] text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
-                    {product.badge}
-                  </div>
-                )}
                 <div className="absolute top-3 right-3 z-10 px-2 py-0.5 rounded-md bg-white/95 backdrop-blur-xs text-[10px] font-bold text-[#4A2508] border border-[#F0E8D8] shadow-2xs">
                   {product.pagesCount} Pages • PDF
                 </div>
