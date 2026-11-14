@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublishedStoreProducts, getStoreProductBySlug } from "@/lib/storeService";
+import { buildProductJsonLd } from "@/lib/storeSchema";
 import { ProductPurchaseCard, ProductPreviewViewer } from "./ProductDetailClient";
 
 export const dynamic = "force-dynamic";
@@ -52,51 +53,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const allProducts = await getPublishedStoreProducts();
   const relatedProducts = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
 
-  // Combined Product + Book JSON-LD schema for Google Rich Results
-  const productJsonLd = {
-    "@context": "https://schema.org",
-    "@type": ["Product", "Book"],
-    name: product.title,
-    bookFormat: "https://schema.org/EBook",
-    numberOfPages: product.pagesCount,
-    inLanguage: "en-US",
-    description: product.description,
-    image: product.coverImage,
-    brand: {
-      "@type": "Brand",
-      name: "AI Home Decorator",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "AI Home Decorator",
-      url: "https://aihomedecorator.com",
-    },
-    offers: {
-      "@type": "Offer",
-      price: product.price.toFixed(2),
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-      url: `https://aihomedecorator.com/store/${product.slug}`,
-      priceValidUntil: "2027-12-31",
-      shippingDetails: {
-        "@type": "OfferShippingDetails",
-        shippingRate: {
-          "@type": "MonetaryAmount",
-          value: "0.00",
-          currency: "USD",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          handlingTime: {
-            "@type": "QuantitativeValue",
-            minValue: 0,
-            maxValue: 0,
-            unitCode: "DAY",
-          },
-        },
-      },
-    },
-  };
+  // Combined Product + Book JSON-LD schema for Google Rich Results & Merchant Center
+  const productJsonLd = buildProductJsonLd(product);
 
   return (
     <>

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import StorefrontClient from "./StorefrontClient";
 import { getPublishedStoreProducts } from "@/lib/storeService";
+import { buildProductJsonLd } from "@/lib/storeSchema";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -39,26 +40,15 @@ export default async function StorePage() {
     "@type": "ItemList",
     name: "AI Home Decorator Digital Design Store",
     description: "Curated digital home improvement and interior design PDF playbooks for US homeowners.",
-    itemListElement: products.map((product, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      item: {
-        "@type": ["Product", "Book"],
-        name: product.title,
-        description: product.subtitle,
-        image: product.coverImage,
-        bookFormat: "https://schema.org/EBook",
-        numberOfPages: product.pagesCount,
-        inLanguage: "en-US",
-        offers: {
-          "@type": "Offer",
-          price: product.price.toFixed(2),
-          priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
-          url: `https://aihomedecorator.com/store/${product.slug}`,
-        },
-      },
-    })),
+    itemListElement: products.map((product, idx) => {
+      const productSchema = buildProductJsonLd(product);
+      const { "@context": _context, ...itemData } = productSchema;
+      return {
+        "@type": "ListItem",
+        position: idx + 1,
+        item: itemData,
+      };
+    }),
   };
 
   return (

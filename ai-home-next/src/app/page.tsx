@@ -88,6 +88,10 @@ export default function Home() {
         "url": PLAY_STORE_URL,
         "image": "https://aihomedecorator.com/brand/logo.jpg",
         "description": "Transform any room in seconds with AI Home Decorator. Upload room photos, choose from 30+ architectural styles, and visualize your dream interior.",
+        "brand": {
+          "@type": "Brand",
+          "name": "AI Home Decorator",
+        },
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "4.9",
@@ -100,6 +104,38 @@ export default function Home() {
           "price": "0",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock",
+          "shippingDetails": {
+            "@type": "OfferShippingDetails",
+            "shippingRate": {
+              "@type": "MonetaryAmount",
+              "value": "0.00",
+              "currency": "USD",
+            },
+            "shippingDestination": {
+              "@type": "DefinedRegion",
+              "addressCountry": "US",
+            },
+            "deliveryTime": {
+              "@type": "ShippingDeliveryTime",
+              "handlingTime": {
+                "@type": "QuantitativeValue",
+                "minValue": 0,
+                "maxValue": 0,
+                "unitCode": "DAY",
+              },
+              "transitTime": {
+                "@type": "QuantitativeValue",
+                "minValue": 0,
+                "maxValue": 0,
+                "unitCode": "DAY",
+              },
+            },
+          },
+          "hasMerchantReturnPolicy": {
+            "@type": "MerchantReturnPolicy",
+            "applicableCountry": "US",
+            "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+          },
         },
       },
       {
