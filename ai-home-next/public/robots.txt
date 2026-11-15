@@ -10,6 +10,7 @@ Disallow: /signup
 User-agent: Googlebot
 Allow: /
 Allow: /store/
+Allow: /tips/
 Allow: /ideas/
 Allow: /guide/
 Allow: /usa/
@@ -19,6 +20,7 @@ Allow: /downloads/
 User-agent: Bingbot
 Allow: /
 Allow: /store/
+Allow: /tips/
 Allow: /ideas/
 Allow: /guide/
 Allow: /usa/
@@ -28,6 +30,7 @@ Allow: /downloads/
 User-agent: Pinterestbot
 Allow: /
 Allow: /store/
+Allow: /tips/
 Allow: /ideas/
 Allow: /guide/
 Allow: /brand/
