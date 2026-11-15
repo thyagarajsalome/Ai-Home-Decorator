@@ -3,6 +3,7 @@ import { ELEMENT_CATEGORIES } from "@/constants";
 import { supabase } from "@/supabaseClient";
 import { ROOMS, STYLES } from "@/lib/seoData";
 import { STORE_PRODUCTS } from "@/lib/storeData";
+import { ALL_TIPS } from "@/lib/tipsData";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aihomedecorator.com";
@@ -18,6 +19,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${baseUrl}/store`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/tips`,
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.95,
@@ -105,9 +112,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  // 7. Design Store: 9 Digital PDF Books & Renovation Playbooks
+  // 7. Design Store: Digital Playbooks & Guides
   const storeProductRoutes: MetadataRoute.Sitemap = STORE_PRODUCTS.map((prod) => ({
     url: `${baseUrl}/store/${prod.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.9,
+  }));
+
+  // 8. Programmatic SEO: 30 Expert Home Improvement Playbooks (Lighting & Painting)
+  const tipsRoutes: MetadataRoute.Sitemap = ALL_TIPS.map((tip) => ({
+    url: `${baseUrl}/tips/${tip.slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.85,
@@ -115,6 +130,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...primaryRoutes,
+    ...tipsRoutes,
     ...cityRoutes,
     ...styleGuideRoutes,
     ...roomIdeaRoutes,

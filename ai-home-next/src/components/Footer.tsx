@@ -123,6 +123,16 @@ const Footer: React.FC = () => {
                 <span>📚</span>
                 <span>Design Store (PDF Books) &rarr;</span>
               </Link>
+              <Link href="/tips" className="text-[#E87A1E] font-bold hover:underline flex items-center gap-1">
+                <span>💡</span>
+                <span>Home Improvement Tips &rarr;</span>
+              </Link>
+              <Link href="/store/home-lighting-design-guide-usa" className="hover:text-[#E87A1E] transition-colors">
+                Lighting Design Guide (USA)
+              </Link>
+              <Link href="/store/home-painting-guide-usa" className="hover:text-[#E87A1E] transition-colors">
+                Home Painting Guide (USA)
+              </Link>
               <Link href="/about" className="hover:text-[#E87A1E] transition-colors">
                 About Our App
               </Link>
