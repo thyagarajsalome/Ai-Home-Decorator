@@ -312,7 +312,7 @@ export default async function StyleGuidePage({ params }: PageProps) {
 
           {/* ── AI CTA ── */}
           <section className="bg-gradient-to-br from-[#4A2508] to-[#2B1504] text-white rounded-3xl p-8 md:p-12 text-center mb-12 shadow-xl">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
               See Your Home in {style.name} Style in 30 Seconds
             </h2>
             <p className="text-[#E8C99A] max-w-xl mx-auto mb-6 text-sm md:text-base">

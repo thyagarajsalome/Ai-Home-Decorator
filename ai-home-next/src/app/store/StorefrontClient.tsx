@@ -264,7 +264,7 @@ export default function StorefrontClient({
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4 text-white">
                     <div>
-                      <h4 className="font-bold text-base">
+                      <h4 className="font-bold text-base text-white">
                         {previewProduct.previewPages[activePreviewIndex]?.title}
                       </h4>
                       <p className="text-xs text-gray-200">
