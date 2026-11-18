@@ -120,24 +120,31 @@ export default function TipsHubPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Resource Section */}
       <section className="bg-[#4A2508] py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            See Your Ideas Come to Life with AI
+            Complete Design Guides for Your Home
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-amber-100/80">
-            Upload a photo of any room and instantly visualize new lighting,
-            paint colors, and design styles — powered by AI.
+            Go deeper with our comprehensive design guides — packed with
+            diagrams, checklists, product recommendations, and professional
+            specifications.
           </p>
-          <a
-            href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#E87A1E] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#d06a12] hover:shadow-xl"
-          >
-            Try AI Home Decorator Free →
-          </a>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/store/home-lighting-design-guide-usa"
+              className="inline-flex items-center gap-2 rounded-full bg-[#E87A1E] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#d06a12] hover:shadow-xl"
+            >
+              💡 Lighting Design Guide →
+            </Link>
+            <Link
+              href="/store/home-painting-guide-usa"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-amber-100/30 px-8 py-3.5 text-base font-semibold text-amber-100 transition-all hover:bg-amber-100/10"
+            >
+              🎨 Painting Guide →
+            </Link>
+          </div>
         </div>
       </section>
     </main>

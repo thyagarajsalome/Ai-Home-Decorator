@@ -310,22 +310,28 @@ export default async function StyleGuidePage({ params }: PageProps) {
             </div>
           </section>
 
-          {/* ── AI CTA ── */}
+          {/* ── Explore More ── */}
           <section className="bg-gradient-to-br from-[#4A2508] to-[#2B1504] text-white rounded-3xl p-8 md:p-12 text-center mb-12 shadow-xl">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-              See Your Home in {style.name} Style in 30 Seconds
+              Explore {style.name} Design Resources
             </h2>
             <p className="text-[#E8C99A] max-w-xl mx-auto mb-6 text-sm md:text-base">
-              Snap or upload any photo of your room. Our AI decorator redesigns it with authentic {style.name} furniture, textures, and lighting automatically.
+              Dive deeper into {style.name} style with our expert lighting and painting guides, or browse room-specific design ideas.
             </p>
-            <a
-              href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-[#E87A1E] hover:bg-[#D66A12] text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition-colors text-sm"
-            >
-              Transform My Room with AI Free →
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/tips"
+                className="inline-block bg-[#E87A1E] hover:bg-[#D66A12] text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition-colors text-sm"
+              >
+                Expert Tips & Guides →
+              </Link>
+              <Link
+                href="/store"
+                className="inline-block border-2 border-amber-100/30 hover:bg-amber-100/10 text-amber-100 font-bold px-8 py-3.5 rounded-xl transition-colors text-sm"
+              >
+                Design Resources →
+              </Link>
+            </div>
           </section>
 
           {/* ── Related Guides ── */}

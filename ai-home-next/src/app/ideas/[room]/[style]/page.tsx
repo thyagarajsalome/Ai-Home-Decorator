@@ -145,7 +145,7 @@ export default async function IdeasPage({ params }: PageProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Try AI Decorator Free →
+                  Expert Design Tips →
                 </a>
                 <Link
                   href={`/guide/${style.slug}`}
@@ -319,19 +319,25 @@ export default async function IdeasPage({ params }: PageProps) {
         <section className="bg-[#4A2508] py-16 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Visualize Your {style.name} {room.name} with AI
+              More {style.name} Design Inspiration
             </h2>
             <p className="text-[#E8C99A] mb-8 text-lg">
-              Upload a photo of your {room.name.toLowerCase()} and see it transformed into {style.name} style in seconds — completely free.
+              Explore expert tips on lighting, paint colors, and styling techniques to bring the {style.name} look to life in your {room.name.toLowerCase()}.
             </p>
-            <a
-              href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
-              className="inline-block bg-[#E87A1E] text-white px-10 py-4 rounded-xl text-lg font-bold hover:bg-[#C86010] transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Try AI Home Decorator Free →
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/tips"
+                className="inline-block bg-[#E87A1E] text-white px-10 py-4 rounded-xl text-lg font-bold hover:bg-[#C86010] transition-colors"
+              >
+                Browse Expert Tips →
+              </Link>
+              <Link
+                href={"/guide/" + style.slug}
+                className="inline-block border-2 border-amber-100/30 text-amber-100 px-10 py-4 rounded-xl text-lg font-bold hover:bg-amber-100/10 transition-colors"
+              >
+                {style.name} Style Guide →
+              </Link>
+            </div>
           </div>
         </section>
 

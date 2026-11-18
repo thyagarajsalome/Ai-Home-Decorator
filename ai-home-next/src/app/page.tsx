@@ -397,17 +397,22 @@ export default function Home() {
           {/* Interactive Component */}
           <InteractiveBeforeAfter />
 
-          {/* App download button below slider */}
-          <div className="mt-8 text-center">
-            <a
-              href={PLAY_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+          {/* Explore tips CTA below slider */}
+          <div className="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/tips"
               className="btn-brand-primary px-8 py-3.5 text-sm font-black shadow-lg shadow-[#E87A1E]/30 inline-flex items-center gap-2"
             >
-              <span>Download Android App to Redesign Your Room</span>
+              <span>Browse Expert Home Tips</span>
               <span>&rarr;</span>
-            </a>
+            </Link>
+            <Link
+              href="/store"
+              className="btn-brand-secondary px-6 py-3.5 text-xs sm:text-sm font-bold shadow-xs inline-flex items-center gap-2"
+            >
+              <span>Shop Design Guides</span>
+              <span>&rarr;</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -513,15 +518,13 @@ export default function Home() {
                 <p className="text-xs text-[#6D5D53] leading-relaxed mb-4 flex-grow">
                   Turn cluttered car garages into sleek organized workshops with epoxy flooring, modular cabinets, and dedicated tool storage.
                 </p>
-                <a
-                  href={PLAY_STORE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/guide/industrial-loft"
                   className="text-xs font-bold text-[#E87A1E] hover:underline flex items-center gap-1"
                 >
-                  <span>Redesign in Android App</span>
-                  <span>↗</span>
-                </a>
+                  <span>Explore Garage Styles</span>
+                  <span>&rarr;</span>
+                </Link>
               </div>
             </div>
 
@@ -546,15 +549,13 @@ export default function Home() {
                 Browse curated architectural themes designed to match popular USA home building trends.
               </p>
             </div>
-            <a
-              href={PLAY_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/guide/modern"
               className="mt-4 md:mt-0 text-xs font-black text-[#E87A1E] hover:underline inline-flex items-center gap-1"
             >
-              <span>Explore all styles in the app</span>
+              <span>Browse All Style Guides</span>
               <span>&rarr;</span>
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -672,33 +673,31 @@ export default function Home() {
           </div>
 
           <span className="text-xs font-black text-[#E87A1E] uppercase tracking-widest">
-            Available on Google Play
+            Expert Resources
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-[#4A2508] mt-2 mb-4 font-heading">
-            Transform Your Space Today
+            Ready to Transform Your Home?
           </h2>
           <p className="text-base text-[#5C3314] max-w-xl mx-auto mb-8 leading-relaxed">
-            Download AI Home Decorator now and start redesigning any room in your home with instant AI inspiration.
+            Explore our expert guides on lighting and painting, browse curated design styles, or dive into our tips library for professional home improvement advice.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href={PLAY_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-transform duration-200 hover:scale-105 active:scale-95 inline-block shadow-xl shadow-[#E87A1E]/30"
+            <Link
+              href="/tips"
+              className="btn-brand-primary px-8 py-3.5 text-sm font-black shadow-lg shadow-[#E87A1E]/30 inline-flex items-center gap-2"
             >
-              <img
-                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                alt="Get it on Google Play"
-                className="h-16 w-auto"
-              />
-            </a>
+              <span>Explore Expert Tips</span>
+              <span>&rarr;</span>
+            </Link>
+            <Link
+              href="/store"
+              className="btn-brand-secondary px-6 py-3.5 text-xs sm:text-sm font-bold shadow-xs inline-flex items-center gap-2"
+            >
+              <span>Browse Design Guides</span>
+              <span>&rarr;</span>
+            </Link>
           </div>
-
-          <p className="text-xs text-[#8D7D72] mt-4">
-            Free download &bull; Android 8.0+ &bull; 4.9 ★★★★★ on Google Play Store
-          </p>
         </div>
       </section>
 

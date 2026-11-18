@@ -154,14 +154,6 @@ const Footer: React.FC = () => {
                 <span>📌</span>
                 <span>Follow on Pinterest</span>
               </a>
-              <a
-                href={PLAY_STORE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#E87A1E] font-bold hover:underline"
-              >
-                Download on Google Play
-              </a>
             </div>
           </div>
 
@@ -180,21 +172,19 @@ const Footer: React.FC = () => {
               </a>
             </div>
             <div className="pt-2">
-              <a
-                href={PLAY_STORE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/tips"
                 className="btn-brand-primary px-4 py-2 text-xs font-black"
               >
-                Get Android App &rarr;
-              </a>
+                Expert Tips &amp; Guides &rarr;
+              </Link>
             </div>
           </div>
 
         </div>
 
         <div className="mt-12 pt-6 border-t border-[#EEDBC9] text-center text-[11px] text-[#8D7D72] flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>AI Home Decorator &bull; Native Android App Available on Google Play Store</span>
+          <span>AI Home Decorator &bull; Expert Home Design Tips, Guides &amp; Resources</span>
           <span>Crafted for American Homeowners &bull; DESIGN &bull; DECORATE &bull; VISUALIZE</span>
         </div>
       </div>

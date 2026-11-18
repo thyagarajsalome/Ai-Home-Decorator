@@ -173,43 +173,27 @@ const Header: React.FC = () => {
               </div>
             )}
 
-            {/* Direct Google Play Store App CTA */}
-            <a
-              href={PLAY_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* Tips & Guides CTA */}
+            <Link
+              href="/tips"
               className="btn-brand-primary px-3 xl:px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#E87A1E]/20 hover:shadow-lg hover:shadow-[#E87A1E]/30 flex-shrink-0"
             >
-              <svg
-                className="w-3.5 h-3.5 fill-current"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M3.609 1.814L13.792 12 3.61 22.186a2.38 2.38 0 0 1-.61-1.63V3.444c0-.623.228-1.2.61-1.63zm11.237 11.24l2.42 2.42-12.02 6.94 9.6-9.36zm0-2.108L5.246 1.586l12.02 6.94-2.42 2.42zm1.472 1.054l3.523 2.033a1.59 1.59 0 0 1 0 2.766l-3.523 2.033-2.155-2.155 2.155-2.677z" />
-              </svg>
-              <span className="hidden xl:inline">Install App</span>
-              <span className="xl:hidden">App</span>
-            </a>
+              <span className="text-sm">💡</span>
+              <span className="hidden xl:inline">Tips & Guides</span>
+              <span className="xl:hidden">Tips</span>
+            </Link>
           </div>
         </div>
 
         {/* Mobile Hamburger Button */}
         <div className="lg:hidden flex items-center gap-2">
-          <a
-            href={PLAY_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/tips"
             className="btn-brand-primary px-3 py-1.5 text-xs font-bold flex items-center gap-1 shadow-xs"
           >
-            <svg
-              className="w-3 h-3 fill-current"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M3.609 1.814L13.792 12 3.61 22.186a2.38 2.38 0 0 1-.61-1.63V3.444c0-.623.228-1.2.61-1.63zm11.237 11.24l2.42 2.42-12.02 6.94 9.6-9.36zm0-2.108L5.246 1.586l12.02 6.94-2.42 2.42zm1.472 1.054l3.523 2.033a1.59 1.59 0 0 1 0 2.766l-3.523 2.033-2.155-2.155 2.155-2.677z" />
-            </svg>
-            <span>App</span>
-          </a>
+            <span className="text-sm">💡</span>
+            <span>Tips</span>
+          </Link>
 
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

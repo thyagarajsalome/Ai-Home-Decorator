@@ -97,8 +97,12 @@ export default async function TipArticlePage({
       "@type": "Organization",
       name: "AI Home Decorator",
       url: "https://aihomedecorator.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://aihomedecorator.com/brand/logo.jpg",
+      },
     },
-    datePublished: "2026-01-01",
+    datePublished: "2026-11-15",
     dateModified: todayISO,
     mainEntityOfPage: `https://aihomedecorator.com/tips/${topicSlug}`,
   };
@@ -148,6 +152,19 @@ export default async function TipArticlePage({
     tip.category === "lighting"
       ? "bg-amber-100 text-amber-800"
       : "bg-violet-100 text-violet-800";
+
+  /* ---- Reading time estimate ---- */
+  const wordCount = [
+    tip.introduction,
+    ...tip.tips.map((t) => t.heading + " " + t.body + " " + (t.proTip ?? "")),
+    ...tip.faqs.map((f) => f.question + " " + f.answer),
+  ].join(" ").split(/\s+/).length;
+  const readingTime = Math.max(5, Math.ceil(wordCount / 200));
+
+  /* ---- Cross-category related tips (max 2) ---- */
+  const crossCategoryTips = ALL_TIPS.filter(
+    (t) => t.category !== tip.category
+  ).slice(0, 2);
 
   return (
     <main className="min-h-screen bg-[#FFFBF7]">
@@ -208,6 +225,22 @@ export default async function TipArticlePage({
           {tip.title}
         </h1>
 
+        {/* Meta info bar */}
+        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-[#7A5C3A]">
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true">📖</span>
+            {readingTime} min read
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true">📅</span>
+            November 15, 2026
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true">✍️</span>
+            AI Home Decorator Editorial
+          </span>
+        </div>
+
         <div className="relative mt-8 aspect-video w-full overflow-hidden rounded-2xl bg-[#F0E8D8]">
           <Image
             src={tip.heroImage}
@@ -222,9 +255,30 @@ export default async function TipArticlePage({
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         {/* ============================================================ */}
+        {/* Table of Contents                                            */}
+        {/* ============================================================ */}
+        <nav className="mb-10 rounded-2xl border border-[#F0E8D8] bg-white p-6 shadow-sm" aria-label="Table of Contents">
+          <h2 className="mb-4 text-lg font-bold text-[#4A2508]">In This Guide</h2>
+          <ol className="space-y-2 text-sm">
+            <li><a href="#introduction" className="text-[#E87A1E] hover:underline">Introduction</a></li>
+            <li><a href="#expert-tips" className="text-[#E87A1E] hover:underline">Expert Tips &amp; Best Practices</a></li>
+            {tip.specifications && tip.specifications.length > 0 && (
+              <li><a href="#specifications" className="text-[#E87A1E] hover:underline">Technical Specifications</a></li>
+            )}
+            {tip.costEstimates && tip.costEstimates.length > 0 && (
+              <li><a href="#cost-estimates" className="text-[#E87A1E] hover:underline">Estimated Costs</a></li>
+            )}
+            {tip.relatedProductSlug && (
+              <li><a href="#recommended-resource" className="text-[#E87A1E] hover:underline">Recommended Resource</a></li>
+            )}
+            <li><a href="#faq" className="text-[#E87A1E] hover:underline">Frequently Asked Questions</a></li>
+          </ol>
+        </nav>
+
+        {/* ============================================================ */}
         {/* 3. Introduction                                              */}
         {/* ============================================================ */}
-        <section className="pb-12">
+        <section id="introduction" className="pb-12">
           <p className="text-lg leading-relaxed text-[#7A5C3A] sm:text-xl sm:leading-relaxed">
             {tip.introduction}
           </p>
@@ -233,7 +287,7 @@ export default async function TipArticlePage({
         {/* ============================================================ */}
         {/* 4. Tips Section                                              */}
         {/* ============================================================ */}
-        <section className="pb-16">
+        <section id="expert-tips" className="pb-16">
           <h2 className="mb-8 text-2xl font-bold text-[#4A2508] sm:text-3xl">
             Expert Tips &amp; Best Practices
           </h2>
@@ -277,7 +331,7 @@ export default async function TipArticlePage({
         {/* 5. Specifications Table                                      */}
         {/* ============================================================ */}
         {tip.specifications && tip.specifications.length > 0 && (
-          <section className="pb-16">
+          <section id="specifications" className="pb-16">
             <h2 className="mb-6 text-2xl font-bold text-[#4A2508] sm:text-3xl">
               Technical Specifications
             </h2>
@@ -326,7 +380,7 @@ export default async function TipArticlePage({
         {/* 6. Cost Estimate Section                                     */}
         {/* ============================================================ */}
         {tip.costEstimates && tip.costEstimates.length > 0 && (
-          <section className="pb-16">
+          <section id="cost-estimates" className="pb-16">
             <h2 className="mb-6 text-2xl font-bold text-[#4A2508] sm:text-3xl">
               Estimated Costs (US Market)
             </h2>
@@ -376,7 +430,7 @@ export default async function TipArticlePage({
         {/* 7. Recommended Resource Card                                 */}
         {/* ============================================================ */}
         {tip.relatedProductSlug && (
-          <section className="pb-16">
+          <section id="recommended-resource" className="pb-16">
             <div className="rounded-2xl border border-[#E87A1E]/20 bg-gradient-to-r from-amber-50 to-orange-50 p-6 sm:p-8">
               <p className="text-sm font-semibold text-[#E87A1E]">
                 📖 Recommended Resource
@@ -401,7 +455,7 @@ export default async function TipArticlePage({
         {/* ============================================================ */}
         {/* 8. FAQ Section                                               */}
         {/* ============================================================ */}
-        <section className="pb-16">
+        <section id="faq" className="pb-16">
           <h2 className="mb-6 text-2xl font-bold text-[#4A2508] sm:text-3xl">
             Frequently Asked Questions
           </h2>
@@ -496,26 +550,30 @@ export default async function TipArticlePage({
       </div>
 
       {/* ============================================================ */}
-      {/* 11. AI CTA Banner                                             */}
+      {/* 11. Explore More Section                                      */}
       {/* ============================================================ */}
       <section className="bg-[#4A2508] py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            Visualize These Changes with AI
+            Continue Your Home Improvement Journey
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-amber-100/80">
-            Upload a photo of your room and see professional{" "}
-            {tip.category === "lighting" ? "lighting" : "painting"} applied
-            instantly.
+            Discover more expert {tip.category === "lighting" ? "lighting" : "painting"} advice, browse design style guides, or explore our complete home improvement resource library.
           </p>
-          <a
-            href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#E87A1E] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#d06a12] hover:shadow-xl"
-          >
-            Transform My Room with AI Free →
-          </a>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/tips"
+              className="inline-flex items-center gap-2 rounded-full bg-[#E87A1E] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#d06a12] hover:shadow-xl"
+            >
+              Browse All Tips →
+            </Link>
+            <Link
+              href={`/store/${tip.relatedProductSlug ?? "home-lighting-design-guide-usa"}`}
+              className="inline-flex items-center gap-2 rounded-full border-2 border-amber-100/30 px-8 py-3.5 text-base font-semibold text-amber-100 transition-all hover:bg-amber-100/10"
+            >
+              Get the Complete Guide →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -581,6 +639,77 @@ export default async function TipArticlePage({
           </div>
         </section>
       )}
+
+      {/* ============================================================ */}
+      {/* 13. Cross-Category Tips                                       */}
+      {/* ============================================================ */}
+      {crossCategoryTips.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+          <h2 className="mb-8 text-2xl font-bold text-[#4A2508] sm:text-3xl">
+            {tip.category === "lighting" ? "🎨 Painting" : "💡 Lighting"} Tips You Might Like
+          </h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {crossCategoryTips.map((ct) => (
+              <Link
+                key={ct.slug}
+                href={`/tips/${ct.slug}`}
+                className="group flex items-start gap-4 rounded-2xl border border-[#F0E8D8] bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-[#E87A1E]/30"
+              >
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#F0E8D8]">
+                  <Image
+                    src={ct.heroImage}
+                    alt={ct.title}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-[#4A2508] group-hover:text-[#E87A1E] transition-colors">
+                    {ct.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-[#7A5C3A] line-clamp-2">
+                    {ct.introduction.slice(0, 100)}…
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ============================================================ */}
+      {/* 14. Author / EEAT Section                                     */}
+      {/* ============================================================ */}
+      <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="rounded-2xl border border-[#F0E8D8] bg-white p-6 sm:p-8 shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-[#E87A1E]/20">
+              <Image
+                src="/brand/logo.jpg"
+                alt="AI Home Decorator"
+                fill
+                sizes="56px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="font-bold text-[#4A2508]">AI Home Decorator Editorial Team</p>
+              <p className="mt-1 text-sm leading-relaxed text-[#7A5C3A]">
+                Our editorial team combines interior design expertise with AI technology insights to bring you practical, actionable home improvement guides. Each article is researched and reviewed by certified interior designers and home improvement professionals.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                <Link href="/tips" className="text-sm font-semibold text-[#E87A1E] hover:underline">
+                  View All Guides →
+                </Link>
+                <Link href="/store" className="text-sm font-semibold text-[#E87A1E] hover:underline">
+                  Design Resources →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
