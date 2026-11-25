@@ -16,8 +16,8 @@ const roboto = Roboto({
 
 export const metadata: Metadata = { 
   metadataBase: new URL("https://aihomedecorator.com"),
-  title: "AI Home Decorator - Design • Decorate • Visualize | Interior Design App", 
-  description: "Reimagine your living room, kitchen, bathroom, and garage with AI Home Decorator. Upload any room photo, choose from 30+ architectural styles, and visualize your dream space instantly on the official Android app.",
+  title: "AI Home Decorator — Interior Design Guides, Room Ideas & Home Tips", 
+  description: "Explore expert home improvement tips, lighting and painting guides, architectural room ideas, and AI-powered interior design inspiration for American homes.",
   icons: {
     icon: "/brand/logo.jpg",
     apple: "/brand/logo.jpg",
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     google: "h75skBgU64mJnx8bnF_UW_o8SHEi9-DO8RM5yjXTo60",
   },
   openGraph: {
-    title: "AI Home Decorator - From Empty to Extraordinary",
-    description: "See your room's potential in seconds with the official AI Home Decorator Android App.",
+    title: "AI Home Decorator — Interior Design Guides & Room Inspiration",
+    description: "Expert lighting and painting tips, 30+ architectural style guides, and room transformation ideas for your home.",
     url: "https://aihomedecorator.com",
     siteName: "AI Home Decorator",
     images: [

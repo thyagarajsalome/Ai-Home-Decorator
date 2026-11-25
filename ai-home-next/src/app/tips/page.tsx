@@ -16,6 +16,14 @@ export const metadata: Metadata = {
       "Expert home improvement tips and guides covering lighting design, painting techniques, color selection, and more.",
     url: "https://aihomedecorator.com/tips",
     siteName: "AI Home Decorator",
+    images: [
+      {
+        url: "/images/showcase/lighting-after.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Home Improvement Tips & Guides",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -23,6 +31,7 @@ export const metadata: Metadata = {
     title: "Home Improvement Tips & Guides | AI Home Decorator",
     description:
       "Expert home improvement tips and guides covering lighting design, painting techniques, color selection, and more.",
+    images: ["/images/showcase/lighting-after.jpg"],
   },
 };
 

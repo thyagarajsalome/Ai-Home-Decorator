@@ -189,15 +189,6 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      {/* Subtle Whole-Page Architectural Blueprint Texture */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0 opacity-[0.06] mix-blend-multiply bg-center bg-repeat"
-        style={{
-          backgroundImage: "url('/brand/floor-plan.jpg')",
-          backgroundSize: "1000px auto",
-        }}
-        aria-hidden="true"
-      />
 
       {/* ============================================================ */}
       {/* 1. HERO SECTION: Brand Colors, Logo, Promo Mockups & Download */}
@@ -257,6 +248,8 @@ export default function Home() {
                   <img
                     src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
                     alt="Download AI Home Decorator on Google Play"
+                    width={165}
+                    height={64}
                     className="h-16 w-auto"
                   />
                 </a>
