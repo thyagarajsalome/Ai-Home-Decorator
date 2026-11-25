@@ -8,6 +8,8 @@ import { ALL_TIPS } from "@/lib/tipsData";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aihomedecorator.com";
   const now = new Date();
+  const tipsLastModified = new Date("2026-11-18T00:00:00Z");
+  const guidesLastModified = new Date("2026-11-18T00:00:00Z");
 
   // 1. High-Priority Primary Hubs
   const primaryRoutes: MetadataRoute.Sitemap = [
@@ -97,7 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 5. Programmatic SEO: 15 Definitive Style Guides
   const styleGuideRoutes: MetadataRoute.Sitemap = STYLES.map((style) => ({
     url: `${baseUrl}/guide/${style.slug}`,
-    lastModified: now,
+    lastModified: guidesLastModified,
     changeFrequency: "weekly" as const,
     priority: 0.85,
   }));
@@ -106,7 +108,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const roomIdeaRoutes: MetadataRoute.Sitemap = ROOMS.flatMap((room) =>
     STYLES.map((style) => ({
       url: `${baseUrl}/ideas/${room.slug}/${style.slug}`,
-      lastModified: now,
+      lastModified: guidesLastModified,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     }))
@@ -123,7 +125,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 8. Programmatic SEO: 30 Expert Home Improvement Playbooks (Lighting & Painting)
   const tipsRoutes: MetadataRoute.Sitemap = ALL_TIPS.map((tip) => ({
     url: `${baseUrl}/tips/${tip.slug}`,
-    lastModified: now,
+    lastModified: tipsLastModified,
     changeFrequency: "weekly" as const,
     priority: 0.85,
   }));

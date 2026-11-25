@@ -1073,7 +1073,7 @@ export const ALL_TIPS: TipArticle[] = [
     "category": "lighting",
     "relatedProductSlug": "home-lighting-design-guide-usa",
     "relatedProductTitle": "The Home Lighting Design Guide (USA Edition)",
-    "heroImage": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=1200&q=80",
+    "heroImage": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80",
     "introduction": "Smart lighting has evolved far beyond novelty color-changing bulbs. A properly engineered smart lighting ecosystem enhances home security, slashes energy bills, and harmonizes your indoor environment with natural human circadian biology. The key decision for American homeowners is choosing smart in-wall switches (such as Lutron Caseta) over individual smart bulbs, ensuring your lighting system remains 100% reliable even when guests or children flip the physical wall toggle.",
     "tips": [
       {
@@ -3356,7 +3356,7 @@ export const ALL_TIPS: TipArticle[] = [
     "category": "painting",
     "relatedProductSlug": "home-painting-guide-usa",
     "relatedProductTitle": "The Home Painting Guide (USA Edition)",
-    "heroImage": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=1200&q=80",
+    "heroImage": "/brand/promo-garage.jpg",
     "introduction": "A stained, cracked concrete garage floor ruins the look of an otherwise beautiful home. However, coating concrete is the most demanding painting project in residential construction. Hot car tires, road salt, oil drips, and hydrostatic moisture vapor rising through the slab destroy cheap DIY paints within months. Understanding the critical differences between cheap acrylic garage paint, 100% solids commercial epoxy, and cutting-edge polyaspartic polyurea coatings guarantees a showroom finish that never peels.",
     "tips": [
       {
