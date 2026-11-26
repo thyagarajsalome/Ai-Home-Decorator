@@ -442,12 +442,22 @@ export default async function TipArticlePage({
                 Get the complete guide with detailed diagrams, checklists, and
                 professional specifications.
               </p>
-              <Link
-                href={`/store/${tip.relatedProductSlug}`}
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#E87A1E] px-6 py-3 text-sm font-semibold text-white shadow transition-all hover:bg-[#d06a12] hover:shadow-md"
-              >
-                Get the Complete Guide →
-              </Link>
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <Link
+                  href={`/store/${tip.relatedProductSlug}`}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#E87A1E] px-6 py-3 text-sm font-semibold text-white shadow transition-all hover:bg-[#d06a12] hover:shadow-md"
+                >
+                  Get the Complete Guide →
+                </Link>
+                <Link
+                  href="/tools"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#E87A1E]/40 bg-white px-5 py-3 text-sm font-semibold text-[#4A2508] transition-all hover:border-[#E87A1E] hover:text-[#E87A1E]"
+                >
+                  {tip.category === "lighting"
+                    ? "💡 Open Lumen & Can Calculator →"
+                    : "🎨 Open Paint Gallon Calculator →"}
+                </Link>
+              </div>
             </div>
           </section>
         )}

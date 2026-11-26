@@ -106,6 +106,12 @@ const Header: React.FC = () => {
               Tips &amp; Guides
             </Link>
             <Link
+              href="/tools"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
+            >
+              Calculators
+            </Link>
+            <Link
               href="/usa"
               className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1 py-1"
             >
@@ -263,6 +269,13 @@ const Header: React.FC = () => {
             className="block px-3 py-2 rounded-lg text-sm font-bold text-[#4A2508] hover:bg-[#FFF8F2]"
           >
             Tips &amp; Guides
+          </Link>
+          <Link
+            href="/tools"
+            onClick={closeMenu}
+            className="block px-3 py-2 rounded-lg text-sm font-bold text-[#4A2508] hover:bg-[#FFF8F2]"
+          >
+            🛠️ Lighting &amp; Paint Calculators
           </Link>
           <Link
             href="/usa"

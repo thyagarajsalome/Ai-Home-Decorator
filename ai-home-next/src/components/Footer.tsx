@@ -127,6 +127,10 @@ const Footer: React.FC = () => {
                 <span>💡</span>
                 <span>Home Improvement Tips &rarr;</span>
               </Link>
+              <Link href="/tools" className="text-[#4A2508] font-bold hover:text-[#E87A1E] transition-colors flex items-center gap-1">
+                <span>🛠️</span>
+                <span>Lighting &amp; Paint Calculators &rarr;</span>
+              </Link>
               <Link href="/store/home-lighting-design-guide-usa" className="hover:text-[#E87A1E] transition-colors">
                 Lighting Design Guide (USA)
               </Link>

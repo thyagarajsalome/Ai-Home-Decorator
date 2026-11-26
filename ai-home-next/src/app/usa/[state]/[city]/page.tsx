@@ -5,11 +5,10 @@ import Image from "next/image";
 import InteractiveBeforeAfter from "@/components/InteractiveBeforeAfter";
 import CityRegionalShowcase from "@/components/CityRegionalShowcase";
 import LeadCaptureSection from "@/components/LeadCaptureSection";
+import USHomeCalculators from "@/components/USHomeCalculators";
+import { getStateCostProfile } from "@/lib/cityMetrics";
 
 export const revalidate = 86400;
-
-const PLAY_STORE_URL =
-  "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
 
 const MapPinIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
   <svg
@@ -72,8 +71,8 @@ export async function generateMetadata({
   const pageUrl = `https://aihomedecorator.com/usa/${state.toLowerCase()}/${city.toLowerCase()}`;
 
   return {
-    title: cityData.meta_title || `AI Interior Design in ${cityData.name}, ${cityData.state_name} | AI Home Decorator`,
-    description: cityData.meta_description || `Reimagine your home in ${cityData.name}, ${cityData.state_name} with AI. Preview ${cityData.popular_style || "modern"} decor ideas instantly with the AI Home Decorator app.`,
+    title: cityData.meta_title || `Interior Design & Remodel Guide in ${cityData.name}, ${cityData.state_name} | AI Home Decorator`,
+    description: cityData.meta_description || `Explore ${cityData.popular_style || "modern"} home design ideas, localized paint & lighting cost estimates, and room calculators for ${cityData.name}, ${cityData.state_name}.`,
     alternates: {
       canonical: pageUrl,
     },
@@ -113,6 +112,7 @@ export default async function CityLandingPage({
     .limit(8);
 
   const pageUrl = `https://aihomedecorator.com/usa/${state.toLowerCase()}/${city.toLowerCase()}`;
+  const costProfile = getStateCostProfile(cityData.state, cityData.name);
   const cityHeroImage = cityData.image_url
     ? cityData.image_url.replace(/\.jpg$/, ".webp")
     : `/images/seo/${city.toLowerCase()}.webp`;
@@ -233,13 +233,87 @@ export default async function CityLandingPage({
           challenge={cityData.challenge}
         />
 
-        {/* CTA: Redesign in App */}
+        {/* Localized Remodel Cost Benchmarks & Climate Guidance */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#F1E4D5] shadow-xs mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEEDDF] border border-[#F8B98B] text-[#8D3D10] text-xs font-bold mb-2">
+                <span>💵</span>
+                <span>{costProfile.tierLabel}</span>
+              </span>
+              <h2 className="text-lg sm:text-xl font-black text-[#4A2508] font-heading">
+                2026 {cityData.name} Paint &amp; Lighting Remodel Costs
+              </h2>
+            </div>
+          </div>
+
+          <p className="text-xs sm:text-sm text-[#5C3314] leading-relaxed mb-5 bg-[#FFFBF7] border border-[#F1E4D5] rounded-2xl p-4">
+            <strong>Regional Spec Note:</strong> {costProfile.climateZoneNote}
+          </p>
+
+          <div className="overflow-x-auto rounded-2xl border border-[#F0E8D8]">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead>
+                <tr className="bg-[#FFFBF7] border-b border-[#F0E8D8]">
+                  <th className="px-4 py-3 font-bold text-[#4A2508]">Project</th>
+                  <th className="hidden sm:table-cell px-4 py-3 font-bold text-[#4A2508]">Typical US Scope</th>
+                  <th className="px-4 py-3 font-bold text-[#4A2508]">{cityData.name} Est.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {costProfile.remodelEstimates.map((item, idx) => (
+                  <tr key={idx} className="border-b border-[#F0E8D8] last:border-b-0">
+                    <td className="px-4 py-3 font-semibold text-[#4A2508]">{item.project}</td>
+                    <td className="hidden sm:table-cell px-4 py-3 text-[#7A5C3A]">{item.scope}</td>
+                    <td className="px-4 py-3 font-bold text-[#E87A1E]">
+                      ${item.lowUsd.toLocaleString()} – ${item.highUsd.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Curated Regional Tips */}
+          <div className="mt-6 pt-5 border-t border-[#F1E4D5]">
+            <h3 className="text-sm font-black text-[#4A2508] mb-3">
+              Recommended Guides for {cityData.name} Homeowners
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {costProfile.recommendedTips.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/tips/${t.slug}`}
+                  className="p-3.5 rounded-xl bg-[#FFFBF7] border border-[#F1E4D5] hover:border-[#E87A1E] transition-all group"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#E87A1E]">
+                    {t.category === "lighting" ? "💡 Lighting" : "🎨 Painting"}
+                  </span>
+                  <div className="text-xs font-bold text-[#4A2508] group-hover:text-[#E87A1E] mt-1 line-clamp-2">
+                    {t.title}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Interactive City-Calibrated Calculators */}
+        <div className="mb-10">
+          <USHomeCalculators
+            cityName={cityData.name}
+            stateCode={cityData.state}
+            costMultiplier={costProfile.multiplier}
+          />
+        </div>
+
+        {/* Interactive Preview Header */}
         <div className="text-center mb-6">
           <h2 className="text-xl sm:text-2xl font-black text-[#4A2508] tracking-tight font-heading mb-1.5">
-            Redesign Your {cityData.name} Space Instantly
+            Preview Before &amp; After {cityData.name} Room Transformations
           </h2>
           <p className="text-xs sm:text-sm text-[#6D5D53] max-w-xl mx-auto">
-            Snap any room in your {cityData.name} home or apartment to preview stunning {cityData.popular_style} designs in seconds.
+            Compare how updated lighting, wall colors, and {cityData.popular_style} finishes transform real spaces.
           </p>
         </div>
       </section>
@@ -257,31 +331,33 @@ export default async function CityLandingPage({
         />
       </div>
 
-      {/* Big Download Card for this City */}
+      {/* Planning Resources Card for this City */}
       <section className="max-w-4xl mx-auto px-4 mb-8">
         <div className="bg-white border-2 border-[#FCD7BA] rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-md text-center flex flex-col items-center">
-          <div className="w-12 h-12 rounded-2xl bg-[#FEEDDF] border border-[#F8B98B] flex items-center justify-center text-[#E87A1E] mb-3">
-            <SmartphoneIcon className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-2xl bg-[#FEEDDF] border border-[#F8B98B] flex items-center justify-center text-[#E87A1E] mb-3 text-2xl">
+            📚
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-[#4A2508] font-heading mb-1.5">
-            Download the App to Redesign Your {cityData.name} Home
+            Complete {cityData.name} Lighting &amp; Painting Playbooks
           </h3>
-          <p className="text-xs sm:text-sm text-[#6D5D53] max-w-lg mb-4">
-            Get instant AI makeover renders, 30+ architectural styles, and before/after sliders right on your Android device.
+          <p className="text-xs sm:text-sm text-[#6D5D53] max-w-lg mb-5">
+            Get printable US floor-plan wiring checklists, lumen sizing tables, and curated Sherwin-Williams &amp; Benjamin Moore color palettes.
           </p>
 
-          <a
-            href={PLAY_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-transform duration-200 hover:scale-105 active:scale-95 inline-block"
-          >
-            <img
-              src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-              alt="Download on Google Play"
-              className="h-11 w-auto"
-            />
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/store/home-lighting-design-guide-usa"
+              className="btn-brand-primary px-6 py-2.5 text-xs sm:text-sm font-bold"
+            >
+              💡 Lighting Design Guide →
+            </Link>
+            <Link
+              href="/store/home-painting-guide-usa"
+              className="btn-brand-secondary px-6 py-2.5 text-xs sm:text-sm font-bold"
+            >
+              🎨 Home Painting Guide →
+            </Link>
+          </div>
         </div>
       </section>
 

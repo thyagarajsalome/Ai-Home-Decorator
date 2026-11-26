@@ -11,6 +11,7 @@ User-agent: Googlebot
 Allow: /
 Allow: /store/
 Allow: /tips/
+Allow: /tools/
 Allow: /ideas/
 Allow: /guide/
 Allow: /usa/
@@ -21,6 +22,7 @@ User-agent: Bingbot
 Allow: /
 Allow: /store/
 Allow: /tips/
+Allow: /tools/
 Allow: /ideas/
 Allow: /guide/
 Allow: /usa/
@@ -31,6 +33,7 @@ User-agent: Pinterestbot
 Allow: /
 Allow: /store/
 Allow: /tips/
+Allow: /tools/
 Allow: /ideas/
 Allow: /guide/
 Allow: /brand/

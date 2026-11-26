@@ -5,9 +5,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-const PLAY_STORE_URL =
-  "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
-
 // Generate paths for all category and style combinations
 export function generateStaticParams() {
   const params: { category: string; style: string }[] = [];
@@ -50,8 +47,8 @@ export async function generateMetadata({
 
   if (!styleObj) return {};
 
-  const title = `${styleObj.name} ${catObj.name} - AI Interior Design & Ideas | AI Home Decorator`;
-  const description = `Reimagine your space with a stunning ${styleObj.name} ${catObj.name.toLowerCase()}. Download the AI Home Decorator Android app to visualize ${styleObj.name} layouts, furniture, and colors instantly.`;
+  const title = `${styleObj.name} ${catObj.name} - Interior Design Guide & Ideas | AI Home Decorator`;
+  const description = `Explore ${styleObj.name} ${catObj.name.toLowerCase()} design ideas, color palettes, material pairings, and expert remodeling tips tailored for American homes.`;
 
   const pageUrl = `https://aihomedecorator.com/design/${category}/${style}`;
 
@@ -158,11 +155,11 @@ export default async function ProgrammaticSEODesignPage({
             {catObj.name} Design
           </h1>
           <p className="text-sm sm:text-base text-[#5C3314] leading-relaxed max-w-2xl mx-auto">
-            Transform any room into a breathtaking <strong>{styleObj.name}</strong> space. Our native mobile app preserves the exact layout and dimensions of your room while applying realistic {styleObj.name.toLowerCase()} furniture, finishes, and lighting.
+            Transform any room into a breathtaking <strong>{styleObj.name}</strong> space. Explore signature {styleObj.name.toLowerCase()} furniture silhouettes, finishes, and lighting ratios to plan your remodel with confidence.
           </p>
         </div>
 
-        {/* Main Feature Showcase & App Download CTA */}
+        {/* Main Feature Showcase & Resource Links */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-16 bg-white border border-[#F1E4D5] rounded-3xl p-6 sm:p-10 shadow-sm">
           
           {/* Left Column: Image Preview */}
@@ -182,52 +179,48 @@ export default async function ProgrammaticSEODesignPage({
             </div>
           </div>
 
-          {/* Right Column: Style Guide & Direct App Download */}
+          {/* Right Column: Style Guide & Planning Tools */}
           <div className="lg:col-span-6 flex flex-col justify-center">
             <span className="text-xs font-black text-[#E87A1E] uppercase tracking-wider">
-              Native Android App Feature
+              {catObj.name} Design Blueprint
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-[#4A2508] mt-1 mb-3 font-heading">
-              Redesign Your Room in {styleObj.name} Style
+              Plan Your {styleObj.name} {catObj.name}
             </h2>
             <p className="text-xs sm:text-sm text-[#6D5D53] leading-relaxed mb-6">
-              Skip $3,000+ interior design agency consultations. With AI Home Decorator, you snap a photo with your phone camera, tap &ldquo;{styleObj.name}&rdquo;, and receive instant photorealistic design variations.
+              Bring the {styleObj.name} look into your home without costly guesswork. Combine balanced room lighting, cohesive wall undertones, and signature material textures suited to your floor plan.
             </p>
 
             {/* Feature Bullets */}
             <div className="space-y-2.5 mb-8 text-xs font-semibold text-[#5C3314]">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#FEEDDF] text-[#E87A1E] flex items-center justify-center font-bold">✓</span>
-                <span>Structural layout and room depth preserved</span>
+                <span>Layered ambient, task &amp; accent lighting specifications</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#FEEDDF] text-[#E87A1E] flex items-center justify-center font-bold">✓</span>
-                <span>Realistic {styleObj.name.toLowerCase()} furniture, lighting &amp; textiles</span>
+                <span>Authentic {styleObj.name.toLowerCase()} furniture, lighting &amp; textiles</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#FEEDDF] text-[#E87A1E] flex items-center justify-center font-bold">✓</span>
-                <span>Interactive Before/After slider on Android</span>
+                <span>Free US lumen &amp; paint gallon estimators for exact budgeting</span>
               </div>
             </div>
 
-            {/* Google Play Download Button */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <a
-                href={PLAY_STORE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-transform duration-200 hover:scale-105 inline-block shadow-md"
+            {/* Internal Action Links */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <Link
+                href="/tools"
+                className="btn-brand-primary px-6 py-3 text-xs sm:text-sm font-black text-center shadow-md"
               >
-                <img
-                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                  alt="Download on Google Play"
-                  className="h-14 w-auto"
-                />
-              </a>
-              <div className="text-left text-xs text-[#7A4B27]">
-                <div className="font-bold text-[#4A2508]">4.9 ★★★★★ Rating</div>
-                <div>Free to download on Google Play</div>
-              </div>
+                Open Lighting &amp; Paint Calculators →
+              </Link>
+              <Link
+                href="/tips"
+                className="btn-brand-secondary px-5 py-3 text-xs sm:text-sm font-bold text-center"
+              >
+                Browse Expert Tips →
+              </Link>
             </div>
           </div>
 
@@ -251,19 +244,27 @@ export default async function ProgrammaticSEODesignPage({
             
             <div className="border-b border-[#F1E4D5] pb-5">
               <h3 className="text-base font-bold text-[#4A2508] mb-2">
-                Can I customize the {styleObj.name} look in the mobile app?
+                What lighting temperature works best for {styleObj.name} {catObj.name.toLowerCase()}?
               </h3>
               <p className="text-xs sm:text-sm text-[#6D5D53] leading-relaxed">
-                Yes! When using the AI Home Decorator Android app, you can select {styleObj.name} or add your own custom prompts (e.g. &ldquo;add warm oak floating shelves&rdquo; or &ldquo;brass hardware with emerald tiles&rdquo;) to fine-tune your visualization.
+                Most residential {styleObj.name.toLowerCase()} spaces perform best with 2700K to 3000K high-CRI (90+) dimmable LEDs. Warm white tones highlight natural wood and textile finishes without washing out wall colors. Use our{" "}
+                <Link href="/tools" className="text-[#E87A1E] font-semibold hover:underline">
+                  free room lighting calculator
+                </Link>{" "}
+                to size your lumens and recessed can spacing.
               </p>
             </div>
             
             <div>
               <h3 className="text-base font-bold text-[#4A2508] mb-2">
-                How does the AI Home Decorator mobile app work?
+                How can I budget paint and lighting for a {styleObj.name} remodel?
               </h3>
               <p className="text-xs sm:text-sm text-[#6D5D53] leading-relaxed">
-                Simply install the app from Google Play, snap a photo of your empty or furnished room, pick {styleObj.name}, and receive instant photorealistic redesigns within seconds with an interactive before/after slider.
+                Start by measuring your room&apos;s square footage and ceiling height to estimate paint gallons and recessed fixture spacing, then review our{" "}
+                <Link href="/store" className="text-[#E87A1E] font-semibold hover:underline">
+                  US Home Lighting &amp; Painting Design Guides
+                </Link>{" "}
+                for room-by-room checklists and material specs.
               </p>
             </div>
           </div>

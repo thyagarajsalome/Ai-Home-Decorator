@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface CityRegionalShowcaseProps {
   city: string;
@@ -19,6 +20,7 @@ interface RegionalProfile {
     style: string;
     image: string;
     description: string;
+    href: string;
   }[];
   palette: {
     name: string;
@@ -43,6 +45,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Coastal Modern & Bohemian",
           image: "/images/showcase/living-room.webp",
           description: "High ceilings, linen sofas, and light white oak floors that maximize coastal breezes and daylight.",
+          href: "/ideas/living-room/coastal",
         },
         {
           title: "Resort-Style Poolside Oasis",
@@ -50,6 +53,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Tropical Resort Landscape",
           image: "/images/showcase/backyard-pool.webp",
           description: "Travertine pool coping, low-maintenance palms, and sunken lounge seating built for year-round hosting.",
+          href: "/ideas/outdoor-patio/coastal",
         },
         {
           title: "Sun-Bleached Stucco Villa",
@@ -57,6 +61,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Mediterranean & Modern Stucco",
           image: "/images/showcase/architecture-villa.webp",
           description: "Smooth off-white stucco with terracotta tile highlights and drought-tolerant bougainvillea accents.",
+          href: "/guide/mediterranean",
         },
       ],
       palette: [
@@ -85,6 +90,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Southwestern Contemporary",
           image: "/images/showcase/living-room.webp",
           description: "Polished concrete and natural stone surfaces that stay cool during peak midday desert temperatures.",
+          href: "/ideas/living-room/bohemian",
         },
         {
           title: "Modern Stucco & Slat Facade",
@@ -92,6 +98,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Modern Slats & Adobe",
           image: "/images/showcase/house-facade.webp",
           description: "Deep recessed window frames and insulated stucco mass to shield the interior from western sun exposure.",
+          href: "/guide/minimalist",
         },
         {
           title: "Drought-Tolerant Firepit Deck",
@@ -99,6 +106,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Modern Desert Xeriscape",
           image: "/images/showcase/patio.webp",
           description: "Flagstone pavers, decomposed granite groundcover, and a natural gas stone firepit for crisp desert nights.",
+          href: "/ideas/outdoor-patio/rustic",
         },
       ],
       palette: [
@@ -127,6 +135,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Scandinavian & Japandi",
           image: "/images/showcase/bedroom.webp",
           description: "Natural pale birch timber, warm indirect cove lighting, and cozy layered wool textiles for overcast mornings.",
+          href: "/ideas/bedroom/scandinavian",
         },
         {
           title: "Craftsman Chef Kitchen",
@@ -134,6 +143,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Modern Oak & Quartz",
           image: "/images/showcase/kitchen.webp",
           description: "Natural white oak shaker cabinetry with marble quartz waterfall slabs and brass ambient lighting.",
+          href: "/ideas/kitchen/japandi",
         },
         {
           title: "Covered Cedar Outdoor Pergola",
@@ -141,6 +151,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Covered Timber Living",
           image: "/images/showcase/landscape-oasis.webp",
           description: "Rain-sheltered Douglas fir pergola with integrated heaters and lush green mountain landscaping.",
+          href: "/ideas/outdoor-patio/rustic",
         },
       ],
       palette: [
@@ -169,6 +180,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Modern Farmhouse",
           image: "/images/showcase/living-room.webp",
           description: "Vaulted ceilings, exposed rustic wood beams, and a stone gas fireplace built for hospitality.",
+          href: "/ideas/living-room/modern-farmhouse",
         },
         {
           title: "Gourmet Southern Kitchen",
@@ -176,6 +188,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Farmhouse Shaker Kitchen",
           image: "/images/showcase/kitchen.webp",
           description: "Crisp white shaker cabinets, double-basin apron front sink, and a spacious central gathering island.",
+          href: "/ideas/kitchen/modern-farmhouse",
         },
         {
           title: "Texas Ranch House Facade",
@@ -183,6 +196,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
           style: "Board & Batten Farmhouse",
           image: "/images/showcase/house-facade.webp",
           description: "White board-and-batten siding with a standing-seam black metal roof and a spacious covered porch.",
+          href: "/guide/modern-farmhouse",
         },
       ],
       palette: [
@@ -210,6 +224,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
         style: "Industrial & Modern Loft",
         image: "/images/showcase/living-room.webp",
         description: "Open-concept layout with slimline black steel window frames, plush modern seating, and warm wood flooring.",
+        href: "/ideas/living-room/industrial",
       },
       {
         title: "Chef's Kitchen & Dining",
@@ -217,6 +232,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
         style: "Euro Minimalist Kitchen",
         image: "/images/showcase/kitchen.webp",
         description: "Seamless integrated flat-panel cabinetry, durable quartz countertops, and smart recessed lighting.",
+        href: "/ideas/kitchen/minimalist",
       },
       {
         title: "Masonry & Modern Accent Walls",
@@ -224,6 +240,7 @@ function getRegionalProfile(state: string, popularStyle: string, cityName: strin
         style: "Exposed Brick & Navy",
         image: "/images/showcase/wall-paint.webp",
         description: "Rich reclaimed red brick and deep matte navy feature walls that add warmth and architectural character.",
+        href: "/guide/transitional",
       },
     ],
     palette: [
@@ -270,8 +287,9 @@ export default function CityRegionalShowcase({
         {/* 3 Visual Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
           {profile.cards.map((card, idx) => (
-            <div
+            <Link
               key={idx}
+              href={card.href}
               className="rounded-2xl overflow-hidden border border-[#F1E4D5] bg-[#FFFBF7] flex flex-col group hover:border-[#E87A1E] transition-all duration-300 shadow-xs hover:shadow-md"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#FEEDDF]">
@@ -288,7 +306,7 @@ export default function CityRegionalShowcase({
               </div>
               <div className="p-4 flex flex-col flex-1 justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-[#4A2508] font-heading mb-1">
+                  <h3 className="text-sm font-bold text-[#4A2508] group-hover:text-[#E87A1E] font-heading mb-1 transition-colors">
                     {card.title}
                   </h3>
                   <p className="text-[11px] text-[#6D5D53] leading-relaxed">
@@ -297,10 +315,10 @@ export default function CityRegionalShowcase({
                 </div>
                 <div className="mt-3 pt-3 border-t border-[#F1E4D5] flex items-center justify-between text-[11px] font-semibold text-[#8D3D10]">
                   <span>Style: {card.style}</span>
-                  <span className="text-[#E87A1E] font-bold group-hover:translate-x-0.5 transition-transform">Preview &rarr;</span>
+                  <span className="text-[#E87A1E] font-bold group-hover:translate-x-0.5 transition-transform">Explore Guide &rarr;</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -348,8 +366,11 @@ export default function CityRegionalShowcase({
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-[#F1E4D5] text-[11px] text-[#8D7D72]">
-            💡 Tap any style in our Android app to apply these exact palettes automatically.
+          <div className="mt-4 pt-3 border-t border-[#F1E4D5] flex items-center justify-between text-[11px]">
+            <span className="text-[#8D7D72]">Need exact gallon &amp; sheen specs?</span>
+            <Link href="/store/home-painting-guide-usa" className="font-bold text-[#E87A1E] hover:underline">
+              Painting Guide &rarr;
+            </Link>
           </div>
         </div>
 
@@ -384,15 +405,13 @@ export default function CityRegionalShowcase({
           </div>
 
           <div className="mt-5 pt-3 border-t border-[#F1E4D5] flex items-center justify-between text-xs text-[#8D3D10] font-bold">
-            <span>Ready to visualize your own rooms?</span>
-            <a
-              href="https://play.google.com/store/apps/details?id=com.aihomedecorator.twa"
-              target="_blank"
-              rel="noopener noreferrer"
+            <span>Sizing lights or paint for your rooms?</span>
+            <Link
+              href="/tools"
               className="text-[#E87A1E] hover:underline"
             >
-              Open Android Studio &rarr;
-            </a>
+              Open Room Calculators &rarr;
+            </Link>
           </div>
         </div>
       </div>

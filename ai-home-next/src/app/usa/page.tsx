@@ -5,20 +5,17 @@ import { supabase } from "@/supabaseClient";
 
 export const revalidate = 86400;
 
-const PLAY_STORE_URL =
-  "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
-
 export const metadata: Metadata = {
-  title: "AI Interior Design & Room Makeover in US Cities | AI Home Decorator",
+  title: "AI Interior Design & Remodel Guides in 50 US Cities | AI Home Decorator",
   description:
-    "Explore AI-powered home decorating and room transformations across 50 major US cities. Find local architectural styles and redesign your space instantly with the AI Home Decorator Android app.",
+    "Explore localized interior design styles, regional color palettes, remodel cost estimates, and home planning calculators across 50 major US cities.",
   alternates: {
     canonical: "https://aihomedecorator.com/usa",
   },
   openGraph: {
-    title: "AI Interior Design Across US Cities | AI Home Decorator",
+    title: "Interior Design & Remodel Guides Across 50 US Cities | AI Home Decorator",
     description:
-      "Explore AI-powered home decorating and room transformations across 50 major US cities.",
+      "Explore localized home decorating styles, regional remodel costs, and planning tools across 50 major US cities.",
     url: "https://aihomedecorator.com/usa",
   },
 };
@@ -111,33 +108,35 @@ export default async function USADirectoryPage() {
           </p>
         </div>
 
-        {/* App Download Prompt (Streamlined & Compact) */}
+        {/* US Calculators & Guides Prompt (Streamlined & Compact) */}
         <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-white border border-[#FCD7BA] shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 text-center md:text-left">
-            <div className="w-10 h-10 rounded-xl bg-[#FEEDDF] border border-[#F8B98B] flex items-center justify-center text-[#E87A1E] flex-shrink-0">
-              <SmartphoneIcon className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-[#FEEDDF] border border-[#F8B98B] flex items-center justify-center text-[#E87A1E] flex-shrink-0 text-lg">
+              🛠️
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-black text-[#4A2508] font-heading">
-                Get the Native Android App for Instant Room Renders
+                Free US Homeowner Lighting &amp; Paint Calculators
               </h2>
               <p className="text-[11px] sm:text-xs text-[#6D5D53] mt-0.5">
-                Snap photos on your phone, test 30+ architectural styles, and save high-resolution redesigns.
+                Calculate exact recessed LED spacing, lumens, paint gallons, and regional remodel costs before you start.
               </p>
             </div>
           </div>
-          <a
-            href={PLAY_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-transform duration-200 hover:scale-105 inline-block flex-shrink-0"
-          >
-            <img
-              src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-              alt="Download on Google Play"
-              className="h-10 w-auto"
-            />
-          </a>
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <Link
+              href="/tools"
+              className="btn-brand-primary px-4 py-2 text-xs font-bold"
+            >
+              Open Calculators &rarr;
+            </Link>
+            <Link
+              href="/tips"
+              className="btn-brand-secondary px-4 py-2 text-xs font-bold"
+            >
+              Expert Tips
+            </Link>
+          </div>
         </div>
 
         {/* Directory Grouped by State */}
