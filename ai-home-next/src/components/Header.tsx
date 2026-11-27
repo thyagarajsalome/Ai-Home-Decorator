@@ -4,9 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 
-const PLAY_STORE_URL =
-  "https://play.google.com/store/apps/details?id=com.aihomedecorator.twa";
-
 const MapPinIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
   <svg
     className={className}
@@ -51,7 +48,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#F1E4D5] shadow-[0_2px_15px_-3px_rgba(74,37,8,0.06)] transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center gap-4">
         {/* Brand Logo & Title */}
         <Link
           href="/"
@@ -68,59 +65,53 @@ const Header: React.FC = () => {
             />
           </div>
           <div className="flex flex-col">
-            <div className="flex items-center gap-1 font-heading font-black text-base sm:text-lg xl:text-xl tracking-tight leading-none">
+            <div className="flex items-center gap-1 font-heading font-black text-base sm:text-lg xl:text-xl tracking-tight leading-none whitespace-nowrap">
               <span className="text-[#E87A1E]">AI</span>
               <span className="text-[#4A2508]">Home Decorator</span>
             </div>
-            <span className="hidden xl:block text-[9px] font-bold tracking-widest text-[#7A4B27] uppercase mt-0.5">
+            <span className="hidden 2xl:block text-[9px] font-bold tracking-widest text-[#7A4B27] uppercase mt-0.5 whitespace-nowrap">
               DESIGN • DECORATE • VISUALIZE
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-3 xl:gap-5">
-          <nav className="flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-bold text-[#5C3314]">
+        <div className="hidden xl:flex items-center gap-4">
+          <nav className="flex items-center gap-4 text-[13px] font-bold text-[#5C3314]">
             <Link
               href="/"
-              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1 whitespace-nowrap"
             >
               Home
             </Link>
             <Link
               href="/ideas"
-              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1 whitespace-nowrap"
             >
               Room Ideas
             </Link>
             <Link
               href="/guide"
-              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1 whitespace-nowrap"
             >
               Style Guides
             </Link>
             <Link
-              href="/tips"
-              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
-            >
-              Tips &amp; Guides
-            </Link>
-            <Link
               href="/tools"
-              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1 whitespace-nowrap"
             >
               Calculators
             </Link>
             <Link
               href="/usa"
-              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1 py-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1 py-1 whitespace-nowrap"
             >
-              <MapPinIcon className="w-3.5 h-3.5 text-[#E87A1E]" />
+              <MapPinIcon className="w-3.5 h-3.5 text-[#E87A1E] flex-shrink-0" />
               <span>US Cities</span>
             </Link>
             <Link
               href="/store"
-              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1.5 text-[#E87A1E] py-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 flex items-center gap-1.5 text-[#E87A1E] py-1 whitespace-nowrap"
             >
               <span>Design Store</span>
               <span className="text-[9px] bg-[#FEEDDF] border border-[#F8B98B] text-[#8D3D10] px-1.5 py-0.5 rounded-md font-black uppercase tracking-wider">
@@ -129,21 +120,21 @@ const Header: React.FC = () => {
             </Link>
             <Link
               href="/about"
-              className="hover:text-[#E87A1E] transition-colors duration-150 py-1"
+              className="hover:text-[#E87A1E] transition-colors duration-150 py-1 whitespace-nowrap"
             >
               About
             </Link>
           </nav>
 
           {/* Auth State & Primary Actions */}
-          <div className="flex items-center gap-2 xl:gap-3 border-l border-[#F1E4D5] pl-3 xl:pl-4">
+          <div className="flex items-center gap-2.5 border-l border-[#F1E4D5] pl-4 flex-shrink-0">
             {currentUser ? (
               <div className="flex items-center gap-2">
                 {/* Admin Quick-Access Button (Exclusive to Admin Users) */}
                 {isAdminUser && (
                   <Link
                     href="/admin/store"
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors shadow-2xs"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-[#8D3D10] bg-[#FEEDDF] hover:bg-[#FCD7BA] border border-[#F8B98B] transition-colors shadow-2xs whitespace-nowrap"
                     title="Store Admin Dashboard"
                   >
                     <span>⚙️</span>
@@ -153,11 +144,11 @@ const Header: React.FC = () => {
 
                 <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FEEDDF]/60 border border-[#F8B98B]/60 text-xs font-medium text-[#4A2508]">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
-                  <span className="max-w-[95px] xl:max-w-[130px] truncate">{currentUser.email}</span>
+                  <span className="max-w-[110px] truncate">{currentUser.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="text-xs font-bold text-[#8D3D10] hover:text-[#E87A1E] transition-colors cursor-pointer px-1 py-1"
+                  className="text-xs font-bold text-[#8D3D10] hover:text-[#E87A1E] transition-colors cursor-pointer px-1 py-1 whitespace-nowrap"
                 >
                   Sign Out
                 </button>
@@ -166,13 +157,13 @@ const Header: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="text-xs font-bold text-[#4A2508] hover:text-[#E87A1E] transition-colors px-2 py-1"
+                  className="text-xs font-bold text-[#4A2508] hover:text-[#E87A1E] transition-colors px-2 py-1 whitespace-nowrap"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
-                  className="btn-brand-secondary px-3 py-1.5 text-xs font-bold"
+                  className="btn-brand-secondary px-3 py-1.5 text-xs font-bold whitespace-nowrap"
                 >
                   Sign Up
                 </Link>
@@ -182,17 +173,16 @@ const Header: React.FC = () => {
             {/* Tips & Guides CTA */}
             <Link
               href="/tips"
-              className="btn-brand-primary px-3 xl:px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#E87A1E]/20 hover:shadow-lg hover:shadow-[#E87A1E]/30 flex-shrink-0"
+              className="btn-brand-primary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#E87A1E]/20 hover:shadow-lg hover:shadow-[#E87A1E]/30 flex-shrink-0 whitespace-nowrap"
             >
               <span className="text-sm">💡</span>
-              <span className="hidden xl:inline">Tips & Guides</span>
-              <span className="xl:hidden">Tips</span>
+              <span>Tips &amp; Guides</span>
             </Link>
           </div>
         </div>
 
-        {/* Mobile Hamburger Button */}
-        <div className="lg:hidden flex items-center gap-2">
+        {/* Mobile / Tablet Hamburger Button */}
+        <div className="xl:hidden flex items-center gap-2 flex-shrink-0">
           <Link
             href="/tips"
             className="btn-brand-primary px-3 py-1.5 text-xs font-bold flex items-center gap-1 shadow-xs"
@@ -241,7 +231,7 @@ const Header: React.FC = () => {
 
       {/* Mobile Dropdown Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white/98 border-b border-[#F1E4D5] px-4 pt-3 pb-6 space-y-2 shadow-xl animate-fadeIn">
+        <div className="xl:hidden bg-white/98 border-b border-[#F1E4D5] px-4 pt-3 pb-6 space-y-2 shadow-xl animate-fadeIn">
           <Link
             href="/"
             onClick={closeMenu}
