@@ -45,6 +45,7 @@ export function buildProductJsonLd(product: ProductSchemaInput) {
       url: `https://aihomedecorator.com/store/${product.slug}`,
       price: product.price.toFixed(2),
       priceCurrency: "USD",
+      validFrom: "2026-01-01",
       priceValidUntil: "2027-12-31",
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
@@ -81,7 +82,7 @@ export function buildProductJsonLd(product: ProductSchemaInput) {
         returnPolicyCategory:
           "https://schema.org/MerchantReturnFiniteReturnWindow",
         merchantReturnDays: 30,
-        returnMethod: "https://schema.org/ReturnOnline",
+        returnMethod: "https://schema.org/ReturnByMail",
         returnFees: "https://schema.org/FreeReturn",
         refundType: "https://schema.org/FullRefund",
       },
