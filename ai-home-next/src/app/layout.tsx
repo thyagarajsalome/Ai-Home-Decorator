@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./providers";
 import Header from "@/components/Header";
@@ -51,6 +52,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={roboto.variable}>
       <body className={`${roboto.className} min-h-screen bg-[#FFFBF7] text-[#382A22] antialiased flex flex-col selection:bg-brand-100 selection:text-brand-900`}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-95627K30JR"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-95627K30JR');
+          `}
+        </Script>
         <Providers>
           <Header />
           <div className="flex-grow">{children}</div>
